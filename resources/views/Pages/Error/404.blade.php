@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <!--
 Template Name: NobleUI - HTML Bootstrap 5 Admin Dashboard Template
@@ -10,27 +9,43 @@ Purchase: https://1.envato.market/nobleui_admin
 License: For each use you must have a valid license purchased only from above link in order to legally use the theme for your project.
 -->
 <html lang="en">
-    @include('Theme/Sub/head')
+	
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="description" content="Responsive HTML Admin Dashboard Template based on Bootstrap 5">
+<meta name="author" content="NobleUI">
+<meta name="keywords"
+	content="nobleui, bootstrap, bootstrap 5, bootstrap5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+
+<title>Apps HGT Services Indonesia</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Arvo">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="{{ asset('assets') }}/css/hgt/404.css">
+    <link rel="shortcut icon" href="{{ asset('assets') }}/images/favicon-hgt1.png" />
+
 <body>
-	<div class="main-wrapper">
-		<div class="page-wrapper full-page">
-			<div class="page-content d-flex align-items-center justify-content-center">
+    <section class="page_404">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 ">
+                    <div class="col-sm-10 col-sm-offset-1  text-center">
+                        <div class="four_zero_four_bg">
+                            <h1 class="text-center ">404</h1>
+                        </div>
 
-				<div class="row w-100 mx-0 auth-page">
-					<div class="col-md-8 col-xl-6 mx-auto d-flex flex-column align-items-center">
-						<img src="{{ asset('assets') }}/images/others/404.svg" class="img-fluid mb-2" alt="404">
-						<h1 class="fw-bolder mb-22 mt-2 tx-80 text-muted">404</h1>
-						<h4 class="mb-2">Page Not Found</h4>
-						<h6 class="text-muted mb-3 text-center">Oopps!! The page you were looking for doesn't exist.</h6>
-						<a href="{{ url('/') }}">Back to home</a>
-					</div>
-				</div>
-
-			</div>
-		</div>
-	</div>
-
-	@include('Theme/Sub/script')
-
+                        <div class="contant_box_404">
+                            <h3 class="h2">
+                                Look like you're lost
+                            </h3>
+                            <p>the page you are looking for not avaible!</p>
+                            <a href="{{ url('/') }}" class="link_404">Go to Home</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
+
 </html>
