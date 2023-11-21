@@ -156,5 +156,9 @@
         }
     });
 </script>
+<script>
+    const sessionExpiryTime = {{ session('expires_at') }};
+</script>
+<script src="{{ asset('assets') }}/js/session_expiry.js }}"></script>
 <script src="{{ asset('assets') }}/js/myscript.js"></script>
 @stack('custom')
