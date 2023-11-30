@@ -7,7 +7,6 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4.2.8/dist/es6-promise.auto.min.js"></script>
 @stack('plugin-page')
-<script src="{{ asset('assets') }}/vendors/tinymce/tinymce.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.10/dist/sweetalert2.all.js"></script>
 <script src="{{ asset('assets') }}/vendors/datatables.net/jquery.dataTables.js"></script>
 <script src="{{ asset('assets') }}/vendors/datatables.net-bs5/dataTables.bootstrap5.js"></script>
@@ -15,8 +14,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script src="{{ asset('assets') }}/vendors/dropify/dist/dropify.min.js"></script>
 <!-- End plugin js for this page -->
-
-<script src="{{ asset('assets') }}/js/tinymce.js"></script>
 <!-- inject:js -->
 <script src="{{ asset('assets') }}/vendors/feather-icons/feather.min.js"></script>
 <script src="{{ asset('assets') }}/js/template.js"></script>
@@ -156,9 +153,5 @@
         }
     });
 </script>
-<script>
-    const sessionExpiryTime = {{ session('expires_at') }};
-</script>
-<script src="{{ asset('assets') }}/js/session_expiry.js }}"></script>
 <script src="{{ asset('assets') }}/js/myscript.js"></script>
 @stack('custom')

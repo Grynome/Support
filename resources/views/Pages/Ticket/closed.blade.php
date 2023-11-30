@@ -110,7 +110,7 @@
                                             <td>{{ $no }}</td>
                                             <td>{{ $item->notiket }}</td>
                                             <td>{{ $item->case_id }}</td>
-                                            <td>{{ $item->end_user_name }}</td>
+                                            <td>{{ $item->company }}</td>
                                             <td>{{ $item->sn }}</td>
                                             <td>{{ $item->entrydate }}</td>
                                             <td>{{ $item->closedate }}</td>
@@ -125,7 +125,7 @@
                                                     Complete
                                                 @endif
                                             @else
-                                                {{ $item->dtStatus }}
+                                                {{ $item->status }}
                                             @endif
                                             </td>
                                             <td>
@@ -168,11 +168,8 @@
         </div>
     </div>
 @endsection
-@push('plugin-page')
-@endpush
-@push('custom-plug')
-@endpush
 @push('custom')
+@if ($depart == 4 && $role == 19)
 <script>
     for (let i = 0; i < 10000; i++) {
         $('.btn-return-ticket' + i + '').on('click', function() {
@@ -194,4 +191,5 @@
         });
     }
 </script>
+@endif
 @endpush

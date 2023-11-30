@@ -139,13 +139,53 @@ class TicketController extends Controller
         }
         if ($depart == 6) {
             $nik =  auth()->user()->nik;
-            $data['ticket_closed'] = Ticketing::where('nik', $nik)->where('status', 10)->whereBetween('closedate', [$tanggal1.' '.'00:00:00', $tanggal2.' '.'23:59:59'])->orderBy('entrydate','desc')->get();
+            $data['ticket_closed'] = DB::table(function ($query) use($nik, $tanggal1, $tanggal2) {
+                                    $query->selectRaw("ht.notiket, 
+                                            case_id, 
+                                            heu.end_user_name as company,
+                                            hti.sn,
+                                            entrydate,
+                                            closedate,
+                                            hp.project_name,
+                                            case
+                                                when ht.status = 10 then 'closed'
+                                            end as status,
+                                            status_awb,
+                                            status_docs")
+                                        ->from('hgt_ticket as ht')
+                                        ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
+                                        ->leftJoin('hgt_project as hp', 'hpi.project_id', '=', 'hp.project_id')
+                                        ->leftJoin('hgt_end_user as heu', 'hpi.end_user_id', '=', 'heu.end_user_id')
+                                        ->leftJoin('hgt_tiket_info as hti', 'ht.notiket', '=', 'hti.notiket')
+                                        ->whereBetween('closedate', [$tanggal1.' '.'00:00:00', $tanggal2.' '.'23:59:59'])
+                                        ->where('en_id', $nik)
+                                        ->orderBy('entrydate','desc');
+                                })->get();
         } else if($depart == 10) {
             $data['ticket_closed'] = Ticketing::where('status_docs', 1)->whereBetween('docs_rcv_at', [$tanggal1.' '.'00:00:00', $tanggal2.' '.'23:59:59'])->get();
         } else if($depart == 9) {
             $data['ticket_closed'] = Ticketing::where('status_awb', 1)->whereBetween('awb_at', [$tanggal1.' '.'00:00:00', $tanggal2.' '.'23:59:59'])->get();
         } else {
-            $data['ticket_closed'] = Ticketing::where('status', 10)->whereBetween('closedate', [$tanggal1.' '.'00:00:00', $tanggal2.' '.'23:59:59'])->get();
+            $data['ticket_closed'] = DB::table(function ($query) use($tanggal1, $tanggal2) {
+                                    $query->selectRaw("ht.notiket, 
+                                            case_id, 
+                                            heu.end_user_name as company,
+                                            hti.sn,
+                                            entrydate,
+                                            closedate,
+                                            hp.project_name,
+                                            case
+                                                when ht.status = 10 then 'closed'
+                                            end as status,
+                                            status_awb,
+                                            status_docs")
+                                        ->from('hgt_ticket as ht')
+                                        ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
+                                        ->leftJoin('hgt_project as hp', 'hpi.project_id', '=', 'hp.project_id')
+                                        ->leftJoin('hgt_end_user as heu', 'hpi.end_user_id', '=', 'heu.end_user_id')
+                                        ->leftJoin('hgt_tiket_info as hti', 'ht.notiket', '=', 'hti.notiket')
+                                        ->whereBetween('closedate', [$tanggal1.' '.'00:00:00', $tanggal2.' '.'23:59:59']);
+                                })->get();
         }
         return view('Pages.Ticket.closed')->with($data)
         ->with('st_dt_cl', $tanggal1)

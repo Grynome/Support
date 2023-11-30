@@ -33,3 +33,9 @@
         </div>
     </div>
 @endsection
+@push('plugin-page')
+<script src="{{ asset('assets') }}/vendors/tinymce/tinymce.min.js"></script>
+@endpush
+@push('custom-plug')
+<script src="{{ asset('assets') }}/js/tinymce.js"></script>
+@endpush

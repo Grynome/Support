@@ -257,6 +257,7 @@ Route::group(['middleware'=>'auth'], function(){
             // Export Excel
             Route::post('export-ticket/Report', [ReportCOntroller::class, 'export']);
             Route::post('Data/Report/PIC', [ReportCOntroller::class, 'exportDataPIC']);
+            Route::post('Data/Report/Split', [ReportCOntroller::class, 'exportDataSplit']);
             // Report Chart
             Route::get('Report/Chart/Monthly-Ticket', [ReportCOntroller::class, 'chart']);
             Route::post('Report/data=Daily/sorting', [ReportCOntroller::class, 'chart'])->name('sorting.chart');

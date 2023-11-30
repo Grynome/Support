@@ -59,6 +59,20 @@
                                                 Data PIC
                                             </button>
                                         </form>
+                                        &nbsp;
+                                        <form action="{{ url('Data/Report/Split') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" value="{{ $sts }}" name="ex_stS">
+                                            <input type="hidden" value="{{ $prt }}" name="ex_prtS">
+                                            <input type="hidden" value="{{ $prj }}" name="ex_prjS">
+                                            <input type="hidden" value="{{ $sp }}" name="ex_spS">
+                                            <input type="hidden" value="{{ $tanggal1 }}" name="ex_stS">
+                                            <input type="hidden" value="{{ $tanggal2 }}" name="ex_ndS">
+                                            <button type="submit" class="btn btn-inverse-info btn-icon-text">
+                                                <i class="btn-icon-prepend mdi mdi-file-excel"></i>
+                                                Data Split Onsite
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                                 <div class="modal fade" id="filter-report-ticket" tabindex="-1"

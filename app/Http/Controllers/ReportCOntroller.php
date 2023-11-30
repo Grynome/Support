@@ -32,6 +32,7 @@ use App\Models\Ticketing;
 use App\Models\VRTP;
 use App\Models\VW_FinalReport;
 use App\Models\LastActEn;
+use App\Models\VW_Ticket_Split;
 
 class ReportCOntroller extends Controller
 {
@@ -529,6 +530,190 @@ class ReportCOntroller extends Controller
             $no++;
         }
         $filename = "Data Reporting PIC.xlsx";
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'. $filename .'"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit();
+    }
+    public function exportDataSplit(Request $request)
+    {
+        $extanggal1 = $request->ex_stS.' '.'00:00:00';
+        $extanggal2 = $request->ex_ndS.' '.'23:59:59';
+        $ex_sts = $request->ex_stsS;
+        $ex_prj = $request->ex_prjS;
+        $ex_prt = $request->ex_prtS;
+        $ex_sp = $request->ex_spS;
+        
+        if (!isset($ex_sts) && 
+            !isset($ex_sp) && 
+            (!isset($ex_prt) && !isset($ex_prj))) {
+            $data_ticket = VW_Ticket_Split::all()->whereBetween('ticketcoming', [$extanggal1, $extanggal2]);
+        } elseif(isset($ex_sts) || (isset($ex_prt) || isset($ex_prj)) || isset($ex_sp)) {
+            if (!empty($ex_sts) && (empty($ex_prt) && empty($ex_prj)) && empty($ex_sp)) {
+                if ($ex_sts == 1) {
+                    $data_ticket = VW_Ticket_Split::where('status', '!=', 10)
+                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                } else {
+                    $data_ticket = VW_Ticket_Split::where('status', 10)
+                    ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                }
+            } elseif ((!empty($ex_prt) || !empty($ex_prj)) && empty($ex_sts) && empty($ex_sp)) {
+                if (!empty($ex_prt) && empty($ex_prj)) {
+                    $data_ticket = VW_Ticket_Split::where('partner_id', $ex_prt)
+                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                } else {
+                    $data_ticket = VW_Ticket_Split::where('partner_id', $ex_prt)
+                                        ->where('project_id', $ex_prj)
+                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                }
+            } elseif (!empty($ex_sp) && (empty($ex_prt) && empty($ex_prj)) && empty($ex_sts)) {
+                $data_ticket = VW_Ticket_Split::where('service_id', $ex_sp)
+                                    ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+            } elseif (!empty($ex_sts) && (!empty($ex_prt) || !empty($ex_prj)) && empty($ex_sp)) {
+                if ($ex_sts == 1) {
+                    if (!empty($ex_prt) && empty($ex_prj)) {
+                        $data_ticket = VW_Ticket_Split::where('status', '<', 10)
+                                            ->where('partner_id', $ex_prt)
+                                            ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                    } else {
+                        $data_ticket = VW_Ticket_Split::where('status', '<', 10)
+                                            ->where('partner_id', $ex_prt)
+                                            ->where('project_id', $ex_prj)
+                                            ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                    }
+                } else {
+                    if (!empty($ex_prt) && empty($ex_prj)) {
+                        $data_ticket = VW_Ticket_Split::where('status', 10)
+                                            ->where('partner_id', $ex_prt)
+                                            ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                    } else {
+                        $data_ticket = VW_Ticket_Split::where('status', 10)
+                                            ->where('partner_id', $ex_prt)
+                                            ->where('project_id', $ex_prj)
+                                            ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                    }
+                }
+            } elseif (!empty($ex_sts) && (empty($ex_prt) && empty($ex_prj)) && !empty($ex_sp)) {
+                if ($ex_sts == 1) {
+                    $data_ticket = VW_Ticket_Split::where('status', '!=', 10)
+                                        ->where('service_id', $ex_sp)
+                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                } else {
+                    $data_ticket = VW_Ticket_Split::where('status', 10)
+                                        ->where('service_id', $ex_sp)
+                                        ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                }
+            } elseif (empty($ex_sts) && (!empty($ex_prt) || !empty($ex_prj)) && !empty($ex_sp)) {
+                if (!empty($ex_prt) && empty($ex_prj)) {
+                    $data_ticket = VW_Ticket_Split::where('service_id', $ex_sp)
+                                        ->where('partner_id', $ex_prt)
+                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                } else {
+                    $data_ticket = VW_Ticket_Split::where('service_id', $ex_sp)
+                                        ->where('partner_id', $ex_prt)
+                                        ->where('project_id', $ex_prj)
+                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                }
+            } else {
+                if ($ex_sts == 1) {
+                    $data_ticket = VW_Ticket_Split::where('status', '!=', 10)
+                                        ->where('partner_id', $ex_prt)
+                                        ->where('project_id', $ex_prj)
+                                        ->where('service_id', $ex_sp)
+                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                } else {
+                    $data_ticket = VW_Ticket_Split::where('status', 10)
+                                        ->where('partner_id', $ex_prt)
+                                        ->where('project_id', $ex_prj)
+                                        ->where('service_id', $ex_sp)
+                                        ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                }
+            }
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Sheet 1');
+        $headers = 
+        [
+            'No',
+            'No Tiket',
+            'Case ID',
+            'Incoming Mail',
+            'Entry Date',
+            'IM Bulan',
+            'Minggu ke',
+            'IM Hari',
+            'Partner',
+            'Project',
+            'SO',
+            'Arrive',
+            'Onsite Ke',
+            'Go',
+            'Work Start',
+            'Work Stop',
+            'Close Date',
+            'Week Close',
+            'Bulan Close',
+            'TAT',
+            'Pengiriman',
+            'FE',
+            'Status'
+        ];
+        $sheet->fromArray([$headers], NULL, 'A1');
+
+        $no = 1;
+        $row = 2;
+        foreach ($data_ticket as $item) {
+            $carbonDate = Carbon::parse($item->ticketcoming);
+            $tatst = Carbon::parse($item->entrydate);
+            $tatnd = Carbon::parse($item->work_stop);
+            $delivend = Carbon::parse($item->arrive);
+            $cbCloseDate = Carbon::parse($item->closedate);
+            
+            $get_tat = !empty($item->entrydate) && !empty($item->work_stop) ? $tatst->diffInDays($tatnd) : null;
+            $get_deliv = !empty($item->entrydate) && !empty($item->arrive) ? $tatst->diffInDays($delivend) : null;
+            $get_fe = !empty($item->arrive) && !empty($item->work_stop) ? $delivend->diffInDays($tatnd) : null;
+            $weekN = $carbonDate->weekOfMonth;
+            $wCloseDate = $cbCloseDate->weekOfMonth;
+            if ($item->status < 10) {
+                $sts = 'Open';
+            } else {
+                $sts = 'Closed';
+            }
+                $data = [   
+                    $no,
+                    $item->notiket,
+                    $item->case_id,
+                    $item->ticketcoming,
+                    $item->entrydate,
+                    Carbon::parse($item->ticketcoming)->format('m'),
+                    $weekN,
+                    Carbon::parse($item->ticketcoming)->format('d'),
+                    $item->partner,
+                    $item->project_name,
+                    $item->so_num,
+                    $item->arrive,
+                    $item->onsite,
+                    $item->gow,
+                    $item->work_start,
+                    $item->work_stop,
+                    $item->closedate,
+                    $wCloseDate,
+                    Carbon::parse($item->work_stop)->format('M'),
+                    $get_tat,
+                    $get_deliv,
+                    $get_fe,
+                    $sts
+                ];
+                $sheet->fromArray([$data], NULL, "A$row");
+            $row++;
+            $no++;
+        }
+        $filename = "Data Ticket - Split Onsite.xlsx";
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'. $filename .'"');
         header('Cache-Control: max-age=0');
