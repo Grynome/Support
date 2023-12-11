@@ -35,6 +35,23 @@
         <div class="main-wrapper">
             @include('sweetalert::alert')
             @include('Theme/Sub/sidebar')
+            <nav class="settings-sidebar">
+                <div class="sidebar-body">
+                    <a href="#" class="settings-sidebar-toggler">
+                        <i data-feather="settings"></i>
+                    </a>
+                    <div class="theme-wrapper">
+                        <h6 class="text-muted mb-2">Light Theme:</h6>
+                        <a class="theme-item" href="javascript:;">
+                            <img src="../assets/images/screenshots/light.jpg" alt="light theme">
+                        </a>
+                        <h6 class="text-muted mb-2">Dark Theme:</h6>
+                        <a class="theme-item active" href="javascript:;">
+                            <img src="../assets/images/screenshots/dark.jpg" alt="light theme">
+                        </a>
+                    </div>
+                </div>
+            </nav>
             <div class="page-wrapper">
                 <!-- partial:partials/_navbar.html -->
                 <nav class="navbar">
@@ -63,8 +80,7 @@
                         <ul class="navbar-nav">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown"
-                                    role="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="false">
+                                    role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i data-feather="bell"></i>
                                     @if ($unread != 0)
                                         <div class="indicator">
@@ -121,9 +137,8 @@
                                 </div>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="profileDropdown"
-                                    role="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <img class="wd-30 ht-30 rounded-circle" src="{{ asset("$profile") }}"
                                         alt="profile">
                                 </a>
@@ -211,31 +226,31 @@
                     </div>
                 </div>
                 <!-- partial -->
-        @yield('getPage')
-        @push('custom')
-            <script>
-                const passwordInput = document.getElementById('password');
-                const passwordConfirmInput = document.getElementById('password-confirm');
-                const confirmPasswordError = document.querySelector('#password-confirm + .invalid-feedback');
-                const saveButton = document.querySelector('.btn-success');
+                @yield('getPage')
+                @push('custom')
+                    <script>
+                        const passwordInput = document.getElementById('password');
+                        const passwordConfirmInput = document.getElementById('password-confirm');
+                        const confirmPasswordError = document.querySelector('#password-confirm + .invalid-feedback');
+                        const saveButton = document.querySelector('.btn-success');
 
-                function validatePassword() {
-                    if (passwordInput.value !== passwordConfirmInput.value) {
-                        passwordConfirmInput.setCustomValidity("Passwords do not match.");
-                        passwordConfirmInput.classList.add("is-invalid");
-                        confirmPasswordError.style.display = "block";
-                        saveButton.disabled = true;
-                    } else {
-                        passwordConfirmInput.setCustomValidity("");
-                        passwordConfirmInput.classList.remove("is-invalid");
-                        confirmPasswordError.style.display = "none";
-                        saveButton.disabled = false;
-                    }
-                }
+                        function validatePassword() {
+                            if (passwordInput.value !== passwordConfirmInput.value) {
+                                passwordConfirmInput.setCustomValidity("Passwords do not match.");
+                                passwordConfirmInput.classList.add("is-invalid");
+                                confirmPasswordError.style.display = "block";
+                                saveButton.disabled = true;
+                            } else {
+                                passwordConfirmInput.setCustomValidity("");
+                                passwordConfirmInput.classList.remove("is-invalid");
+                                confirmPasswordError.style.display = "none";
+                                saveButton.disabled = false;
+                            }
+                        }
 
-                passwordInput.addEventListener('input', validatePassword);
-                passwordConfirmInput.addEventListener('input', validatePassword);
-            </script>
-        @endpush
-        @extends('Theme/footer')
+                        passwordInput.addEventListener('input', validatePassword);
+                        passwordConfirmInput.addEventListener('input', validatePassword);
+                    </script>
+                @endpush
+                @extends('Theme/footer')
     @endif

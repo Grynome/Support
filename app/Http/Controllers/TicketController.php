@@ -159,6 +159,7 @@ class TicketController extends Controller
                                         ->leftJoin('hgt_tiket_info as hti', 'ht.notiket', '=', 'hti.notiket')
                                         ->whereBetween('closedate', [$tanggal1.' '.'00:00:00', $tanggal2.' '.'23:59:59'])
                                         ->where('en_id', $nik)
+                                        ->where('ht.status', 10)
                                         ->orderBy('entrydate','desc');
                                 })->get();
         } else if($depart == 10) {
@@ -175,7 +176,7 @@ class TicketController extends Controller
                                             closedate,
                                             hp.project_name,
                                             case
-                                                when ht.status = 10 then 'closed'
+                                                when ht.status = 10 then 'Closed'
                                             end as status,
                                             status_awb,
                                             status_docs")
@@ -184,10 +185,50 @@ class TicketController extends Controller
                                         ->leftJoin('hgt_project as hp', 'hpi.project_id', '=', 'hp.project_id')
                                         ->leftJoin('hgt_end_user as heu', 'hpi.end_user_id', '=', 'heu.end_user_id')
                                         ->leftJoin('hgt_tiket_info as hti', 'ht.notiket', '=', 'hti.notiket')
-                                        ->whereBetween('closedate', [$tanggal1.' '.'00:00:00', $tanggal2.' '.'23:59:59']);
+                                        ->whereBetween('closedate', [$tanggal1.' '.'00:00:00', $tanggal2.' '.'23:59:59'])
+                                        ->where('ht.status', 10);
                                 })->get();
         }
         return view('Pages.Ticket.closed')->with($data)
+        ->with('st_dt_cl', $tanggal1)
+        ->with('nd_dt_cl', $tanggal2);
+    }
+    public function cancel_page(Request $request)
+    {
+        $depart =  auth()->user()->depart;
+        
+        $now = Carbon::now()->addHours(7)->format('Y-m-d');
+        $oneMonthAgo = Carbon::parse($now)->subMonth(1)->format('Y-m-d');   
+
+        if (empty($request->stCC_date) && empty($request->ndCC_date)) {
+            $tanggal1 = $oneMonthAgo;
+            $tanggal2 = $now;
+        } else {
+            $tanggal1 = $request->stCC_date;
+            $tanggal2 = $request->ndCC_date;
+        }
+        $data['ticket_canceled'] = DB::table(function ($query) use($tanggal1, $tanggal2) {
+                                $query->selectRaw("ht.notiket, 
+                                        case_id, 
+                                        heu.end_user_name as company,
+                                        hti.sn,
+                                        entrydate,
+                                        closedate,
+                                        hp.project_name,
+                                        case
+                                            when ht.status = 11 then 'Canceled'
+                                        end as status,
+                                        status_awb,
+                                        status_docs")
+                                    ->from('hgt_ticket as ht')
+                                    ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
+                                    ->leftJoin('hgt_project as hp', 'hpi.project_id', '=', 'hp.project_id')
+                                    ->leftJoin('hgt_end_user as heu', 'hpi.end_user_id', '=', 'heu.end_user_id')
+                                    ->leftJoin('hgt_tiket_info as hti', 'ht.notiket', '=', 'hti.notiket')
+                                    ->whereBetween('closedate', [$tanggal1.' '.'00:00:00', $tanggal2.' '.'23:59:59'])
+                                    ->where('ht.status', 11);
+                            })->get();
+        return view('Pages.Ticket.cancel')->with($data)
         ->with('st_dt_cl', $tanggal1)
         ->with('nd_dt_cl', $tanggal2);
     }
@@ -1806,7 +1847,7 @@ class TicketController extends Controller
         $nik =  auth()->user()->nik;
         $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
         $value = [
-            'schedule'    => $request->sch_time_sch." ".$request->time_sch_en
+            'schedule'    => $request->sch_time_sch
         ];
 
         $query_change_sch = Ticket::where('notiket', $id)->first();
@@ -1815,7 +1856,7 @@ class TicketController extends Controller
         if($result) {
             $logging = [
                 'notiket'    => $id,
-                'note'    => 'Rechedule Engineer to '.$request->sch_time_sch." ".$request->time_sch_en,
+                'note'    => 'Reschedule Engineer to '.$request->sch_time_sch." ".$request->time_sch_en,
                 'user'     => $nik,
                 'created_at'     => $dateTime
             ];
@@ -1938,6 +1979,35 @@ class TicketController extends Controller
             return back();
         }
         else {
+            Alert::toast('Error when Updating', 'error');
+            return back();
+        }
+    }
+    public function cancle_ticket(Request $request, $id)
+    {
+        $nik =  auth()->user()->nik;
+        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        
+        $query = Ticket::where('notiket', $id)->first();
+        if($query) {
+            $value = [
+                'status'    => 11,
+                'ext_status' => null,
+                'sts_pending'    => null,
+                'closedate'    => $dateTime
+            ];
+            $logging = [
+                'notiket'    => $id,
+                'note'    => 'Ticket Cancel',
+                'user'     => $nik,
+                'type_log'     => 1,
+                'created_at'     => $dateTime
+            ];
+            $query->update($value);
+            LogTiket::insert($logging);
+            Alert::toast('Ticket cancelled!', 'success');
+            return back();
+        } else {
             Alert::toast('Error when Updating', 'error');
             return back();
         }

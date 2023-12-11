@@ -741,13 +741,11 @@
                                         <div class="col-md-6 mb-2">
                                             <label for="schedule" class="form-label">Schedule</label>
                                             <div class="input-group flatpickr" id="flatpickr-dtc">
-                                                <div class="input-group flatpickr" id="flatpickr-dtc">
-                                                    <input type="text" class="form-control"
-                                                        placeholder="Select Date/Time" name="sch" id="flatpickr-dtc"
-                                                        data-input>
-                                                    <span class="input-group-text input-group-addon" data-toggle><i
-                                                            data-feather="calendar"></i></span>
-                                                </div>
+                                                <input type="text" class="form-control"
+                                                    placeholder="Select Date/Time" name="sch" id="flatpickr-dtc"
+                                                    data-input>
+                                                <span class="input-group-text input-group-addon" data-toggle><i
+                                                        data-feather="calendar"></i></span>
                                             </div>
                                         </div>
                                         <div class="col-md-6 mb-2">

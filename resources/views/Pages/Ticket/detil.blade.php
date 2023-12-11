@@ -299,18 +299,30 @@
                                                                     href="#updt-info-ticket" data-bs-toggle="modal"><i
                                                                         data-feather="edit" class="icon-sm me-2"></i>
                                                                     <span class="">Edit Info Ticket</span></a>
-                                                                @if (empty($detail->first()->full_name) || $detail->first()->type_ticket == 'Deploy' || $detail->first()->type_ticket == 'Staging' || ($role == 19 && $depart == 4))
-                                                                    <a class="dropdown-item d-flex align-items-center close-ticket-dt"
-                                                                        href="javascript:;"><i data-feather="x-square"
-                                                                            class="icon-sm me-2"></i>
-                                                                        <span class="">Close Ticket</span>
-                                                                    </a>
-                                                                    <form action="{{ url("Close/Ticket/$id") }}"
-                                                                        method="post" id="close-ticket-dt">
-                                                                        @csrf
-                                                                        {{ method_field('patch') }}
-                                                                    </form>
-                                                                @endif
+                                                                    @if (empty($detail->first()->full_name) || $detail->first()->type_ticket == 'Deploy' || $detail->first()->type_ticket == 'Staging' || ($role == 19 && $depart == 4))
+                                                                        <a class="dropdown-item d-flex align-items-center close-ticket-dt"
+                                                                            href="javascript:;"><i data-feather="x-square"
+                                                                                class="icon-sm me-2"></i>
+                                                                            <span class="">Close Ticket</span>
+                                                                        </a>
+                                                                        <form action="{{ url("Close/Ticket/$id") }}"
+                                                                            method="post" id="close-ticket-dt">
+                                                                            @csrf
+                                                                            {{ method_field('patch') }}
+                                                                        </form>
+                                                                        @if ($role == 19 && $depart == 4)
+                                                                            <a class="dropdown-item d-flex align-items-center cancle-ticket-dt"
+                                                                                href="javascript:;"><i data-feather="x-square"
+                                                                                    class="icon-sm me-2"></i>
+                                                                                <span class="">Cancel Ticket</span>
+                                                                            </a>
+                                                                            <form action="{{ url("Ticket-Cancle/$id") }}"
+                                                                                method="post" id="cancle-ticket-dt">
+                                                                                @csrf
+                                                                                {{ method_field('patch') }}
+                                                                            </form>
+                                                                        @endif
+                                                                    @endif
                                                             @elseif($detail->first()->status == 10)
                                                                 @if (!empty($detail->first()->full_name))
                                                                     <a class="dropdown-item d-flex align-items-center"
@@ -348,14 +360,6 @@
                                                                 href="#engineer-change" data-bs-toggle="modal"><i
                                                                     data-feather="user-check" class="icon-sm me-2"></i>
                                                                 <span class="">Change Engineer</span></a>
-                                                            {{-- <a class="dropdown-item d-flex align-items-center"
-                                                                href="#reqs-en-reimburse" data-bs-toggle="modal"><i
-                                                                    data-feather="dollar-sign" class="icon-sm me-2"></i>
-                                                                <span class="">Request Reimburse</span></a>
-                                                            <a class="dropdown-item d-flex align-items-center"
-                                                                href="#list-reimburse-en" data-bs-toggle="modal"><i
-                                                                    data-feather="list" class="icon-sm me-2"></i>
-                                                                <span class="">List Reimburse</span></a> --}}
                                                         @endif
                                                     </div>
                                                     @if ($depart == 4 || $role == 20 || $role == 15)
@@ -565,10 +569,10 @@
                                                                                 <div class="col-md-6">
                                                                                     <div
                                                                                         class="justify-content-between flex-grow-1">
-                                                                                        <label for="reference"
+                                                                                        <label for="input-PN/SN"
                                                                                             class="form-label fw-bolder">PN/SN
                                                                                             Unit : </label>
-                                                                                        <div class="input-group mb-3">
+                                                                                        <div class="input-group mb-3" id="input-PN/SN">
                                                                                             <input type="text"
                                                                                                 name="dt_pn_unit"
                                                                                                 class="form-control"
@@ -597,7 +601,7 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-md-6">
-                                                                                    <label for="reference"
+                                                                                    <label for="edt-return-or-not"
                                                                                         class="form-label fw-bolder">Warranty
                                                                                         : </label>
                                                                                     <fieldset id="edt-return-or-not">
@@ -637,7 +641,7 @@
                                                                                                         class="form-label fw-bolder">
                                                                                                         Problem :
                                                                                                     </p>
-                                                                                                    <textarea id="maxlength-textarea" class="form-control txt-note" id="defaultconfig-4" rows="3"
+                                                                                                    <textarea class="form-control txt-note" rows="3"
                                                                                                             placeholder="Type Note" name="edt_prob">{{@$detail->first()->problem}}</textarea>
                                                                                                 </div>
                                                                                             </div>
@@ -650,7 +654,7 @@
                                                                                                         class="form-label fw-bolder">
                                                                                                         Action Plan :
                                                                                                     </p>
-                                                                                                    <textarea id="maxlength-textarea" class="form-control txt-note" id="defaultconfig-4" rows="3"
+                                                                                                    <textarea class="form-control txt-note" rows="3"
                                                                                                             placeholder="Type Note" name="edt_act_plan">{{@$detail->first()->action_plan}}</textarea>
                                                                                                 </div>
                                                                                             </div>
@@ -743,7 +747,7 @@
                                                                                 </div>
                                                                                 <div class="col-md-6">
                                                                                     <div class="mb-3">
-                                                                                        <label for="sla_1"
+                                                                                        <label for="not-exist-type-add"
                                                                                             class="form-label fw-bolder">Type
                                                                                             Unit</label>
                                                                                         <input
@@ -826,178 +830,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    @elseif($depart == 6)
-                                                        {{-- MODAL Upload Reimburse --}}
-                                                        {{-- <div class="modal fade bd-example-modal-lg" id="reqs-en-reimburse" tabindex="-1"
-                                                            aria-labelledby="attachModal" aria-hidden="true">
-                                                            <div class="modal-dialog modal-lg">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title">Form Reimburse
-                                                                        </h5>
-                                                                        <button type="button" class="btn-close"
-                                                                            data-bs-dismiss="modal" aria-label="btn-close"></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <button data-bs-target="#list-reimburse-en"
-                                                                            class="btn btn-inverse-primary btn-icon-text btn-md"
-                                                                            type="button" data-bs-toggle="modal">
-                                                                            <i class="btn-icon-prepend"
-                                                                                data-feather="chevron-left"></i>
-                                                                            List Reimburse
-                                                                        </button>
-                                                                        <form
-                                                                            action="{{ url("add/Reimburse/En/$id") }}" method="post" id="form-reimburse-en"
-                                                                            enctype="multipart/form-data">
-                                                                            @csrf
-                                                                            <div class="row mb-3">
-                                                                                <div class="col-md-3">
-                                                                                    <label for="defaultconfig-4" class="col-form-label">Nominal:</label>
-                                                                                </div>
-                                                                                <div class="col-md-8">
-                                                                                    <input class="form-control mb-4 mb-md-0" name="nominal"
-                                                                                        data-inputmask="'alias': 'currency', 'prefix':'Rp'" />
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row mb-3">
-                                                                                <div class="col-lg-3">
-                                                                                    <label for="defaultconfig-4" class="col-form-label">Description:</label>
-                                                                                </div>
-                                                                                <div class="col-lg-8">
-                                                                                    <textarea id="maxlength-textarea" class="form-control" name="desc_reimburse" rows="4"
-                                                                                        placeholder="Describe your request!"></textarea>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-lg-3">
-                                                                                    <label for="defaultconfig-4" class="col-form-label">Upload Attachment:</label>
-                                                                                </div>
-                                                                                <div class="col-lg-8">
-                                                                                    <div class="d-flex justify-content-between align-items-center">
-                                                                                        <div
-                                                                                            id="attach-reimburse" class="mb-1">
-                                                                                            <input type="file"
-                                                                                                class="file"
-                                                                                                name="filesRR[]"
-                                                                                                accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps"
-                                                                                                id="file-input" required />
-                                                                                        </div>
-                                                                                        <button
-                                                                                            id="addt-att-reimburse"
-                                                                                            class="btn btn-inverse-info btn-md"
-                                                                                            type="button">
-                                                                                            <i class="btn-icon-append icon-md"
-                                                                                                data-feather="plus"></i>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </form>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button"
-                                                                            class="btn btn-inverse-primary btn-icon-text btn-md confirm-reqs-reimburse">
-                                                                            Save <i data-feather="save" class="icon-lg"></i> 
-                                                                        </button>
-                                                                        <button type="button" class="btn btn-inverse-secondary"
-                                                                            data-bs-dismiss="modal">Cancle</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div> --}}
-                                                        {{-- MODAL view attach reimburse --}}
-                                                        {{-- <div class="modal fade bd-example-modal-xl" id="list-reimburse-en" tabindex="-1"
-                                                            aria-labelledby="attachModal" aria-hidden="true">
-                                                            <div class="modal-dialog modal-xl">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title">List Reimburse
-                                                                        </h5>
-                                                                        <button type="button" class="btn-close"
-                                                                            data-bs-dismiss="modal" aria-label="btn-close"></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <div class="mb-3">
-                                                                            <button data-bs-toggle="modal"
-                                                                                class="btn btn-inverse-primary btn-icon-text btn-md"
-                                                                                type="button" data-bs-target="#reqs-en-reimburse">
-                                                                                <i class="btn-icon-prepend"
-                                                                                    data-feather="plus"></i>
-                                                                                Request Reimburse
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="table-responsive">
-                                                                            <table id="display" class="table">
-                                                                                <thead>
-                                                                                    <tr>
-                                                                                        <th>
-                                                                                            No</th>
-                                                                                        <th>
-                                                                                            Description</th>
-                                                                                        <th>
-                                                                                            Nominal</th>
-                                                                                        <th>QTY Attach</th>
-                                                                                        <th>
-                                                                                            Status</th>
-                                                                                        <th>
-                                                                                            Reqs At</th>
-                                                                                        <th>Option</th>
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody>
-                                                                                    @php
-                                                                                        $order = 1;
-                                                                                    @endphp
-                                                                                    @foreach ($reimburseEn as $item)
-                                                                                        <tr>
-                                                                                            <td>{{ $order }}</td>
-                                                                                            <td>{{ $item->description }}</td>
-                                                                                            <td>{{ 'Rp' . number_format($item->nominal, 0, ',', '.') }}</td>
-                                                                                            <td>{{$item->qty_attach}}
-                                                                                            </td>
-                                                                                            <td>Proceed</td>
-                                                                                            <td>{{ $item->created_at }}</td>
-                                                                                            <td>
-                                                                                                <div class="btn-group me-2" role="group" aria-label="First group">
-                                                                                                    <a href="{{ url("preview-Attach/Reimburse/$item->fk_id") }}"
-                                                                                                        class="btn btn-inverse-secondary btn-icon btn-sm">
-                                                                                                        <i data-feather="search"></i>
-                                                                                                    </a>
-                                                                                                    &nbsp;
-                                                                                                    <form action="{{ url("attach-Reimburse/Download/en/$item->fk_id") }}" method="post">
-                                                                                                        @csrf
-                                                                                                        <button type="submit"
-                                                                                                            class="btn btn-inverse-secondary btn-icon btn-sm">
-                                                                                                            <i data-feather="download"></i>
-                                                                                                        </button>
-                                                                                                    </form>
-                                                                                                    &nbsp;
-                                                                                                    <form action="{{ url("delete/Reimburse/En/$item->fk_id")}}" method="post"
-                                                                                                    id="fm-del-reimburse">
-                                                                                                    @csrf
-                                                                                                    </form>
-                                                                                                    <button type="button"
-                                                                                                        class="btn btn-inverse-danger btn-icon btn-sm btn-del-reimburse">
-                                                                                                        <i data-feather="x"></i>
-                                                                                                    </button>
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        @php
-                                                                                            $order++;
-                                                                                        @endphp
-                                                                                    @endforeach
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-inverse-secondary"
-                                                                            data-bs-dismiss="modal">Cancle</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div> --}}
                                                     @endif
                                                 </div>
                                             @endif
@@ -1701,7 +1533,7 @@
                                                                                                                 class="justify-content-between flex-grow-1">
                                                                                                                     <p class="text-body fw-bolder"
                                                                                                                         type="Address:">
-                                                                                                                            <textarea id="maxlength-textarea" name="address_eu" rows="2"
+                                                                                                                            <textarea name="address_eu" rows="2"
                                                                                                                             placeholder="Type Address" {{$readonly}}>{{ @$detail->first()->address }}</textarea>
                                                                                                                     </p>
                                                                                                             </div>
@@ -1885,46 +1717,21 @@
                                                                                                                 $date = substr("$sch", 0, 10);
                                                                                                                 $time = substr("$sch", 11);
                                                                                                             @endphp
-                                                                                                            <div
-                                                                                                                class="row">
-                                                                                                                <div
-                                                                                                                    class="col-md-6">
-                                                                                                                    <div class="input-group flatpickr"
-                                                                                                                        id="flatpickr-date">
-                                                                                                                        <input
-                                                                                                                            type="text"
-                                                                                                                            class="form-control"
-                                                                                                                            placeholder="Select date"
-                                                                                                                            name="sch_time_sch"
-                                                                                                                            id="dt-sch-en"
-                                                                                                                            value="{{ $date }}"
-                                                                                                                            data-input
-                                                                                                                            required>
-                                                                                                                        <span
-                                                                                                                            class="input-group-text input-group-addon"
-                                                                                                                            data-toggle><i
-                                                                                                                                data-feather="calendar"></i></span>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                                <div
-                                                                                                                    class="col-md-6">
-                                                                                                                    <div class="input-group flatpickr"
-                                                                                                                        id="flatpickr-time">
-                                                                                                                        <input
-                                                                                                                            type="text"
-                                                                                                                            class="form-control"
-                                                                                                                            placeholder="Select time"
-                                                                                                                            name="time_sch_en"
-                                                                                                                            id="tm-sch-en"
-                                                                                                                            value="{{ $time }}"
-                                                                                                                            data-input
-                                                                                                                            required>
-                                                                                                                        <span
-                                                                                                                            class="input-group-text input-group-addon"
-                                                                                                                            data-toggle><i
-                                                                                                                                data-feather="clock"></i></span>
-                                                                                                                    </div>
-                                                                                                                </div>
+                                                                                                            <div class="input-group flatpickr"
+                                                                                                                id="flatpickr-date-time">
+                                                                                                                <input
+                                                                                                                    type="text"
+                                                                                                                    class="form-control"
+                                                                                                                    placeholder="Select date"
+                                                                                                                    name="sch_time_sch"
+                                                                                                                    id="dt-sch-en"
+                                                                                                                    value="{{ $sch }}"
+                                                                                                                    data-input
+                                                                                                                    required>
+                                                                                                                <span
+                                                                                                                    class="input-group-text input-group-addon"
+                                                                                                                    data-toggle><i
+                                                                                                                        data-feather="calendar"></i></span>
                                                                                                             </div>
                                                                                                         </form>
                                                                                                     </div>
@@ -2259,13 +2066,13 @@
                                                                                                                 <div
                                                                                                                     class="col-md-4">
                                                                                                                     <label
-                                                                                                                        for="date_mail"
+                                                                                                                        for="choose-type-part"
                                                                                                                         class="form-label">Type
                                                                                                                         Part
                                                                                                                     </label>
                                                                                                                     <select
                                                                                                                         class="js-example-basic-single form-select"
-                                                                                                                        data-width="100%"
+                                                                                                                        data-width="100%" id="choose-type-part"
                                                                                                                         name="status_part_updt">
                                                                                                                         <option
                                                                                                                             value="">
@@ -2285,12 +2092,13 @@
                                                                                                                 <div
                                                                                                                     class="col-md-4">
                                                                                                                     <label
-                                                                                                                        for="reference"
+                                                                                                                        for="choose-ctgr"
                                                                                                                         class="form-label">Category
                                                                                                                         Part</label>
                                                                                                                     <select
                                                                                                                         class="js-example-basic-single form-select"
                                                                                                                         data-width="100%"
+                                                                                                                        id="choose-ctgr"
                                                                                                                         name="kat_part_dt">
                                                                                                                         <option
                                                                                                                             value="">
@@ -2309,15 +2117,15 @@
                                                                                                                 <div
                                                                                                                     class="col-md-4">
                                                                                                                     <label
-                                                                                                                        for="date_mail"
+                                                                                                                        for="choose-part-name"
                                                                                                                         class="form-label">Part
                                                                                                                         Name
                                                                                                                     </label>
                                                                                                                     <input
-                                                                                                                        id="reqs-part"
                                                                                                                         class="form-control"
                                                                                                                         name="type_unit_updt"
                                                                                                                         type="text"
+                                                                                                                        id="choose-part-name"
                                                                                                                         placeholder="Type Unit">
                                                                                                                 </div>
                                                                                                             </div>
@@ -2326,33 +2134,33 @@
                                                                                                                 <div
                                                                                                                     class="col-md-3">
                                                                                                                     <label
-                                                                                                                        for="date_mail"
+                                                                                                                        for="input-so"
                                                                                                                         class="form-label">SO
                                                                                                                         Number</label>
                                                                                                                     <input
-                                                                                                                        id="reqs-part"
                                                                                                                         class="form-control"
                                                                                                                         name="so_num_updt"
                                                                                                                         type="text"
+                                                                                                                        id="input-so"
                                                                                                                         placeholder="SO Number">
                                                                                                                 </div>
                                                                                                                 <div
                                                                                                                     class="col-md-3">
                                                                                                                     <label
-                                                                                                                        for="date_mail"
+                                                                                                                        for="input-rma"
                                                                                                                         class="form-label">RMA
                                                                                                                     </label>
                                                                                                                     <input
-                                                                                                                        id="reqs-part"
                                                                                                                         class="form-control"
                                                                                                                         name="rma_part_updt"
                                                                                                                         type="text"
+                                                                                                                        id="input-rma"
                                                                                                                         placeholder="Type RMA Number">
                                                                                                                 </div>
                                                                                                                 <div
                                                                                                                     class="col-md-3">
                                                                                                                     <label
-                                                                                                                        for="date_mail"
+                                                                                                                        for="pn-2"
                                                                                                                         class="form-label">Part
                                                                                                                         Number</label>
                                                                                                                     <input
@@ -2365,7 +2173,7 @@
                                                                                                                 <div
                                                                                                                     class="col-md-3">
                                                                                                                     <label
-                                                                                                                        for="time_mail"
+                                                                                                                        for="sn-2"
                                                                                                                         class="form-label">CT
                                                                                                                         Number</label>
                                                                                                                     <input
@@ -2784,11 +2592,11 @@
                                                                                                         <div class="mb-3">
                                                                                                             <div
                                                                                                                 class="d-flex justify-content-between align-items-baseline">
-                                                                                                                <label for="reference"
+                                                                                                                <label for="choose-type-note"
                                                                                                                     class="form-label fw-bolder">Type
                                                                                                                     Note : </label>
                                                                                                             </div>
-                                                                                                            <select
+                                                                                                            <select id="choose-type-note"
                                                                                                                 class="js-example-basic-single form-select"
                                                                                                                 data-width="100%" name="edt_type_note">
                                                                                                                 <option value="">
@@ -2805,10 +2613,10 @@
                                                                                                     </div>
                                                                                                     <div class="col-md-12">
                                                                                                         <div class="mb-3">
-                                                                                                            <label for="reference"
+                                                                                                            <label for="edt-input-desc-note"
                                                                                                                 class="form-label fw-bolder">Description
                                                                                                                 : </label>
-                                                                                                            <textarea id="maxlength-textarea" class="form-control txt-note" id="defaultconfig-4" rows="3"
+                                                                                                            <textarea class="form-control txt-note" rows="3" id="edt-input-desc-note"
                                                                                                                 placeholder="Type Note" name="edt_log_note">{{$item->note}}</textarea>
                                                                                                         </div>
                                                                                                     </div>
@@ -2860,7 +2668,7 @@
                                                             <div class="mb-3">
                                                                 <div
                                                                     class="d-flex justify-content-between align-items-baseline">
-                                                                    <label for="reference"
+                                                                    <label for="type-note"
                                                                         class="form-label fw-bolder">Aktivitas Helpdesk : </label>
                                                                     <a href="#"
                                                                         id="refresh-type-note">
@@ -2885,10 +2693,10 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="mb-3">
-                                                                <label for="reference"
+                                                                <label for="input-desc-note"
                                                                     class="form-label fw-bolder">Description
                                                                     : </label>
-                                                                <textarea id="maxlength-textarea" class="form-control txt-note" id="defaultconfig-4" rows="3"
+                                                                <textarea class="form-control txt-note" rows="3" id="input-desc-note"
                                                                     placeholder="Type Note" name="log_note"></textarea>
                                                             </div>
                                                         </div>
@@ -2896,7 +2704,7 @@
                                                             <div class="mb-3">
                                                                 <div
                                                                     class="d-flex justify-content-between align-items-baseline">
-                                                                    <label for="reference"
+                                                                    <label for="rc_dt_note"
                                                                         class="form-label fw-bolder">Pending Karena : </label>
                                                                 </div>
                                                                 <select
@@ -3330,6 +3138,31 @@
                 });
                 return false;
             });
+            $('.cancle-ticket-dt').on('click', function() {
+                Swal.fire({
+                    title: 'Close Ticket?',
+                    text: 'Ticket will be cancled!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Yes',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        jQuery('#cancle-ticket-dt').submit();
+                    }
+                });
+                document.addEventListener("keydown", function (event) {
+                    if (event.key === "Enter") {
+                        const nextButton = document.querySelector(".swal2-confirm");
+                        if (nextButton) {
+                            nextButton.click();
+                        }
+                    }
+                });
+                return false;
+            });
 
             $('.add-type-not-exist').on('click', function() {
                 if ($('#not-exist-type-add').val() === "") {
@@ -3511,50 +3344,6 @@
                 });
             });
         </script>
-    @elseif($depart == 6)
-        {{-- <script>
-            $('.confirm-reqs-reimburse').on('click', function() {
-                Swal.fire({
-                    title: 'Continue send Request?',
-                    text: 'Make sure your request is correct!',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#34a853',
-                    confirmButtonText: 'Next',
-                    cancelButtonColor: '#d33',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        jQuery('#form-reimburse-en').submit();
-                    }
-                });
-            });
-            $('#addt-att-reimburse').on('click', function() {
-                const fileInputs = document.getElementById('attach-reimburse');
-                const fileInput = document.createElement('input');
-                fileInput.type = 'file';
-                fileInput.name = 'filesRR[]';
-                fileInput.accept = 'image/jpeg,image/gif,image/png,application/pdf,image/x-eps';
-                fileInput.capture = 'camera';
-                fileInputs.appendChild(fileInput);
-            });
-            $('.btn-del-reimburse').on('click', function() {
-                Swal.fire({
-                    title: 'Sure to delete this reimburse?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#34a853',
-                    confirmButtonText: 'Yes',
-                    cancelButtonColor: '#d33',
-                    cancelButtonText: 'No'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        jQuery('#fm-del-reimburse').submit();
-                    }
-                });
-            });
-        </script> --}}
-    @else
     <script>
         $('#addt-upload-att').on('click', function() {
             const fileInputs = document.getElementById('adm-upload-att');

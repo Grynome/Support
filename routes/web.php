@@ -82,6 +82,8 @@ Route::group(['middleware'=>'auth'], function(){
     Route::get('helpdesk/form=Ticket', [TicketController::class, 'notabs'])->name('form.ticket');
     Route::get('helpdesk/Ticket=closed', [TicketController::class, 'closed_page'])->name('ticket.closed');
         Route::post('helpdesk/ticket=Closed/sorting', [TicketController::class, 'closed_page'])->name('sorting.closed');
+    Route::get('helpdesk/Ticket=Canceled', [TicketController::class, 'cancel_page'])->name('ticket.cancel');
+        Route::post('helpdesk/ticket=Canceled/sorting', [TicketController::class, 'cancel_page'])->name('sorting.cancel');
     Route::get('helpdesk/Ticket=today', [TicketController::class, 'ticket_today'])->name('ticket.today');
         // Data Ajax in notabs
         Route::get('/typeTicket', [DataAjaxController::class, 'fetchTypeTicket'])->name('refresh.type.ticket');
@@ -172,6 +174,8 @@ Route::group(['middleware'=>'auth'], function(){
         Route::patch('update/End-User/{id}', [TicketController::class, 'updt_end_user'])->where(['id' => '.*']);
         // Close Ticket Instant
         Route::patch('Close/Ticket/{id}', [TicketController::class, 'updt_close_instant'])->where(['id' => '.*']);
+        // Cancle Ticket
+        Route::patch('Ticket-Cancle/{id}', [TicketController::class, 'cancle_ticket'])->where(['id' => '.*']);
         // Open Ticket From CLosed
         Route::patch('Return/Ticket/{id}', [TicketController::class, 'prev_sts_ticket'])->where(['id' => '.*']);
         // Remove Engineer

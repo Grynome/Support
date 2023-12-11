@@ -12,5 +12,4 @@
     </div>
 @include('Theme/Sub/script')
 </body>
-
 </html>

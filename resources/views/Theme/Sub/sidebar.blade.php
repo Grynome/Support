@@ -104,9 +104,25 @@
                                     @endif
                                 </a>
                             </li>
+                            @if (($role == 19 && $depart == 4) || $role == 20)
+                                <li class="nav-item">
+                                    <a href="{{ route('ticket.cancel') }}" class="nav-link">
+                                        Cancel Ticket
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
                     </div>
                 </li>
+                @if ($depart == 6 || $role == 20)
+                    <li class="nav-item">
+                        <a href="{{ url('Search/Data-Issue') }}" class="nav-link" role="button" aria-expanded="false"
+                            aria-controls="general-pages">
+                            <i class="link-icon" data-feather="credit-card"></i>
+                            <span class="link-title">Accomodation</span>
+                        </a>
+                    </li>
+                @endif
             @endif
             @if ($depart == 4 || $role == 20 || $role == 15 || $depart == 5 || $depart == 3 || ($depart == 6 && $role == 19) || $depart == 10)
                 <li class="nav-item">

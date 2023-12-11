@@ -458,7 +458,7 @@ for (let i = 0; i < 50; i++) {
     });
 }
 $('.save-updt-sch-en').on('click', function () {
-    if ($('#dt-sch-en').val() === "" || $('#tm-sch-en').val() === "") {
+    if ($('#dt-sch-en').val() === "") {
         Swal.fire({
             title: "The field cannot be empty!",
             text: "Select date and time for updating schedule Engineer!",
