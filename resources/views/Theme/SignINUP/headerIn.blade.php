@@ -18,7 +18,6 @@
   <link href="{{ asset('assets-form-sign') }}/css/nucleo-svg.css" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('assets-form-sign') }}/css/soft-ui-dashboard.css?v=1.0.3" rel="stylesheet" />
-  <link rel="stylesheet" href="{{ asset('assets-yeti') }}/css/yeti.css">
 </head>
 
 <body class="">
