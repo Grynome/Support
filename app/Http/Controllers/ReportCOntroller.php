@@ -93,12 +93,12 @@ class ReportCOntroller extends Controller
                     if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
                         $data['report'] = VW_FinalReport::where('status', 10)
                                             ->where('partner_id', $request->prt_id)
-                                            ->whereBetween('ticketcoming', [$tanggal1, $tanggal2])->get();
+                                            ->whereBetween('closedate', [$tanggal1, $tanggal2])->get();
                     } else {
                         $data['report'] = VW_FinalReport::where('status', 10)
                                             ->where('partner_id', $request->prt_id)
                                             ->where('project_id', $request->sort_prj_report)
-                                            ->whereBetween('ticketcoming', [$tanggal1, $tanggal2])->get();
+                                            ->whereBetween('closedate', [$tanggal1, $tanggal2])->get();
                     }
                 }
             } elseif (!empty($request->stats_report) && (empty($request->prt_id) && empty($request->sort_prj_report)) && !empty($request->sort_sp_report)) {
@@ -209,12 +209,12 @@ class ReportCOntroller extends Controller
                     if (!empty($ex_prt) && empty($ex_prj)) {
                         $data_ticket = VW_FinalReport::where('status', 10)
                                             ->where('partner_id', $ex_prt)
-                                            ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                                            ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
                     } else {
                         $data_ticket = VW_FinalReport::where('status', 10)
                                             ->where('partner_id', $ex_prt)
                                             ->where('project_id', $ex_prj)
-                                            ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                                            ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
                     }
                 }
             } elseif (!empty($ex_sts) && (empty($ex_prt) && empty($ex_prj)) && !empty($ex_sp)) {

@@ -119,12 +119,30 @@
                                                 {{ $item->status }}
                                             </td>
                                             <td>
-                                                <a href="{{ url("Detail/Ticket=$item->notiket") }}">
-                                                    <button type="button"
-                                                        class="btn btn-inverse-success btn-icon btn-sm ">
-                                                        <i data-feather="search"></i>
-                                                    </button>
-                                                </a>
+                                                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                                                    <div class="btn-group me-2" role="group" aria-label="First group">
+                                                        @if ($depart == 4 && $role == 19)
+                                                            <form
+                                                                action="{{ url("Return/Ticket/$item->notiket") }}"
+                                                                id="form-return-cancel{{ $no }}"
+                                                                method="post">
+                                                                @csrf
+                                                                {{ method_field('patch') }}
+                                                            </form>
+                                                            <button type="button"
+                                                                class="btn btn-inverse-secondary btn-icon btn-sm btn-return-cancel{{ $no }}">
+                                                                <i data-feather="rotate-cw"></i>
+                                                            </button>
+                                                            &nbsp;
+                                                        @endif
+                                                        <a href="{{ url("Detail/Ticket=$item->notiket") }}">
+                                                            <button type="button"
+                                                                class="btn btn-inverse-success btn-icon btn-sm ">
+                                                                <i data-feather="search"></i>
+                                                            </button>
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </td>
                                         </tr>
                                         @php
@@ -141,4 +159,27 @@
     </div>
 @endsection
 @push('custom')
+@if ($depart == 4 && $role == 19)
+<script>
+    for (let i = 0; i < 10000; i++) {
+        $('.btn-return-cancel' + i + '').on('click', function() {
+            Swal.fire({
+                title: 'Are u sure return this Ticket?',
+                text: 'Ticket will be Open again!!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#34a853',
+                confirmButtonText: 'Yes',
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    jQuery('#form-return-cancel' + i + '').submit();
+                }
+            });
+            return false;
+        });
+    }
+</script>
+@endif
 @endpush

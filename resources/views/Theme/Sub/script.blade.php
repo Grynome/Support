@@ -1,31 +1,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <!-- core:js -->
 <script src="{{ asset('assets') }}/vendors/core/core.js"></script>
-<!-- endinject -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<!-- Plugin js for this page -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/es6-promise@4.2.8/dist/es6-promise.auto.min.js"></script>
 @stack('plugin-page')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.10/dist/sweetalert2.all.js"></script>
 <script src="{{ asset('assets') }}/vendors/datatables.net/jquery.dataTables.js"></script>
 <script src="{{ asset('assets') }}/vendors/datatables.net-bs5/dataTables.bootstrap5.js"></script>
-<script src="{{ asset('assets') }}/vendors/inputmask/jquery.inputmask.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-<script src="{{ asset('assets') }}/vendors/dropify/dist/dropify.min.js"></script>
 <!-- End plugin js for this page -->
 <!-- inject:js -->
 <script src="{{ asset('assets') }}/vendors/feather-icons/feather.min.js"></script>
 <script src="{{ asset('assets') }}/js/template.js"></script>
-<script src="{{ asset('assets') }}/js/select2.js"></script>
 <!-- endinject -->
 <!-- Custom js for this page -->
 <script src="{{ asset('assets') }}/js/sweet-alert.js"></script>
 @stack('custom-plug')
-<script src="{{ asset('assets') }}/js/flatpickr.js"></script>
-<script src="{{ asset('assets') }}/js/inputmask.js"></script>
 <script src="{{ asset('assets') }}/js/data-table.js"></script>
-<script src="{{ asset('assets') }}/js/dropify.js"></script>
 <script>
     (function($) {
         'use strict';
@@ -56,29 +44,6 @@
             });
         });
     });
-</script>
-<script>
-    $('input[name="sidebarThemeSettings"]').on('change', function() {
-        var theme = $(this).val();
-
-        $.ajax({
-            url: '/theme',
-            method: 'PATCH',
-            data: {
-                theme: theme,
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                if (response.status == 'success') {
-                    // Tampilkan pesan sukses jika permintaan berhasil
-                    alert('Tema berhasil diubah!');
-                }
-            }
-        });
-    });
-</script>
-<script>
-
 </script>
 <script>
     $(document).ready(function() {

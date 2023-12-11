@@ -1,5 +1,5 @@
 @push('css-plugin')
-    <link rel="stylesheet" href="{{ asset('assets') }}/vendors/datatables.net-bs5/dataTables.bootstrap5.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 @endpush
 @php
     use App\Models\VW_Tiket_Part;
@@ -31,13 +31,13 @@
                             </div>
                             <div class="col-md-3">
                                 @if ($depart == 4 || $role == 20 || $role == 15 || $depart == 3 || $depart == 5)
-                                    <button type="button" class="btn btn-inverse-primary btn-icon-text" data-bs-toggle="modal"
-                                        data-bs-target="#filter-ticket">
+                                    <button type="button" class="btn btn-inverse-primary btn-icon-text"
+                                        data-bs-toggle="modal" data-bs-target="#filter-ticket">
                                         Filter
                                         <i class="btn-icon-append" data-feather="search"></i>
                                     </button>
-                                    <div class="modal fade" id="filter-ticket" tabindex="-1" aria-labelledby="sourceModalLabel"
-                                        aria-hidden="true">
+                                    <div class="modal fade" id="filter-ticket" tabindex="-1"
+                                        aria-labelledby="sourceModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
@@ -47,11 +47,13 @@
                                                         aria-label="btn-close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="{{ route('sorting.ticket') }}" method="post" id="sorting">
+                                                    <form action="{{ route('sorting.ticket') }}" method="post"
+                                                        id="sorting">
                                                         @csrf
                                                         <div class="row mb-2">
                                                             <div class="col-md-6 border-end-lg">
-                                                                <label for="Choose Partner" class="form-label">Partner</label>
+                                                                <label for="Choose Partner"
+                                                                    class="form-label">Partner</label>
                                                                 <select class="js-example-basic-single form-select"
                                                                     data-width="100%" name="filter_prt" id="srt-prt-select">
                                                                     <option value="">- Choose Partner -</option>
@@ -78,10 +80,11 @@
                                                                     <div class="input-group flatpickr" id="flatpickr-date">
                                                                         <input type="text" class="form-control"
                                                                             placeholder="Select Date" name="st_date"
-                                                                            id="st-date-mt" value="{{$val_stDate}}"
+                                                                            id="st-date-mt" value="{{ $val_stDate }}"
                                                                             data-input>
                                                                         <span class="input-group-text input-group-addon"
-                                                                            data-toggle><i data-feather="calendar"></i></span>
+                                                                            data-toggle><i
+                                                                                data-feather="calendar"></i></span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -93,10 +96,11 @@
                                                                     <div class="input-group flatpickr" id="flatpickr-date">
                                                                         <input type="text" class="form-control"
                                                                             placeholder="Select Date"
-                                                                            value="{{$val_ndDate}}" name="nd_date"
+                                                                            value="{{ $val_ndDate }}" name="nd_date"
                                                                             id="nd-date-mt" data-input>
                                                                         <span class="input-group-text input-group-addon"
-                                                                            data-toggle><i data-feather="calendar"></i></span>
+                                                                            data-toggle><i
+                                                                                data-feather="calendar"></i></span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -144,7 +148,7 @@
                                             <th>No HP</th>
                                             <th>QTY Part</th>
                                         @else
-                                            @if ($depart == 4 || $role == 15 ||  $depart == 3 || $depart == 5)
+                                            @if ($depart == 4 || $role == 15 || $depart == 3 || $depart == 5)
                                                 <th>No Tiket</th>
                                                 <th>Case ID</th>
                                                 <th>Schedule</th>
@@ -155,7 +159,6 @@
                                                 <th>Aging Part(Days)</th>
                                                 <th>Aging En(Days)</th>
                                                 <th>Parts</th>
-                                                <th>INTERVAL</th>
                                                 <th>last update</th>
                                             @endif
                                         @endif
@@ -166,54 +169,38 @@
                                 <tbody>
                                     @php
                                         $num = 1;
+                                        $now = Carbon::now()->addHours(7);
+                                        $date = Carbon::now()
+                                            ->addHours(7)
+                                            ->format('Y-m-d');
                                     @endphp
                                     @foreach ($ticket as $item)
                                         @php
-                                            $now = Carbon::now()->addHours(7);
-                                            $date = Carbon::now()->addHours(7)->format('Y-m-d');
-                                            $plan = Carbon::parse($item->departure);
-                                            if ($now > $plan) {
-                                                $selisih = "Overdue";
-                                            }else{
-                                                $selisih = 'H-'.$now->diffInDays($plan);
-                                            }
-                                        @endphp
-                                    @if($item->deleted == 1)
-                                        <tr style="background: rgba(205, 147, 59, 0.2);">
-                                        @else
-                                            @if ($depart == 4 || $role == 15 || $depart == 3 || $depart == 5)
-                                                @php
-                                                    // $datenow = Carbon::now()->addHours(7);
-                                                    $start_date_range = Carbon::parse($item->entrydate);
-                                                    $end_date_range = Carbon::parse($item->deadline);
-                                                    
-                                                    $total_days = $start_date_range->diffInDays($end_date_range);
+                                            $start_date_range = Carbon::parse($item->entrydate);
+                                            $end_date_range = Carbon::parse($item->deadline);
 
-                                                    $send = Carbon::parse($item->send);
-                                                    $arrive = Carbon::parse($item->arrive);
-                                                    
-                                                    $agingPart = $send->diffInDays($now);
-                                                    $agingEn = $arrive->diffInDays($now);
-                                                    
-                                                    if ($total_days == 0) {
-                                                        $progress_percentage = 100;
-                                                    } else {
-                                                        $days_passed = $start_date_range->diffInDays($now);
-                                                    
-                                                        $progress_percentage = ($days_passed / $total_days) * 100;
-                                                    }
-                                                    
-                                                    $rounded_percentage = round($progress_percentage / 25) * 25;
-                                                    
-                                                @endphp
-                                                @if ($rounded_percentage > 75)
-                                        <tr style="background: rgba(246, 10, 10, 0.1);">
+                                            $total_days = $start_date_range->diffInDays($end_date_range);
+
+                                            $send = Carbon::parse($item->send);
+                                            $arrive = Carbon::parse($item->arrive);
+
+                                            $agingPart = $send->diffInDays($now);
+                                            $agingEn = $arrive->diffInDays($now);
+
+                                            if ($total_days == 0) {
+                                                $progress_percentage = 100;
+                                            } else {
+                                                $days_passed = $start_date_range->diffInDays($now);
+
+                                                $progress_percentage = ($days_passed / $total_days) * 100;
+                                            }
+
+                                            $rounded_percentage = round($progress_percentage / 25) * 25;
+                                        @endphp
+                                        @if ($rounded_percentage > 75)
+                                            <tr style="background: rgba(246, 10, 10, 0.1);">
                                         @else
-                                        <tr>
-                                    @endif
-                                @else
-                                    <tr>
-                                        @endif
+                                            <tr>
                                         @endif
                                         <td>{{ $num }}</td>
                                         @if ($depart == 10)
@@ -242,16 +229,13 @@
                                                 <td>{{ $item->company }}</td>
                                                 <td>{{ $item->sn }}</td>
                                                 <td>
-                                                    {{$agingPart}}
+                                                    {{ $agingPart }}
                                                 </td>
                                                 <td>
-                                                    {{$agingEn}}
+                                                    {{ $agingEn }}
                                                 </td>
                                                 <td>
-                                                    {{$item->sts_part}}
-                                                </td>
-                                                <td>
-                                                    {{ $selisih }}
+                                                    {{ $item->sts_part }}
                                                 </td>
                                                 <td>
                                                     {{ $item->last_update }}
@@ -261,41 +245,35 @@
                                         <td>
                                             @if ($depart == 4 || $role == 20 || $role == 15 || $depart == 3 || $depart == 5)
                                                 @if ($item->status == 2 && $item->sts_act == 1)
-                                                    @if ($item->act_desc == 2)
-                                                        On site 2nd : Go to Location
-                                                    @elseif ($item->act_desc == 3)
-                                                        On site 2nd : Arrived on location
-                                                    @elseif ($item->act_desc == 4)
-                                                        On site 2nd : Start Working
-                                                    @elseif ($item->act_desc == 5)
-                                                        On site 2nd : Stop Working
-                                                        {{ $item->solve_en }}
-                                                    @elseif ($item->act_desc == 6)
-                                                        On site 2nd : Leave Site
-                                                        {{ $item->solve_en }}
-                                                    @elseif ($item->act_desc == 7)
-                                                        On site 2nd : Travel Stop
-                                                        {{ $item->solve_en }}
-                                                    @endif
+                                                    {{ $item->act_desc == 2
+                                                        ? 'On site 2nd : Go to Location'
+                                                        : ($item->act_desc == 3
+                                                            ? 'On site 2nd : Arrived on location'
+                                                            : ($item->act_desc == 4
+                                                                ? 'On site 2nd : Start Working'
+                                                                : ($item->act_desc == 5
+                                                                    ? 'On site 2nd : Stop Working' . $item->solve_en
+                                                                    : ($item->act_desc == 6
+                                                                        ? 'On site 2nd : Leave Site' . $item->solve_en
+                                                                        : ($item->act_desc == 7
+                                                                            ? 'On site 2nd : Travel Stop' . $item->solve_en
+                                                                            : ''))))) }}
                                                 @elseif ($item->status == 3 && $item->sts_act == 2)
-                                                    @if ($item->act_desc == 2)
-                                                        On site 3rd : Go to Location
-                                                    @elseif ($item->act_desc == 3)
-                                                        On site 3rd : Arrived on location
-                                                    @elseif ($item->act_desc == 4)
-                                                        On site 3rd : Start Working
-                                                    @elseif ($item->act_desc == 5)
-                                                        On site 3rd : Stop Working
-                                                        {{ $item->solve_en }}
-                                                    @elseif ($item->act_desc == 6)
-                                                        On site 3rd : Leave Site
-                                                        {{ $item->solve_en }}
-                                                    @elseif ($item->act_desc == 7)
-                                                        On site 3rd : Travel Stop
-                                                        {{ $item->solve_en }}
-                                                    @endif
+                                                    {{ $item->act_desc == 2
+                                                        ? 'On site 3rd : Go to Location'
+                                                        : ($item->act_desc == 3
+                                                            ? 'On site 3rd : Arrived on location'
+                                                            : ($item->act_desc == 4
+                                                                ? 'On site 3rd : Start Working'
+                                                                : ($item->act_desc == 5
+                                                                    ? 'On site 3rd : Stop Working' . $item->solve_en
+                                                                    : ($item->act_desc == 6
+                                                                        ? 'On site 3rd : Leave Site' . $item->solve_en
+                                                                        : ($item->act_desc == 7
+                                                                            ? 'On site 3rd : Travel Stop' . $item->solve_en
+                                                                            : ''))))) }}
                                                 @else
-                                                    {{ $item->dtStatus.' '.$item->solve_en }}
+                                                    {{ $item->dtStatus . ' ' . $item->solve_en }}
                                                 @endif
                                             @elseif ($depart == 9)
                                                 @php
@@ -305,43 +283,32 @@
                                                         })
                                                         ->first();
                                                 @endphp
-                                                @if (!empty($val_awb_progress) && $item->status_awb == 0)
-                                                    Progress AWB
-                                                @elseif (empty($val_awb_progress) && $item->status_awb == 0)
-                                                    Set Done on AWB
-                                                @elseif ($item->status_awb == 1)
-                                                    AWB Finished
-                                                @endif
+                                                {{ !empty($val_awb_progress) && $item->status_awb == 0
+                                                    ? 'Progress AWB'
+                                                    : (empty($val_awb_progress) && $item->status_awb == 0
+                                                        ? 'Set Done on AWB'
+                                                        : ($item->status_awb == 1
+                                                            ? 'AWB Finished'
+                                                            : '')) }}
                                             @elseif ($depart == 6 || $role == 1)
-                                                @if ($item->status == 9)
-                                                    Need to Receive
-                                                @elseif ($item->status == 5)
-                                                    Solved
-                                                @elseif ($item->status == 2 || $item->status == 3)
-                                                    @if ($item->reqsCek == 1)
-                                                        Pending : waiting for the component to be ready by helpdesk
-                                                    @else
-                                                        Open
-                                                    @endif
-                                                @else
-                                                    Progress Activity
-                                                @endif
+                                                {{ $item->status == 9
+                                                    ? 'Need to Receive'
+                                                    : ($item->status == 5
+                                                        ? 'Solved'
+                                                        : ($item->status == 2 || $item->status == 3
+                                                            ? ($item->reqsCek == 1
+                                                                ? 'Pending : waiting for the component to be ready by helpdesk'
+                                                                : 'Open')
+                                                            : 'Progress Activity')) }}
                                             @elseif ($depart == 13)
-                                                @if ($item->status == 9)
-                                                    Waiting Engineer to Submit Activity
-                                                @else
-                                                    Update your Activity
-                                                @endif
+                                                {{ $item->status == 9 ? 'Waiting Engineer to Submit Activity' : 'Update your Activity' }}
                                             @elseif ($depart == 10)
-                                                @if ($item->status_docs == 0)
-                                                    Documents isn't received`
-                                                @else
-                                                    Documents received
-                                                @endif
+                                                {{ $item->status_docs == 0 ? 'Documents isn\'t received' : 'Documents received' }}
                                             @endif
                                         </td>
                                         <td>
-                                            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                                            <div class="btn-toolbar" role="toolbar"
+                                                aria-label="Toolbar with button groups">
                                                 <div class="btn-group me-2" role="group" aria-label="First group">
                                                     @php
                                                         if ($depart == 13) {
@@ -368,7 +335,8 @@
                                                                 <i data-feather="edit"></i>
                                                             </button>
                                                         @else
-                                                            <a href="{{ url("Timeline/Engineer/Ticket=$item->notiket") }}">
+                                                            <a
+                                                                href="{{ url("Timeline/Engineer/Ticket=$item->notiket") }}">
                                                                 <button type="button"
                                                                     class="btn btn-inverse-info btn-icon btn-sm">
                                                                     <i data-feather="activity"></i>
@@ -377,8 +345,7 @@
                                                         @endif
                                                     @elseif ($depart == 13)
                                                         @php
-                                                            $vald_act_l2 = ActivityL2En::where('notiket', $item->notiket)
-                                                                ->first();
+                                                            $vald_act_l2 = ActivityL2En::where('notiket', $item->notiket)->first();
                                                         @endphp
                                                         @if ($date == Carbon::parse($item->departure)->format('Y-m-d'))
                                                             @if (empty($vald_act_l2) && ($item->status > 0 && $item->status < 9))
@@ -388,7 +355,8 @@
                                                                 </button>
                                                                 &nbsp;
                                                             @elseif ($item->status != 9)
-                                                                <a href="{{ url("Timeline/L2-Engineer/Ticket=$item->notiket") }}">
+                                                                <a
+                                                                    href="{{ url("Timeline/L2-Engineer/Ticket=$item->notiket") }}">
                                                                     <button type="button"
                                                                         class="btn btn-inverse-info btn-icon btn-sm">
                                                                         <i data-feather="activity"></i>
@@ -408,16 +376,16 @@
                                                             @endif
                                                         @endif
                                                         @if ($role == 19)
-                                                                <form action="{{ url("Remove/$item->notiket/Ticket-HGT") }}"
-                                                                    id="form-remove-ticket{{ $num }}"
-                                                                    method="post">
-                                                                    @csrf
-                                                                    {{ method_field('delete') }}
-                                                                </form>
-                                                                <button type="button"
-                                                                    class="btn btn-inverse-danger btn-icon btn-sm btn-remove-ticket{{ $num }}">
-                                                                    <i data-feather="trash-2"></i>
-                                                                </button>
+                                                            <form action="{{ url("Remove/$item->notiket/Ticket-HGT") }}"
+                                                                id="form-remove-ticket{{ $num }}"
+                                                                method="post">
+                                                                @csrf
+                                                                {{ method_field('delete') }}
+                                                            </form>
+                                                            <button type="button"
+                                                                class="btn btn-inverse-danger btn-icon btn-sm btn-remove-ticket{{ $num }}">
+                                                                <i data-feather="trash-2"></i>
+                                                            </button>
                                                             &nbsp;
                                                         @endif
                                                         @if ($item->status == 2 || $item->status == 3)
@@ -470,10 +438,10 @@
                                                 </div>
                                             </div>
                                         </td>
-                                    </tr>
-                                    @php
-                                        $num++;
-                                    @endphp
+                                        </tr>
+                                        @php
+                                            $num++;
+                                        @endphp
                                     @endforeach
                                 </tbody>
                             </table>
@@ -484,6 +452,12 @@
         </div>
     </div>
 @endsection
+@push('plugin-page')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+@endpush
+@push('custom-plug')
+    <script src="{{ asset('assets') }}/js/select2.js"></script>
+@endpush
 @push('custom')
     @if ($depart == 6 || $depart == 13 || $role == 1)
         <script>
@@ -495,28 +469,28 @@
             }
             for (let i = 0; i < 1000; i++) {
                 $('.updt-en-ticket' + i).on('click', function() {
-                        navigator.geolocation.getCurrentPosition(function(position) {
-                            var lat = position.coords.latitude;
-                            var lng = position.coords.longitude;
-                            document.getElementById('latitude' + i).value = lat;
-                            document.getElementById('longitude' + i).value = lng;
-                        }, function(error) {
-                            console.log("Error occurred. Error code: " + error.code);
-                        });
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var lat = position.coords.latitude;
+                        var lng = position.coords.longitude;
+                        document.getElementById('latitude' + i).value = lat;
+                        document.getElementById('longitude' + i).value = lng;
+                    }, function(error) {
+                        console.log("Error occurred. Error code: " + error.code);
+                    });
 
-                        Swal.fire({
-                            title: title,
-                            icon: 'question',
-                            showCancelButton: true,
-                            confirmButtonColor: '#34a853',
-                            confirmButtonText: 'Next',
-                            cancelButtonColor: '#d33',
-                            cancelButtonText: 'Cancel'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                jQuery('#updt-en-ticket' + i).submit();
-                            }
-                        });
+                    Swal.fire({
+                        title: title,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#34a853',
+                        confirmButtonText: 'Next',
+                        cancelButtonColor: '#d33',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            jQuery('#updt-en-ticket' + i).submit();
+                        }
+                    });
                 });
             }
         </script>
@@ -561,7 +535,7 @@
                     });
                     return false;
                 });
-                
+
                 $('.btn-remove-ticket' + i + '').on('click', function() {
                     Swal.fire({
                         title: 'Are u sure delete this Ticket?',

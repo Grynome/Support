@@ -18,16 +18,17 @@ class User extends Seeder
     public function run()
     {
         DB::table('hgt_users')->insert([
-            'nik' => 'HGT-KR111',
-            'full_name' => 'Master',
-            'username' => 'Master',
+            'nik' => 'HGT-KR096',
+            'full_name' => 'Augustinus Nelson',
+            'username' => 'Nelson-HGT',
             'gender' => 'L',
-            'role' => '1',
-            'depart' => '1',
-            'email' => 'master@hgt-services.com',
+            'role' => '16',
+            'depart' => '5',
+            'email' => 'nelson@hgt-services.com',
+            'phone' => '081289687505',
             'verify' => '1',
-            'verify_at' => '2023-06-21 16:30:12',
-            'password' => Hash::make('Hagete.2023'),
+            'verify_at' => '2023-06-15 01:35:10',
+            'password' => Hash::make('Admin'),
             'terms' => 'Agree'
         ]);
     }

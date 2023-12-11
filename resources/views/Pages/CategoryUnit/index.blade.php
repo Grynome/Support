@@ -1,4 +1,5 @@
 @push('css-plugin')
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 @endpush
 @extends('Theme/header')
 @section('getPage')
@@ -167,8 +168,10 @@
     </div>
 @endsection
 @push('plugin-page')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 @endpush
 @push('custom-plug')
+    <script src="{{ asset('assets') }}/js/select2.js"></script>
 @endpush
 @push('custom')
 <script>

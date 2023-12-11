@@ -1,4 +1,5 @@
 @push('css-plugin')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 @endpush
 @extends('Theme/header')
 @section('getPage')
@@ -233,8 +234,12 @@
     </div>
 @endsection
 @push('plugin-page')
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="{{ asset('assets') }}/vendors/inputmask/jquery.inputmask.min.js"></script>
 @endpush
 @push('custom-plug')
+    <script src="{{ asset('assets') }}/js/flatpickr.js"></script>
+    <script src="{{ asset('assets') }}/js/inputmask.js"></script>
 @endpush
 @push('custom')
     @if (!empty($data_project))

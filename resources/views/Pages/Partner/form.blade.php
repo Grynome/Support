@@ -97,8 +97,10 @@
     </div>
 @endsection
 @push('plugin-page')
+    <script src="{{ asset('assets') }}/vendors/inputmask/jquery.inputmask.min.js"></script>
 @endpush
 @push('custom-plug')
+    <script src="{{ asset('assets') }}/js/inputmask.js"></script>
 @endpush
 @push('custom')
     <script>

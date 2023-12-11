@@ -3,7 +3,9 @@
     <link rel="stylesheet" href="{{ asset('assets') }}/vendors/dropzone/dropzone.min.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/vendors/pickr/themes/classic.min.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/vendors/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="{{ asset('assets') }}/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('assets') }}/vendors/dropify/dist/dropify.min.css">
 @endpush
 @extends('Theme/header')
 @section('getPage')
@@ -741,9 +743,8 @@
                                         <div class="col-md-6 mb-2">
                                             <label for="schedule" class="form-label">Schedule</label>
                                             <div class="input-group flatpickr" id="flatpickr-dtc">
-                                                <input type="text" class="form-control"
-                                                    placeholder="Select Date/Time" name="sch" id="flatpickr-dtc"
-                                                    data-input>
+                                                <input type="text" class="form-control" placeholder="Select Date/Time"
+                                                    name="sch" id="flatpickr-dtc" data-input>
                                                 <span class="input-group-text input-group-addon" data-toggle><i
                                                         data-feather="calendar"></i></span>
                                             </div>
@@ -793,11 +794,15 @@
     </div>
 @endsection
 @push('plugin-page')
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="{{ asset('assets') }}/vendors/jquery-validation/jquery.validate.min.js"></script>
     <script src="{{ asset('assets') }}/vendors/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
     <script src="{{ asset('assets') }}/vendors/typeahead.js/typeahead.bundle.min.js"></script>
     <script src="{{ asset('assets') }}/vendors/jquery-tags-input/jquery.tagsinput.min.js"></script>
     <script src="{{ asset('assets') }}/vendors/dropzone/dropzone.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="{{ asset('assets') }}/vendors/inputmask/jquery.inputmask.min.js"></script>
+    <script src="{{ asset('assets') }}/vendors/dropify/dist/dropify.min.js"></script>
 @endpush
 @push('custom-plug')
     <script src="{{ asset('assets') }}/js/form-validation.js"></script>
@@ -805,6 +810,9 @@
     <script src="{{ asset('assets') }}/js/inputmask.js"></script>
     <script src="{{ asset('assets') }}/js/typeahead.js"></script>
     <script src="{{ asset('assets') }}/js/tags-input.js"></script>
+    <script src="{{ asset('assets') }}/js/flatpickr.js"></script>
+    <script src="{{ asset('assets') }}/js/select2.js"></script>
+    <script src="{{ asset('assets') }}/js/dropify.js"></script>
 @endpush
 @push('custom')
     <script>
