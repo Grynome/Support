@@ -303,7 +303,11 @@ class ReportCOntroller extends Controller
             $tatst = Carbon::parse($item->entrydate);
             $tatnd = Carbon::parse($item->work_stop);
             $delivend = Carbon::parse($item->arrive);
-            
+            if ($item->project_id == "PRJ-021-HGT" && empty($item->service_id)) {
+                $sp = 'CSR';
+            } else {
+                $sp = $item->service_name;
+            }
             $get_tat = !empty($item->entrydate) && !empty($item->work_stop) ? $tatst->diffInDays($tatnd) : null;
             $get_deliv = !empty($item->entrydate) && !empty($item->arrive) ? $tatst->diffInDays($delivend) : null;
             $get_fe = !empty($item->arrive) && !empty($item->work_stop) ? $delivend->diffInDays($tatnd) : null;
@@ -324,7 +328,7 @@ class ReportCOntroller extends Controller
                     $item->unit_name,
                     $item->sn,
                     $item->pn,
-                    $item->service_name,
+                    $sp,
                     $item->lok_kab,
                     $item->company,
                     $item->severity_name,
