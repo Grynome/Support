@@ -1,5 +1,4 @@
 @push('css-plugin')
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 @endpush
 @php
     use App\Models\VW_Tiket_Part;
@@ -453,10 +452,8 @@
     </div>
 @endsection
 @push('plugin-page')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 @endpush
 @push('custom-plug')
-    <script src="{{ asset('assets') }}/js/select2.js"></script>
 @endpush
 @push('custom')
     @if ($depart == 6 || $depart == 13 || $role == 1)

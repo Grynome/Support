@@ -794,13 +794,11 @@
     </div>
 @endsection
 @push('plugin-page')
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="{{ asset('assets') }}/vendors/jquery-validation/jquery.validate.min.js"></script>
     <script src="{{ asset('assets') }}/vendors/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
     <script src="{{ asset('assets') }}/vendors/typeahead.js/typeahead.bundle.min.js"></script>
     <script src="{{ asset('assets') }}/vendors/jquery-tags-input/jquery.tagsinput.min.js"></script>
     <script src="{{ asset('assets') }}/vendors/dropzone/dropzone.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="{{ asset('assets') }}/vendors/inputmask/jquery.inputmask.min.js"></script>
     <script src="{{ asset('assets') }}/vendors/dropify/dist/dropify.min.js"></script>
 @endpush
@@ -810,8 +808,6 @@
     <script src="{{ asset('assets') }}/js/inputmask.js"></script>
     <script src="{{ asset('assets') }}/js/typeahead.js"></script>
     <script src="{{ asset('assets') }}/js/tags-input.js"></script>
-    <script src="{{ asset('assets') }}/js/flatpickr.js"></script>
-    <script src="{{ asset('assets') }}/js/select2.js"></script>
     <script src="{{ asset('assets') }}/js/dropify.js"></script>
 @endpush
 @push('custom')

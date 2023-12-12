@@ -1,3 +1,6 @@
+@push('css-plugin')
+<link rel="stylesheet" href="{{ asset('assets') }}/vendors/mdi/css/materialdesignicons.min.css">
+@endpush
 @extends('Theme/header')
 @php
     if (empty($str) && empty($ndr)) {
@@ -337,6 +340,10 @@
         </div>
     </div>
 @endsection
+@push('plugin-page')
+@endpush
+@push('custom-plug')
+@endpush
 @push('custom')
     <script>
         function dtProject(url, prt_id, project) {

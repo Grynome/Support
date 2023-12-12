@@ -1,3 +1,5 @@
+@push('css-plugin')
+@endpush
 @php
     $role = auth()->user()->role;
     $depart = auth()->user()->depart;
@@ -216,13 +218,8 @@
                                                         <i class="icon-xl text-muted pb-3px" data-feather="settings"></i>
                                                     </a>
                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                        @if ($depart == 4 || $role == 20 || $role == 15)
-                                                            @if (
-                                                                $detail->first()->status == 0 ||
-                                                                    $detail->first()->status == 1 ||
-                                                                    $detail->first()->status == 2 ||
-                                                                    $detail->first()->status == 3 ||
-                                                                    $detail->first()->status == 9)
+                                                        @if (($depart == 4 && ($role == 19 || $role == 16)) || $role == 20 || $role == 15)
+                                                            @if ($detail->first()->status < 10)
                                                                 <a class="dropdown-item d-flex align-items-center change-part-reqs"
                                                                     href="javascript:;"><i data-feather="edit"
                                                                         class="icon-sm me-2"></i>
@@ -299,18 +296,28 @@
                                                                     href="#updt-info-ticket" data-bs-toggle="modal"><i
                                                                         data-feather="edit" class="icon-sm me-2"></i>
                                                                     <span class="">Edit Info Ticket</span></a>
-                                                                    @if (empty($detail->first()->full_name) || $detail->first()->type_ticket == 'Deploy' || $detail->first()->type_ticket == 'Staging' || ($role == 19 && $depart == 4))
-                                                                        <a class="dropdown-item d-flex align-items-center close-ticket-dt"
-                                                                            href="javascript:;"><i data-feather="x-square"
-                                                                                class="icon-sm me-2"></i>
-                                                                            <span class="">Close Ticket</span>
-                                                                        </a>
+                                                                    @if (empty($detail->first()->full_name) || $detail->first()->type_ticket == 'Deploy' 
+                                                                        || $detail->first()->type_ticket == 'Staging' || $detail->first()->type_ticket == 'Inventory'
+                                                                        || $detail->first()->type_ticket == 'Delivery')
                                                                         <form action="{{ url("Close/Ticket/$id") }}"
                                                                             method="post" id="close-ticket-dt">
                                                                             @csrf
                                                                             {{ method_field('patch') }}
                                                                         </form>
-                                                                        @if ($role == 19 && $depart == 4)
+                                                                        @if (($detail->first()->type_ticket == 'Inventory' || $detail->first()->type_ticket == 'Delivery') && $role == 16)
+                                                                            <a class="dropdown-item d-flex align-items-center close-ticket-dt"
+                                                                                href="javascript:;"><i data-feather="x-square"
+                                                                                    class="icon-sm me-2"></i>
+                                                                                <span class="">Close Ticket</span>
+                                                                            </a>
+                                                                        @else
+                                                                            <a class="dropdown-item d-flex align-items-center close-ticket-dt"
+                                                                                href="javascript:;"><i data-feather="x-square"
+                                                                                    class="icon-sm me-2"></i>
+                                                                                <span class="">Close Ticket</span>
+                                                                            </a>
+                                                                        @endif
+                                                                        @if ($role == 19)
                                                                             <a class="dropdown-item d-flex align-items-center cancle-ticket-dt"
                                                                                 href="javascript:;"><i data-feather="x-square"
                                                                                     class="icon-sm me-2"></i>
@@ -2742,8 +2749,10 @@
         @endif
     </div>
 @endsection
+@push('plugin-page')
+@endpush
 @push('custom-plug')
-    <script src="{{ asset('assets') }}//js/chat.js"></script>
+    <script src="{{ asset('assets') }}/js/chat.js"></script>
 @endpush
 @push('custom')
     <script>

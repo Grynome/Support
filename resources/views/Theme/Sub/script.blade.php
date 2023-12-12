@@ -2,6 +2,9 @@
 <!-- core:js -->
 <script src="{{ asset('assets') }}/vendors/core/core.js"></script>
 @stack('plugin-page')
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.10/dist/sweetalert2.all.js"></script>
 <script src="{{ asset('assets') }}/vendors/datatables.net/jquery.dataTables.js"></script>
 <script src="{{ asset('assets') }}/vendors/datatables.net-bs5/dataTables.bootstrap5.js"></script>
@@ -14,6 +17,9 @@
 <script src="{{ asset('assets') }}/js/sweet-alert.js"></script>
 @stack('custom-plug')
 <script src="{{ asset('assets') }}/js/data-table.js"></script>
+
+<script src="{{ asset('assets') }}/js/flatpickr.js"></script>
+<script src="{{ asset('assets') }}/js/select2.js"></script>
 <script>
     (function($) {
         'use strict';
@@ -49,23 +55,23 @@
     $(document).ready(function() {
         $('table#display').DataTable({
             "aLengthMenu": [
-            [10, 30, 50, -1],
-            [10, 30, 50, "All"]
+                [10, 30, 50, -1],
+                [10, 30, 50, "All"]
             ],
             "iDisplayLength": 10,
             "language": {
-            search: ""
+                search: ""
             },
         });
-        
+
         $('table#d-Monthly').DataTable({
             "aLengthMenu": [
-            [10, 30, 50, -1],
-            [10, 30, 50, "All"]
+                [10, 30, 50, -1],
+                [10, 30, 50, "All"]
             ],
             "iDisplayLength": 10,
             "language": {
-            search: ""
+                search: ""
             },
             scrollX: true,
         });
