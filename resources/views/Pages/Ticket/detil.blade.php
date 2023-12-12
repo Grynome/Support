@@ -310,14 +310,13 @@
                                                                                     class="icon-sm me-2"></i>
                                                                                 <span class="">Close Ticket</span>
                                                                             </a>
-                                                                        @else
+                                                                        @endif
+                                                                        @if ($role == 19)
                                                                             <a class="dropdown-item d-flex align-items-center close-ticket-dt"
                                                                                 href="javascript:;"><i data-feather="x-square"
                                                                                     class="icon-sm me-2"></i>
                                                                                 <span class="">Close Ticket</span>
                                                                             </a>
-                                                                        @endif
-                                                                        @if ($role == 19)
                                                                             <a class="dropdown-item d-flex align-items-center cancle-ticket-dt"
                                                                                 href="javascript:;"><i data-feather="x-square"
                                                                                     class="icon-sm me-2"></i>
