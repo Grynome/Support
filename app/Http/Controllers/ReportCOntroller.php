@@ -33,6 +33,7 @@ use App\Models\VRTP;
 use App\Models\VW_FinalReport;
 use App\Models\LastActEn;
 use App\Models\VW_Ticket_Split;
+use App\Models\TCCompare;
 
 class ReportCOntroller extends Controller
 {
@@ -60,67 +61,67 @@ class ReportCOntroller extends Controller
             if (!empty($request->stats_report) && (empty($request->prt_id) && empty($request->sort_prj_report)) && empty($request->sort_sp_report)) {
                 if ($request->stats_report == 1) {
                     $data['report'] = VW_FinalReport::where('status', '!=', 10)
-                                        ->whereBetween('ticketcoming', [$tanggal1, $tanggal2])->get();
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
                 } else {
                     $data['report'] = VW_FinalReport::where('status', 10)
-                    ->whereBetween('closedate', [$tanggal1, $tanggal2])->get();
+                    ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
                 }
             } elseif ((!empty($request->prt_id) || !empty($request->sort_prj_report)) && empty($request->stats_report) && empty($request->sort_sp_report)) {
                 if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
                     $data['report'] = VW_FinalReport::where('partner_id', $request->prt_id)
-                                        ->whereBetween('ticketcoming', [$tanggal1, $tanggal2])->get();
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
                 } else {
                     $data['report'] = VW_FinalReport::where('partner_id', $request->prt_id)
                                         ->where('project_id', $request->sort_prj_report)
-                                        ->whereBetween('ticketcoming', [$tanggal1, $tanggal2])->get();
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
                 }
             } elseif (!empty($request->sort_sp_report) && (empty($request->prt_id) && empty($request->sort_prj_report)) && empty($request->stats_report)) {
                 $data['report'] = VW_FinalReport::where('service_id', $request->sort_sp_report)
-                                    ->whereBetween('ticketcoming', [$tanggal1, $tanggal2])->get();
+                                    ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
             } elseif (!empty($request->stats_report) && (!empty($request->prt_id) || !empty($request->sort_prj_report)) && empty($request->sort_sp_report)) {
                 if ($request->stats_report == 1) {
                     if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
                         $data['report'] = VW_FinalReport::where('status', '<', 10)
                                             ->where('partner_id', $request->prt_id)
-                                            ->whereBetween('ticketcoming', [$tanggal1, $tanggal2])->get();
+                                            ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
                     } else {
                         $data['report'] = VW_FinalReport::where('status', '<', 10)
                                             ->where('partner_id', $request->prt_id)
                                             ->where('project_id', $request->sort_prj_report)
-                                            ->whereBetween('ticketcoming', [$tanggal1, $tanggal2])->get();
+                                            ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
                     }
                 } else {
                     if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
                         $data['report'] = VW_FinalReport::where('status', 10)
                                             ->where('partner_id', $request->prt_id)
-                                            ->whereBetween('closedate', [$tanggal1, $tanggal2])->get();
+                                            ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
                     } else {
                         $data['report'] = VW_FinalReport::where('status', 10)
                                             ->where('partner_id', $request->prt_id)
                                             ->where('project_id', $request->sort_prj_report)
-                                            ->whereBetween('closedate', [$tanggal1, $tanggal2])->get();
+                                            ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
                     }
                 }
             } elseif (!empty($request->stats_report) && (empty($request->prt_id) && empty($request->sort_prj_report)) && !empty($request->sort_sp_report)) {
                 if ($request->stats_report == 1) {
                     $data['report'] = VW_FinalReport::where('status', '!=', 10)
                                         ->where('service_id', $request->sort_sp_report)
-                                        ->whereBetween('ticketcoming', [$tanggal1, $tanggal2])->get();
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
                 } else {
                     $data['report'] = VW_FinalReport::where('status', 10)
                                         ->where('service_id', $request->sort_sp_report)
-                                        ->whereBetween('closedate', [$tanggal1, $tanggal2])->get();
+                                        ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
                 }
             } elseif (empty($request->stats_report) && (!empty($request->prt_id) || !empty($request->sort_prj_report)) && !empty($request->sort_sp_report)) {
                 if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
                     $data['report'] = VW_FinalReport::where('service_id', $request->sort_sp_report)
                                         ->where('partner_id', $request->prt_id)
-                                        ->whereBetween('ticketcoming', [$tanggal1, $tanggal2])->get();
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
                 } else {
                     $data['report'] = VW_FinalReport::where('service_id', $request->sort_sp_report)
                                         ->where('partner_id', $request->prt_id)
                                         ->where('project_id', $request->sort_prj_report)
-                                        ->whereBetween('ticketcoming', [$tanggal1, $tanggal2])->get();
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
                 }
             } else {
                 if ($request->stats_report == 1) {
@@ -128,13 +129,13 @@ class ReportCOntroller extends Controller
                                         ->where('partner_id', $request->prt_id)
                                         ->where('project_id', $request->sort_prj_report)
                                         ->where('service_id', $request->sort_sp_report)
-                                        ->whereBetween('ticketcoming', [$tanggal1, $tanggal2])->get();
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
                 } else {
                     $data['report'] = VW_FinalReport::where('status', 10)
                                         ->where('partner_id', $request->prt_id)
                                         ->where('project_id', $request->sort_prj_report)
                                         ->where('service_id', $request->sort_sp_report)
-                                        ->whereBetween('closedate', [$tanggal1, $tanggal2])->get();
+                                        ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
                 }
             }
         }
@@ -149,6 +150,118 @@ class ReportCOntroller extends Controller
         ->with('ndr', $request->nd_date_report);
     }
     
+    public function compare(Request $request)
+    {
+        $now = Carbon::now()->endOfDay();
+        $oneMonthAgo = $now->copy()->startOfDay()->subMonth(1);
+        $tanggal1 = $request->st_date_report.' '.'00:00:00';
+        $tanggal2 = $request->nd_date_report.' '.'23:59:59';
+        $data['partner'] = TCCompare::select('partner_id', 'partner')->groupBy('partner_id')->get();
+        $data['project'] = TCCompare::select('project_id', 'project_name')->groupBy('project_id')->get();
+        $data['office'] = TCCompare::select('service_id', 'service_name')->where('service_id', '!=', '')->groupBy('service_id')->get();
+        if (!empty($request->st_date_report) && !empty($request->nd_date_report)) {
+            $eventTgl1 = $tanggal1;
+            $eventTgl2 = $tanggal2;
+        } else {
+            $eventTgl1 = $oneMonthAgo;
+            $eventTgl2 = $now;
+        }
+        if (!isset($request->stats_report) && 
+            !isset($request->sort_sp_report) && 
+            (!isset($request->prt_id) && !isset($request->sort_prj_report))) {
+            $data['report'] = TCCompare::all()->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2]);
+        } elseif(isset($request->stats_report) || (isset($request->prt_id) || isset($request->sort_prj_report)) || isset($request->sort_sp_report)) {
+            if (!empty($request->stats_report) && (empty($request->prt_id) && empty($request->sort_prj_report)) && empty($request->sort_sp_report)) {
+                if ($request->stats_report == 1) {
+                    $data['report'] = TCCompare::where('status', '!=', 10)
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
+                } else {
+                    $data['report'] = TCCompare::where('status', 10)
+                    ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                }
+            } elseif ((!empty($request->prt_id) || !empty($request->sort_prj_report)) && empty($request->stats_report) && empty($request->sort_sp_report)) {
+                if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
+                    $data['report'] = TCCompare::where('partner_id', $request->prt_id)
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
+                } else {
+                    $data['report'] = TCCompare::where('partner_id', $request->prt_id)
+                                        ->where('project_id', $request->sort_prj_report)
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
+                }
+            } elseif (!empty($request->sort_sp_report) && (empty($request->prt_id) && empty($request->sort_prj_report)) && empty($request->stats_report)) {
+                $data['report'] = TCCompare::where('service_id', $request->sort_sp_report)
+                                    ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
+            } elseif (!empty($request->stats_report) && (!empty($request->prt_id) || !empty($request->sort_prj_report)) && empty($request->sort_sp_report)) {
+                if ($request->stats_report == 1) {
+                    if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
+                        $data['report'] = TCCompare::where('status', '<', 10)
+                                            ->where('partner_id', $request->prt_id)
+                                            ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
+                    } else {
+                        $data['report'] = TCCompare::where('status', '<', 10)
+                                            ->where('partner_id', $request->prt_id)
+                                            ->where('project_id', $request->sort_prj_report)
+                                            ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
+                    }
+                } else {
+                    if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
+                        $data['report'] = TCCompare::where('status', 10)
+                                            ->where('partner_id', $request->prt_id)
+                                            ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                    } else {
+                        $data['report'] = TCCompare::where('status', 10)
+                                            ->where('partner_id', $request->prt_id)
+                                            ->where('project_id', $request->sort_prj_report)
+                                            ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                    }
+                }
+            } elseif (!empty($request->stats_report) && (empty($request->prt_id) && empty($request->sort_prj_report)) && !empty($request->sort_sp_report)) {
+                if ($request->stats_report == 1) {
+                    $data['report'] = TCCompare::where('status', '!=', 10)
+                                        ->where('service_id', $request->sort_sp_report)
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
+                } else {
+                    $data['report'] = TCCompare::where('status', 10)
+                                        ->where('service_id', $request->sort_sp_report)
+                                        ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                }
+            } elseif (empty($request->stats_report) && (!empty($request->prt_id) || !empty($request->sort_prj_report)) && !empty($request->sort_sp_report)) {
+                if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
+                    $data['report'] = TCCompare::where('service_id', $request->sort_sp_report)
+                                        ->where('partner_id', $request->prt_id)
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
+                } else {
+                    $data['report'] = TCCompare::where('service_id', $request->sort_sp_report)
+                                        ->where('partner_id', $request->prt_id)
+                                        ->where('project_id', $request->sort_prj_report)
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
+                }
+            } else {
+                if ($request->stats_report == 1) {
+                    $data['report'] = TCCompare::where('status', '!=', 10)
+                                        ->where('partner_id', $request->prt_id)
+                                        ->where('project_id', $request->sort_prj_report)
+                                        ->where('service_id', $request->sort_sp_report)
+                                        ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
+                } else {
+                    $data['report'] = TCCompare::where('status', 10)
+                                        ->where('partner_id', $request->prt_id)
+                                        ->where('project_id', $request->sort_prj_report)
+                                        ->where('service_id', $request->sort_sp_report)
+                                        ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                }
+            }
+        }
+        return view('Pages.Report.compare')->with($data)
+        ->with('sts', $request->stats_report)
+        ->with('prj', $request->sort_prj_report)
+        ->with('prt', $request->prt_id)
+        ->with('sp', $request->sort_sp_report)
+        ->with('stsd', $oneMonthAgo)
+        ->with('ndsd', $now)
+        ->with('str', $request->st_date_report)
+        ->with('ndr', $request->nd_date_report);
+    }
     public function getViewDetilReport($notiket)
     {
         return view('Pages.Report.report-detil')->with('id', $notiket);

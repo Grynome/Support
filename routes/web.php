@@ -254,10 +254,13 @@ Route::group(['middleware'=>'auth'], function(){
             Route::patch('delete/{id_ptn}/data=Partner', [PartnerController::class, 'destroy_partner']);
         // Report
         Route::get('Report/data=Ticket', [ReportCOntroller::class, 'report']);
+        // Compare
+        Route::get('Compare/Report/data=Ticket', [ReportCOntroller::class, 'compare']);
             // KPI Detil Report
             Route::get('Data/Detil-Report/{notiket}', [ReportCOntroller::class, 'getViewDetilReport'])->where(['notiket' => '.*']);
             Route::get('getAjaxDetil/{notiket}', [ReportCOntroller::class, 'getReportDetil'])->where(['notiket' => '.*']);
         Route::post('Report/data=Ticket/sorting', [ReportCOntroller::class, 'report'])->name('sorting.report');
+        Route::post('Compare/Report/data=Ticket/sorting', [ReportCOntroller::class, 'compare'])->name('sorting.compare');
             // Export Excel
             Route::post('export-ticket/Report', [ReportCOntroller::class, 'export']);
             Route::post('Data/Report/PIC', [ReportCOntroller::class, 'exportDataPIC']);
