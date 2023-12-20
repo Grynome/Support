@@ -48,8 +48,9 @@
                                 <div class="col">
                                     <div class="mb-3">
                                         <label class="form-label">Contact Name</label>
-                                        <input type="text" class="form-control" placeholder="PIC name" id="contact-person-prj"
-                                            name="contact_name" value="{{ @$data_project->contact_person }}">
+                                        <input type="text" class="form-control" placeholder="PIC name"
+                                            id="contact-person-prj" name="contact_name"
+                                            value="{{ @$data_project->contact_person }}">
                                     </div>
                                 </div>
                             </div>
@@ -145,7 +146,8 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="desc" class="form-label">Description</label>
-                                        <textarea class="form-control" name="desc" id="project-desc" maxlength="100" rows="1" placeholder="Type Desc">{{ @$data_project->desc }}</textarea>
+                                        <textarea class="form-control" name="desc" id="project-desc" maxlength="100" rows="1"
+                                            placeholder="Type Desc">{{ @$data_project->desc }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -156,8 +158,8 @@
                                             <div class="mb-3">
                                                 <label for="project_mail" class="form-label">Project
                                                     Mail</label>
-                                                <input class="form-control mb-4 mb-md-0" name="project_mail" id="project-mail"
-                                                    data-inputmask="'alias': 'email'"
+                                                <input class="form-control mb-4 mb-md-0" name="project_mail"
+                                                    id="project-mail" data-inputmask="'alias': 'email'"
                                                     value="{{ @$data_project->mail_project }}" />
                                             </div>
                                         </div>
@@ -165,8 +167,8 @@
                                             <div class="mb-3">
                                                 <label for="Phone" class="form-label">Phone Number</label>
                                                 <input class="form-control mb-4 mb-md-0"
-                                                    data-inputmask-alias="(+62) 999-9999-9999" name="phone_prj" id="phone-prj"
-                                                    value="{{ @$data_project->phone }}" />
+                                                    data-inputmask-alias="(+62) 999-9999-9999" name="phone_prj"
+                                                    id="phone-prj" value="{{ @$data_project->phone }}" />
                                             </div>
                                         </div>
                                     </div>
@@ -239,6 +241,15 @@
     <script src="{{ asset('assets') }}/js/inputmask.js"></script>
 @endpush
 @push('custom')
+    <script>
+        $('.select-partner').click(function() {
+            let partner_id = $(this).closest('tr').find('td:eq(1)').text().trim();
+            let partner_name = $(this).closest('tr').find('td:eq(2)').text().trim();
+            $('#partner-id').val(partner_id);
+            $('#name-partner').val(partner_name);
+            $('#find-partner').modal('hide');
+        });
+    </script>
     @if (!empty($data_project))
         <script>
             $('.save-data').on('click', function() {
@@ -269,8 +280,11 @@
                         break;
                     }
                 }
-                if ($('#partner-id').val() === "" && $('#contact-person-prj').val() === "" && $('#contract-prj').val() === "" && $('#project-name').val() === "" && $('#project-desc').val() === "" && $('#project-mail').val() ===
-                    "" && $('#phone-prj').val() === "" && !checkedFieldset2 && $('#start-date').val() === "" && $('#end-date').val() === "") {
+                if ($('#partner-id').val() === "" && $('#contact-person-prj').val() === "" && $('#contract-prj')
+                .val() === "" && $('#project-name').val() === "" && $('#project-desc').val() === "" && $(
+                        '#project-mail').val() ===
+                    "" && $('#phone-prj').val() === "" && !checkedFieldset2 && $('#start-date').val() === "" && $(
+                        '#end-date').val() === "") {
                     Swal.fire({
                         title: "All Field's its empty!",
                         icon: "warning",

@@ -110,4 +110,24 @@
 @push('custom-plug')
 @endpush
 @push('custom')
+    <script>
+        for (let i = 0; i < 50; i++) {
+            $('.remove-prj' + i + '').on('click', function() {
+
+                Swal.fire({
+                    title: "Are u Sure to delete this Item?",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Save'
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+
+                        jQuery('#remove-prj' + i + '').submit();
+                    }
+                });
+                return false;
+            });
+        }
+    </script>
 @endpush

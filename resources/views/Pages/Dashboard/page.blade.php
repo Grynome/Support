@@ -94,6 +94,17 @@
 @endpush
 @push('custom')
     <script>
+        (function($) {
+            'use strict';
+            $(function() {
+                if ($('.perfect-scrollbar-example').length) {
+                    var scrollbarExample = new PerfectScrollbar('.perfect-scrollbar-example');
+                }
+
+            });
+        })(jQuery);
+    </script>
+    <script>
         $(document).ready(function() {
             const container = document.querySelector('.perfect-scrollbar-example');
             let scrollPosition = container.scrollTop;
@@ -121,8 +132,7 @@
                         scrollPosition = 0;
                     }
                 }
-
-                // Add the sticky-header class dynamically based on the scroll position
+                
                 if (scrollPosition > 0) {
                     tableHeader.style.transform = `translateY(${container.scrollTop}px)`;
                 } else {
@@ -149,20 +159,22 @@
                             var tableRows = '';
                             $.each(data, function(index, item) {
                                 tableRows += '<tr>';
-                                    tableRows += '<td class="tx-9">' + item.notiket + '</td>';
-                                    tableRows += '<td class="dvc tx-9">' + item.case_id + '</td>';
-                                    tableRows += '<td class="tx-9">' + item.project_name + '</td>';
-                                    tableRows += '<td class="tx-9">' + item.company + '</td>';
-                                    tableRows += '<td class="tx-9">' + item.lok_kab + '</td>';
-                                    tableRows += '<td class="tx-9">' + item.full_name + '</td>';
-                                    tableRows += '<td class=""><span class="status-dash" data-tiket-id="' +
-                                        item
-                                        .tiket_id +
-                                        '">Loading...</span></td>';
-                                    tableRows += '<td class=""><span class="act-time" data-tiket-id="' +
-                                        item
-                                        .tiket_id +
-                                        '">Loading...</span></td>';
+                                tableRows += '<td class="tx-9">' + item.notiket + '</td>';
+                                tableRows += '<td class="dvc tx-9">' + item.case_id + '</td>';
+                                tableRows += '<td class="tx-9">' + item.project_name + '</td>';
+                                tableRows += '<td class="tx-9">' + item.company + '</td>';
+                                tableRows += '<td class="tx-9">' + item.lok_kab + '</td>';
+                                tableRows += '<td class="tx-9">' + item.full_name + '</td>';
+                                tableRows +=
+                                    '<td class=""><span class="status-dash" data-tiket-id="' +
+                                    item
+                                    .tiket_id +
+                                    '">Loading...</span></td>';
+                                tableRows +=
+                                    '<td class=""><span class="act-time" data-tiket-id="' +
+                                    item
+                                    .tiket_id +
+                                    '">Loading...</span></td>';
                                 tableRows += '</tr>';
                                 num++;
                             });
@@ -336,4 +348,3 @@
         });
     </script>
 @endpush
-{{-- @endif --}}

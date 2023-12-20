@@ -81,31 +81,35 @@
                                             <td>{{ $item->severity_name }}</td>
                                             <td>{{ $item->created_at }}</td>
                                             <td>
-                                                <button type="button" class="btn btn-inverse-info btn-icon btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#edit-sev{{ $no }}">
+                                                <button type="button" class="btn btn-inverse-info btn-icon btn-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#edit-sev{{ $no }}">
                                                     <i data-feather="edit"></i>
                                                 </button>
-                                                <div class="modal fade" id="edit-sev{{ $no }}" tabindex="-1" aria-labelledby="severityModalLabel"
-                                                    aria-hidden="true">
+                                                <div class="modal fade" id="edit-sev{{ $no }}" tabindex="-1"
+                                                    aria-labelledby="severityModalLabel" aria-hidden="true">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title" id="severityModalLabel">Edit Severity
+                                                                <h5 class="modal-title" id="severityModalLabel">Edit
+                                                                    Severity
                                                                 </h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                                    aria-label="btn-close"></button>
+                                                                <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal" aria-label="btn-close"></button>
                                                             </div>
                                                             <div class="modal-body">
-                                                                <form action="{{ url("update/$item->id/data=Severity") }}" method="post" id="form-edit-sev{{ $no }}">
+                                                                <form action="{{ url("update/$item->id/data=Severity") }}"
+                                                                    method="post" id="form-edit-sev{{ $no }}">
                                                                     @csrf
                                                                     {{ method_field('patch') }}
                                                                     <div class="row">
                                                                         <div class="col-md-12">
                                                                             <div class="mb-3">
-                                                                                <label for="source_name" class="form-label">Source
+                                                                                <label for="source_name"
+                                                                                    class="form-label">Source
                                                                                     Name</label>
                                                                                 <input type="text" class="form-control"
-                                                                                    name="edit_name" value="{{ $item->severity_name }}">
+                                                                                    name="edit_name"
+                                                                                    value="{{ $item->severity_name }}">
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -114,18 +118,21 @@
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary"
                                                                     data-bs-dismiss="modal">Cancel</button>
-                                                                <button type="button" class="btn btn-success edit-sev{{ $no }}">Edit</button>
+                                                                <button type="button"
+                                                                    class="btn btn-success edit-sev{{ $no }}">Edit</button>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 |
-                                                <button type="button" class="btn btn-inverse-warning btn-icon btn-sm destroy-sev{{ $no }}">
+                                                <button type="button"
+                                                    class="btn btn-inverse-warning btn-icon btn-sm destroy-sev{{ $no }}">
                                                     <i data-feather="delete"></i>
                                                 </button>
-                                                <form action="{{ url("remove/$item->id/data=Severity") }}" method="post" id="destroy-sev{{ $no }}">
-                                                @csrf
-                                                {{ method_field('patch') }}
+                                                <form action="{{ url("remove/$item->id/data=Severity") }}" method="post"
+                                                    id="destroy-sev{{ $no }}">
+                                                    @csrf
+                                                    {{ method_field('patch') }}
                                                 </form>
                                             </td>
                                         </tr>
@@ -147,4 +154,59 @@
 @push('custom-plug')
 @endpush
 @push('custom')
+    <script>
+        $('.store-sev').on('click', function() {
+
+            if ($('#severity-name').val() === "") {
+                swal.fire({
+                    title: "Plese insert Severity name!",
+                    icon: "info",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else {
+
+                jQuery("#form-sev").submit();
+            }
+            return false;
+        });
+        for (let i = 0; i < 50; i++) {
+            $('.edit-sev' + i + '').on('click', function() {
+
+                swal.fire({
+                    title: "Update this data!?",
+                    icon: "info",
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Sure!',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        jQuery('#form-edit-sev' + i + '').submit();
+                    }
+                });
+            });
+        }
+        for (let i = 0; i < 50; i++) {
+            $('.destroy-sev' + i + '').on('click', function() {
+
+                swal.fire({
+                    title: "Data will be deleted!?",
+                    icon: "info",
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Next!',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        jQuery('#destroy-sev' + i + '').submit();
+                    }
+                });
+            });
+        }
+    </script>
 @endpush

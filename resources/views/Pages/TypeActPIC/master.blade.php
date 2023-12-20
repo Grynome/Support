@@ -3,10 +3,10 @@
 @extends('Theme/header')
 @section('getPage')
     <div class="page-content">
-    @include('sweetalert::alert')
+        @include('sweetalert::alert')
         <nav class="page-breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{('/')}}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ '/' }}">Home</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Type Act PIC</li>
             </ol>
         </nav>
@@ -36,12 +36,14 @@
                                                     aria-label="btn-close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <form action="{{ url('Add/data=Type-Act/PIC') }}" method="post" id="fm-store-tap">
+                                                <form action="{{ url('Add/data=Type-Act/PIC') }}" method="post"
+                                                    id="fm-store-tap">
                                                     @csrf
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <div class="mb-3">
-                                                                <label for="Type Act PIC" class="form-label">Name Type</label>
+                                                                <label for="Type Act PIC" class="form-label">Name
+                                                                    Type</label>
                                                                 <input type="text" class="form-control"
                                                                     name="act_type_pic" id="val-tap">
                                                             </div>
@@ -148,3 +150,57 @@
         </div>
     </div>
 @endsection
+@push('custom')
+    <script>
+        $('.btn-store-tap').on('click', function() {
+            if ($('#val-tap').val() === "") {
+                Swal.fire({
+                    title: "Type Cannot be Empty",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else {
+                jQuery("#fm-store-tap").submit();
+            }
+            return false;
+        });
+
+        for (let i = 0; i < 999; i++) {
+            // CRUD Add Type Activity
+            $('.btn-edt-tap' + i + '').on('click', function() {
+                Swal.fire({
+                    title: "Continues Edit?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Yes',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "No"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        jQuery('#fm-edt-tap' + i + '').submit();
+                    }
+                });
+
+                return false;
+            });
+            $('.btn-destroy-dt-tap' + i + '').on('click', function() {
+                Swal.fire({
+                    title: "Continues Delete?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Yes',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "No"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        jQuery('#fm-destroy-dt-tap' + i + '').submit();
+                    }
+                });
+                return false;
+            });
+        }
+    </script>
+@endpush

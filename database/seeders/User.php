@@ -18,9 +18,9 @@ class User extends Seeder
     public function run()
     {
         DB::table('hgt_users')->insert([
-            'nik' => 'HGT-KR096',
-            'full_name' => 'Augustinus Nelson',
-            'username' => 'Nelson-HGT',
+            'nik' => 'HGT-KR055',
+            'full_name' => 'Bagus Sunggono',
+            'username' => 'Bsunggono',
             'gender' => 'L',
             'role' => '16',
             'depart' => '5',

@@ -31,6 +31,7 @@ class LoginController extends Controller
         $role = auth()->user()->role;
         $depart = auth()->user()->depart;
         $verify = auth()->user()->verify;
+        $nik = auth()->user()->nik;
         if ($role == 19 || $role == 1) {
             if ($verify != 1) {
                 return redirect('/NotVerified');
@@ -48,7 +49,11 @@ class LoginController extends Controller
                 if ($verify != 1) {
                     return redirect('/NotVerified');
                 } else {
-                    return redirect()->route('manage.ticket');
+                    if ($nik == "HGT-KR055") {
+                        return redirect("/Choose-dept");
+                    } else {
+                        return redirect()->route('manage.ticket');
+                    }
                 }
             }
         }

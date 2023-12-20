@@ -3,7 +3,7 @@
 @extends('Theme/header')
 @section('getPage')
     <div class="page-content">
-    @include('sweetalert::alert')
+        @include('sweetalert::alert')
         <nav class="page-breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Tables</a></li>
@@ -176,4 +176,75 @@
 @push('custom-plug')
 @endpush
 @push('custom')
+    <script>
+        $('.store-src').on('click', function() {
+
+            if ($('#source-name').val() === "" && $('#source-detail').val() === "") {
+                Swal.fire({
+                    title: "All Field Cannot be Empty",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else if ($('#source-name').val() === "") {
+                Swal.fire({
+                    title: "Field Name Cannot be Empty",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else if ($('#source-detail').val() === "") {
+                Swal.fire({
+                    title: "Field Detail Cannot be Empty",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else {
+
+                jQuery("#store_src").submit();
+            }
+            return false;
+        });
+
+        for (let i = 0; i < 50; i++) {
+            // Source
+            $('.edit-src' + i + '').on('click', function() {
+                Swal.fire({
+                    title: "Continues Edit?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Yes',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "No"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        jQuery('#form_edit_src' + i + '').submit();
+                    }
+                });
+
+                return false;
+            });
+            $('.remove-src' + i + '').on('click', function() {
+                Swal.fire({
+                    title: "Are u Sure to Remove this sourece?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Next',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        jQuery('#remove_src' + i + '').submit();
+                    }
+                });
+
+                return false;
+            });
+            // END Source
+        }
+    </script>
 @endpush

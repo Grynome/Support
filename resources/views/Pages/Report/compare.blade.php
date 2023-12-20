@@ -1,5 +1,4 @@
 @push('css-plugin')
-<link rel="stylesheet" href="{{ asset('assets') }}/vendors/mdi/css/materialdesignicons.min.css">
 @endpush
 @extends('Theme/header')
 @php
@@ -44,7 +43,7 @@
                                             <input type="hidden" value="{{ $tanggal1 }}" name="ex_st">
                                             <input type="hidden" value="{{ $tanggal2 }}" name="ex_nd">
                                             <button type="submit" class="btn btn-inverse-info btn-icon-text">
-                                                <i class="btn-icon-prepend mdi mdi-file-excel"></i>
+                                                <i class="btn-icon-prepend" data-feather="download"></i>
                                                 Data Detil
                                             </button>
                                         </form>
@@ -58,7 +57,7 @@
                                             <input type="hidden" value="{{ $tanggal1 }}" name="ex_stP">
                                             <input type="hidden" value="{{ $tanggal2 }}" name="ex_ndP">
                                             <button type="submit" class="btn btn-inverse-info btn-icon-text">
-                                                <i class="btn-icon-prepend mdi mdi-file-excel"></i>
+                                                <i class="btn-icon-prepend" data-feather="download"></i>
                                                 Data PIC
                                             </button>
                                         </form>
@@ -72,7 +71,7 @@
                                             <input type="hidden" value="{{ $tanggal1 }}" name="ex_stS">
                                             <input type="hidden" value="{{ $tanggal2 }}" name="ex_ndS">
                                             <button type="submit" class="btn btn-inverse-info btn-icon-text">
-                                                <i class="btn-icon-prepend mdi mdi-file-excel"></i>
+                                                <i class="btn-icon-prepend" data-feather="download"></i>
                                                 Data Split Onsite
                                             </button>
                                         </form>

@@ -274,8 +274,8 @@ class ReportCOntroller extends Controller
     }
     public function export(Request $request)
     {
-        $extanggal1 = $request->ex_st.' '.'00:00:00';
-        $extanggal2 = $request->ex_nd.' '.'23:59:59';
+        $extanggal1 = Carbon::parse($request->ex_st)->startOfDay()->format('Y-m-d H:i:s');
+        $extanggal2 = Carbon::parse($request->ex_nd)->endOfDay()->format('Y-m-d H:i:s');
         $ex_sts = $request->ex_sts;
         $ex_prj = $request->ex_prj;
         $ex_prt = $request->ex_prt;
@@ -284,90 +284,141 @@ class ReportCOntroller extends Controller
         if (!isset($ex_sts) && 
             !isset($ex_sp) && 
             (!isset($ex_prt) && !isset($ex_prj))) {
-            $data_ticket = VW_FinalReport::all()->whereBetween('ticketcoming', [$extanggal1, $extanggal2]);
+            $data_ticket = VW_FinalReport::whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
         } elseif(isset($ex_sts) || (isset($ex_prt) || isset($ex_prj)) || isset($ex_sp)) {
             if (!empty($ex_sts) && (empty($ex_prt) && empty($ex_prj)) && empty($ex_sp)) {
                 if ($ex_sts == 1) {
-                    $data_ticket = VW_FinalReport::where('status', '!=', 10)
-                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                    $data_ticket = VW_FinalReport::whereRaw('status < 10')
+                                        ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 } else {
-                    $data_ticket = VW_FinalReport::where('status', 10)
-                    ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                    $data_ticket = VW_FinalReport::whereRaw('status = 10')
+                    ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 }
             } elseif ((!empty($ex_prt) || !empty($ex_prj)) && empty($ex_sts) && empty($ex_sp)) {
                 if (!empty($ex_prt) && empty($ex_prj)) {
-                    $data_ticket = VW_FinalReport::where('partner_id', $ex_prt)
-                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                    $data_ticket = VW_FinalReport::whereRaw("partner_id = '$ex_prt'")
+                                        ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 } else {
-                    $data_ticket = VW_FinalReport::where('partner_id', $ex_prt)
-                                        ->where('project_id', $ex_prj)
-                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                    $data_ticket = VW_FinalReport::whereRaw("partner_id = '$ex_prt'")
+                                        ->whereRaw("project_id = '$ex_prj'")
+                                        ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 }
             } elseif (!empty($ex_sp) && (empty($ex_prt) && empty($ex_prj)) && empty($ex_sts)) {
-                $data_ticket = VW_FinalReport::where('service_id', $ex_sp)
-                                    ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                $data_ticket = VW_FinalReport::whereRaw("service_id = '$ex_sp'")
+                                    ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
             } elseif (!empty($ex_sts) && (!empty($ex_prt) || !empty($ex_prj)) && empty($ex_sp)) {
                 if ($ex_sts == 1) {
                     if (!empty($ex_prt) && empty($ex_prj)) {
-                        $data_ticket = VW_FinalReport::where('status', '<', 10)
-                                            ->where('partner_id', $ex_prt)
-                                            ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                        $data_ticket = VW_FinalReport::whereRaw('status < 10')
+                                            ->whereRaw("partner_id = '$ex_prt'")
+                                            ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                     } else {
-                        $data_ticket = VW_FinalReport::where('status', '<', 10)
-                                            ->where('partner_id', $ex_prt)
-                                            ->where('project_id', $ex_prj)
-                                            ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                        $data_ticket = VW_FinalReport::whereRaw('status < 10')
+                                            ->whereRaw("partner_id = '$ex_prt'")
+                                            ->whereRaw("project_id = '$ex_prj'")
+                                            ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                     }
                 } else {
                     if (!empty($ex_prt) && empty($ex_prj)) {
-                        $data_ticket = VW_FinalReport::where('status', 10)
-                                            ->where('partner_id', $ex_prt)
-                                            ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                        $data_ticket = VW_FinalReport::whereRaw('status = 10')
+                                            ->whereRaw("partner_id = '$ex_prt'")
+                                            ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                     } else {
-                        $data_ticket = VW_FinalReport::where('status', 10)
-                                            ->where('partner_id', $ex_prt)
-                                            ->where('project_id', $ex_prj)
-                                            ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                        $data_ticket = VW_FinalReport::whereRaw('status = 10')
+                                            ->whereRaw("partner_id = '$ex_prt'")
+                                            ->whereRaw("project_id = '$ex_prj'")
+                                            ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                     }
                 }
             } elseif (!empty($ex_sts) && (empty($ex_prt) && empty($ex_prj)) && !empty($ex_sp)) {
                 if ($ex_sts == 1) {
-                    $data_ticket = VW_FinalReport::where('status', '!=', 10)
-                                        ->where('service_id', $ex_sp)
-                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                    $data_ticket = VW_FinalReport::whereRaw('status < 10')
+                                        ->whereRaw("service_id = '$ex_sp'")
+                                        ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 } else {
-                    $data_ticket = VW_FinalReport::where('status', 10)
-                                        ->where('service_id', $ex_sp)
-                                        ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                    $data_ticket = VW_FinalReport::whereRaw('status = 10')
+                                        ->whereRaw("service_id = '$ex_sp'")
+                                        ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 }
             } elseif (empty($ex_sts) && (!empty($ex_prt) || !empty($ex_prj)) && !empty($ex_sp)) {
                 if (!empty($ex_prt) && empty($ex_prj)) {
-                    $data_ticket = VW_FinalReport::where('service_id', $ex_sp)
-                                        ->where('partner_id', $ex_prt)
-                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                    $data_ticket = VW_FinalReport::whereRaw("service_id = '$ex_sp'")
+                                        ->whereRaw("partner_id = '$ex_prt'")
+                                        ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 } else {
-                    $data_ticket = VW_FinalReport::where('service_id', $ex_sp)
-                                        ->where('partner_id', $ex_prt)
-                                        ->where('project_id', $ex_prj)
-                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                    $data_ticket = VW_FinalReport::whereRaw("service_id = '$ex_sp'")
+                                        ->whereRaw("partner_id = '$ex_prt'")
+                                        ->whereRaw("project_id = '$ex_prj'")
+                                        ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 }
             } else {
                 if ($ex_sts == 1) {
-                    $data_ticket = VW_FinalReport::where('status', '!=', 10)
-                                        ->where('partner_id', $ex_prt)
-                                        ->where('project_id', $ex_prj)
-                                        ->where('service_id', $ex_sp)
-                                        ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                    $data_ticket = VW_FinalReport::whereRaw('status < 10')
+                                        ->whereRaw("partner_id = '$ex_prt'")
+                                        ->whereRaw("project_id = '$ex_prj'")
+                                        ->whereRaw("service_id = '$ex_sp'")
+                                        ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 } else {
-                    $data_ticket = VW_FinalReport::where('status', 10)
-                                        ->where('partner_id', $ex_prt)
-                                        ->where('project_id', $ex_prj)
-                                        ->where('service_id', $ex_sp)
-                                        ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                    $data_ticket = VW_FinalReport::whereRaw('status = 10')
+                                        ->whereRaw("partner_id = '$ex_prt'")
+                                        ->whereRaw("project_id = '$ex_prj'")
+                                        ->whereRaw("service_id = '$ex_sp'")
+                                        ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 }
             }
         }
+        $issues = DB::table('hgt_tiket_log as htl')
+            ->select('htl.notiket')
+            ->selectSub(
+                function ($query) {
+                    $query->select(DB::raw('COUNT(*)'))
+                        ->from('hgt_tiket_log')
+                        ->whereColumn('notiket', 'htl.notiket')
+                        ->whereRaw('sts_pending = 1')
+                        ->groupBy('notiket');
+                },
+                'issue_partner'
+            )
+            ->selectSub(
+                function ($query) {
+                    $query->select(DB::raw('COUNT(*)'))
+                        ->from('hgt_tiket_log')
+                        ->whereColumn('notiket', 'htl.notiket')
+                        ->whereRaw('sts_pending = 2'
+                        )
+                        ->groupBy('notiket');
+                },
+                'issue_deliv'
+            )
+            ->selectSub(
+                function ($query) {
+                    $query->select(DB::raw('COUNT(*)'))
+                        ->from('hgt_tiket_log')
+                        ->whereColumn('notiket', 'htl.notiket')
+                        ->whereRaw('sts_pending = 3')
+                        ->groupBy('notiket');
+                },
+                'issue_user'
+            )
+            ->selectSub(
+                function ($query) {
+                    $query->select(DB::raw('COUNT(*)'))
+                        ->from('hgt_tiket_log')
+                        ->whereColumn('notiket', 'htl.notiket')
+                        ->whereRaw('sts_pending = 4')
+                        ->groupBy('notiket');
+                },
+                'issue_en'
+            )
+            ->groupBy('htl.notiket')
+            ->toSql();
 
+        $final_data = DB::table(DB::raw("({$data_ticket}) AS dt"))
+            ->leftJoin(DB::raw("({$issues}) AS iss"), 'dt.notiket', '=', 'iss.notiket')
+            ->select(
+                'dt.*',
+                'issue_partner', 'issue_deliv', 'issue_user', 'issue_en'
+            )->get();
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Sheet 1');
@@ -405,13 +456,17 @@ class ReportCOntroller extends Controller
             'Work Stop',
             'Leave Site',
             'Travel Stop',
-            'Close Date'
+            'Close Date',
+            'Issue Partner',
+            'Issue Deliv',
+            'Issue User',
+            'Issue En'
         ];
         $sheet->fromArray([$headers], NULL, 'A1');
 
         $no = 1;
         $row = 2;
-        foreach ($data_ticket as $item) {
+        foreach ($final_data as $item) {
             $carbonDate = Carbon::parse($item->ticketcoming);
             $tatst = Carbon::parse($item->entrydate);
             $tatnd = Carbon::parse($item->work_stop);
@@ -458,7 +513,11 @@ class ReportCOntroller extends Controller
                     $item->work_stop,
                     $item->leave_site,
                     $item->travel_stop,
-                    $item->closedate
+                    $item->closedate,
+                    $item->issue_partner,
+                    $item->issue_deliv,
+                    $item->issue_user,
+                    $item->issue_en
                 ];
                 $sheet->fromArray([$data], NULL, "A$row");
             $row++;
@@ -792,22 +851,21 @@ class ReportCOntroller extends Controller
             $tatnd = Carbon::parse($item->work_stop);
             $delivend = Carbon::parse($item->arrive);
             $cbCloseDate = Carbon::parse($item->closedate);
-            
+
+            $onst = [2, 3, 4, 5];
+            $TComing = (in_array($item->onsite, $onst) ? $item->gow : $item->ticketcoming);
+
             $get_tat = !empty($item->entrydate) && !empty($item->work_stop) ? $tatst->diffInDays($tatnd) : null;
             $get_deliv = !empty($item->entrydate) && !empty($item->arrive) ? $tatst->diffInDays($delivend) : null;
             $get_fe = !empty($item->arrive) && !empty($item->work_stop) ? $delivend->diffInDays($tatnd) : null;
             $weekN = $carbonDate->weekOfMonth;
             $wCloseDate = $cbCloseDate->weekOfMonth;
-            if ($item->status < 10) {
-                $sts = 'Open';
-            } else {
-                $sts = 'Closed';
-            }
+            $sts = ($item->status < 10) ? 'Open' : 'Closed';
                 $data = [   
                     $no,
                     $item->notiket,
                     $item->case_id,
-                    $item->ticketcoming,
+                    $TComing,
                     $item->entrydate,
                     Carbon::parse($item->ticketcoming)->format('m'),
                     $weekN,
@@ -899,7 +957,7 @@ class ReportCOntroller extends Controller
                                     ->fromSub(function ($query) {
                                         $query->select('*')
                                             ->from('vw_hgt_activity_engineer')
-                                            ->whereIn('sts_timeline', [0, 1, 2])
+                                            ->whereIn('sts_timeline', [0, 1, 2, 3, 4])
                                             ->groupBy('notiket', 'sts_timeline');
                                     }, 'subquery')
                                     ->where('status', 10)
@@ -923,7 +981,7 @@ class ReportCOntroller extends Controller
                                     ->fromSub(function ($query) {
                                         $query->select('*')
                                             ->from('vw_hgt_activity_engineer')
-                                            ->whereIn('sts_timeline', [0, 1, 2])
+                                            ->whereIn('sts_timeline', [0, 1, 2, 3, 4])
                                             ->groupBy('notiket', 'sts_timeline');
                                     }, 'subquery')
                                     ->where('status', 10)

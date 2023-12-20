@@ -3,7 +3,7 @@
 @extends('Theme/header')
 @section('getPage')
     <div class="page-content">
-    @include('sweetalert::alert')
+        @include('sweetalert::alert')
         <nav class="page-breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Tables</a></li>
@@ -183,7 +183,8 @@
                                                                                     class="form-label">Condition</label><br>
                                                                                 <select
                                                                                     class="js-example-basic-single form-control form-select"
-                                                                                    data-width="100%" name="edt_condition">
+                                                                                    data-width="100%"
+                                                                                    name="edt_condition">
                                                                                     <option value="1"
                                                                                         {{ $item->kondisi == '1' ? 'selected' : '' }}>
                                                                                         Normal</option>
@@ -235,6 +236,75 @@
 @push('custom-plug')
 @endpush
 @push('custom')
-<script>
-</script>
+    <script>
+        $('.add_sla').on('click', function() {
+            if ($('#sla_name').val() === "" && $('#longer').val() === "" && $('#condition').val() === "") {
+                Swal.fire({
+                    title: "All Field Cannot be Empty",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else if ($('#sla_name').val() === "") {
+                Swal.fire({
+                    title: "Field SLA name cannot be Empty!",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else if ($('#longer').val() === "") {
+                Swal.fire({
+                    title: "Field Time cannot be Empty!",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else if ($('#condition').val() === "") {
+                Swal.fire({
+                    title: "Field Condition cannot be Empty!",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else {
+                jQuery("#form_add_sla").submit();
+            }
+            return false;
+        });
+        for (let i = 0; i < 50; i++) {
+            $('.edit-sla' + i + '').on('click', function() {
+                Swal.fire({
+                    title: "Are u Sure Update this SLA?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Next',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        jQuery('#form_edit_sla' + i + '').submit();
+                    }
+                });
+                return false;
+            });
+            $('.remove-sla' + i + '').on('click', function() {
+                Swal.fire({
+                    title: "Remove this item?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Next',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        jQuery('#remove_sla' + i + '').submit();
+                    }
+                });
+                return false;
+            });
+        }
+    </script>
 @endpush

@@ -45,8 +45,9 @@
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-md-12">
-                                                        <label class="form-label">Address</label>
-                                                        <textarea class="form-control" name="address_partner" id="adds-partner" maxlength="150" rows="3" placeholder="Type Address">{{ @$data_ptn->address }}</textarea>
+                                                    <label class="form-label">Address</label>
+                                                    <textarea class="form-control" name="address_partner" id="adds-partner" maxlength="150" rows="3"
+                                                        placeholder="Type Address">{{ @$data_ptn->address }}</textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -103,6 +104,70 @@
     <script src="{{ asset('assets') }}/js/inputmask.js"></script>
 @endpush
 @push('custom')
+    <script>
+        $('.btn-store-partner').on('click', function() {
+            if ($('#partner-name').val() === "" || $('#contact-person').val() === "" || $('#adds-partner').val() ===
+                "" || $('#phone-partner').val() === "" || $('#mail-partner').val() === "") {
+                if ($('#partner-name').val() === "" && $('#contact-person').val() === "" && $('#adds-partner')
+                .val() === "" && $('#phone-partner').val() === "" && $('#mail-partner').val() === "") {
+                    Swal.fire({
+                        title: "All Field's cannot be empty!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                } else if ($('#partner-name').val() === "") {
+                    Swal.fire({
+                        title: "Partner name its empty!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                } else if ($('#contact-person').val() === "") {
+                    Swal.fire({
+                        title: "Contact its empty!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                } else if ($('#adds-partner').val() === "") {
+                    Swal.fire({
+                        title: "Address its empty!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                } else if ($('#phone-partner').val() === "") {
+                    Swal.fire({
+                        title: "Phone its empty!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                } else if ($('#mail-partner').val() === "") {
+                    Swal.fire({
+                        title: "Mail its empty!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                }
+            } else {
+                Swal.fire({
+                    title: "Continue to Adding Partner?",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes',
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        jQuery("#form-partner").submit();
+                    }
+                })
+            }
+            return false;
+        });
+    </script>
     <script>
         // function onChangeSelectPartner(url, id, name) {
         //     $.ajax({

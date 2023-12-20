@@ -413,6 +413,7 @@ class TicketController extends Controller
                     'pn'    => $request->product_number,
                     'sn'    => $request->serial_number,
                     'type_part'    => $request->status_part,
+                    'part_onsite'    => 1,
                     'status'    => 0,
                     'created_at'    => $dateTime
                 ];
@@ -593,6 +594,7 @@ class TicketController extends Controller
             'type_note'    => $request->type_note,
             'note'    => $request->log_note,
             'user'     => $nik,
+            'sts_pending'     => $request->ktgr_pending,
             'created_at'     => $dateTime
         ];
         if($logging) {
@@ -623,6 +625,8 @@ class TicketController extends Controller
         $sts_timeline1st = VW_Activity_Engineer::select('act_description', 'status_activity')->where('notiket',$key)->where('sts_timeline',0)->whereNotIn('act_description',[8, 9])->groupBy('act_description')->orderBy('act_time','desc')->limit(1)->first();
         $sts_timeline2nd = VW_Activity_Engineer::select('act_description', 'status_activity')->where('notiket',$key)->where('sts_timeline',1)->whereNotIn('act_description',[8, 9])->groupBy('act_description')->orderBy('act_time','desc')->limit(1)->first();
         $sts_timeline3rd = VW_Activity_Engineer::select('act_description', 'status_activity')->where('notiket',$key)->where('sts_timeline',2)->whereNotIn('act_description',[8, 9])->groupBy('act_description')->orderBy('act_time','desc')->limit(1)->first();
+        $sts_timeline4th = VW_Activity_Engineer::select('act_description', 'status_activity')->where('notiket',$key)->where('sts_timeline',3)->whereNotIn('act_description',[8, 9])->groupBy('act_description')->orderBy('act_time','desc')->limit(1)->first();
+        $sts_timeline5th = VW_Activity_Engineer::select('act_description', 'status_activity')->where('notiket',$key)->where('sts_timeline',4)->whereNotIn('act_description',[8, 9])->groupBy('act_description')->orderBy('act_time','desc')->limit(1)->first();
         $validate = Ticket::select('status')->where('notiket',$key)->first();
         $nik =  auth()->user()->nik;
         $dept =  auth()->user()->depart;
@@ -654,53 +658,64 @@ class TicketController extends Controller
                 ];
                 $alert_success = "Ticket Accepted!";
                 $alert_failed = "Error when receive ticket!";
-            } elseif ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3) && (($sts_timeline1st->act_description == 1) 
-            || ((empty($sts_timeline2nd) || empty($sts_timeline3rd)) && (($validate->status == 2 && empty($sts_timeline2nd) && $sts_timeline1st->status_activity == 0) 
-            || ($validate->status == 3 && empty($sts_timeline3rd) && $sts_timeline2nd->status_activity == 0)))))) {
-                    if ((($validate->status == 1 || $validate->status == 2) && $sts_timeline1st->act_description == 1)) {
-                        $visit = 0;
-                        $notes = "Engineer go to location";
-                    }elseif ((($validate->status == 2 || $validate->status == 3) && empty($sts_timeline2nd))) {
-                        $visit = 1;
-                        $notes = "2nd OnSite : Engineer go to location";
-                    }else{
-                        $visit = 2;
-                        $notes = "3rd OnSite : Engineer go to location";
-                    }
-                    $value = [
-                        'updated_at'    => $dateTime
-                    ];
-                    $resp_en = [
-                        'notiket'    =>  $key,
-                        'en_id'    => $nik,
-                        'act_description'    => 2,
-                        'act_time'    => $dateTime,
-                        'latitude'    => $request->latitude,
-                        'longitude'    => $request->longitude,
-                        'visitting'    => $visit,
-                        'status'    => 1,
-                        'created_at'    => $dateTime
-                    ];
-                    $logging = [
-                        'notiket'    => $key,
-                        'note'    => $notes,
-                        'user'     => $nik,
-                        'type_log'     => 1,
-                        'created_at'     => $dateTime
-                    ];
+            } elseif ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3  || $validate->status == 4 || $validate->status == 5) && (($sts_timeline1st->act_description == 1) || ((empty($sts_timeline2nd) || empty($sts_timeline3rd) || empty($sts_timeline4th) || empty($sts_timeline5th)) && (($validate->status == 2 && empty($sts_timeline2nd) && $sts_timeline1st->status_activity == 0) || ($validate->status == 3 && empty($sts_timeline3rd) && $sts_timeline2nd->status_activity == 0) || ($validate->status == 4 && empty($sts_timeline4th) && $sts_timeline3rd->status_activity == 0) || ($validate->status == 5 && empty($sts_timeline5th) && $sts_timeline4th->status_activity == 0)))))) {
+                if ((($validate->status == 1 || $validate->status == 2) && $sts_timeline1st->act_description == 1)) {
+                    $visit = 0;
+                    $notes = "Engineer go to location";
+                }elseif ((($validate->status == 2 || $validate->status == 3) && empty($sts_timeline2nd))) {
+                    $visit = 1;
+                    $notes = "2nd OnSite : Engineer go to location";
+                }elseif ((($validate->status == 3 || $validate->status == 4) && empty($sts_timeline3rd))) {
+                    $visit = 2;
+                    $notes = "3rd OnSite : Engineer go to location";
+                }elseif ((($validate->status == 4 || $validate->status == 5) && empty($sts_timeline4th))) {
+                    $visit = 3;
+                    $notes = "4th OnSite : Engineer go to location";
+                }else {
+                    $visit = 4;
+                    $notes = "5th OnSite : Engineer go to location";
+                }
+                $value = [
+                    'updated_at'    => $dateTime
+                ];
+                $resp_en = [
+                    'notiket'    =>  $key,
+                    'en_id'    => $nik,
+                    'act_description'    => 2,
+                    'act_time'    => $dateTime,
+                    'latitude'    => $request->latitude,
+                    'longitude'    => $request->longitude,
+                    'visitting'    => $visit,
+                    'status'    => 1,
+                    'created_at'    => $dateTime
+                ];
+                $logging = [
+                    'notiket'    => $key,
+                    'note'    => $notes,
+                    'user'     => $nik,
+                    'type_log'     => 1,
+                    'created_at'     => $dateTime
+                ];
                 $alert_success = "Your log Cabs recorded!";
                 $alert_failed = "Error when updating!";
-            } elseif ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3) && 
-                    ($sts_timeline1st->act_description == 2 || @$sts_timeline2nd->act_description == 2 || @$sts_timeline3rd->act_description == 2))) {
+            } elseif ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3 || $validate->status == 4 || $validate->status == 5) && 
+                    ($sts_timeline1st->act_description == 2 || @$sts_timeline2nd->act_description == 2 || @$sts_timeline3rd->act_description == 2
+                     || @$sts_timeline4th->act_description == 2 || @$sts_timeline5th->act_description == 2))) {
                     if ((($validate->status == 1 || $validate->status == 2) && $sts_timeline1st->act_description == 2)) {
                         $visit = 0;
                         $notes = "Engineer arrived to the location";
                     }elseif ((($validate->status == 2 || $validate->status == 3) && $sts_timeline2nd->act_description == 2)) {
                         $visit = 1;
                         $notes = "Engineer arrived to the location 2nd On Site";
-                    }else{
+                    }elseif ((($validate->status == 3 || $validate->status == 4) && $sts_timeline3rd->act_description == 2)) {
                         $visit = 2;
                         $notes = "Engineer arrived to the location 3rd On Site";
+                    }elseif ((($validate->status == 4 || $validate->status == 5) && $sts_timeline4th->act_description == 2)) {
+                        $visit = 3;
+                        $notes = "Engineer arrived to the location 4th On Site";
+                    }else {
+                        $visit = 4;
+                        $notes = "Engineer arrived to the location 5th On Site";
                     }
                     $value = [
                         'updated_at'    => $dateTime
@@ -725,17 +740,23 @@ class TicketController extends Controller
                     ];
                 $alert_success = "Your log arrive recorded!";
                 $alert_failed = "Error when updating!";
-            } elseif ((($validate->status == 1 || $validate->status == 2  || $validate->status == 3) 
-                && ($sts_timeline1st->act_description == 3 || @$sts_timeline2nd->act_description == 3  || @$sts_timeline3rd->act_description == 3))) {
+            } elseif ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3 || $validate->status == 4 || $validate->status == 5) 
+                && ($sts_timeline1st->act_description == 3 || @$sts_timeline2nd->act_description == 3 || @$sts_timeline3rd->act_description == 3 || @$sts_timeline4th->act_description == 3 || @$sts_timeline5th->act_description == 3))) {
                     if ((($validate->status == 1 || $validate->status == 2) && $sts_timeline1st->act_description == 3)) {
                         $visit = 0;
                         $notes = "Engineer start working";
                     }elseif ((($validate->status == 2 || $validate->status == 3) && $sts_timeline2nd->act_description == 3)) {
                         $visit = 1;
                         $notes = "Engineer start working 2nd On Site";
-                    }else{
+                    }elseif ((($validate->status == 3 || $validate->status == 4) && $sts_timeline3rd->act_description == 3)) {
                         $visit = 2;
                         $notes = "Engineer start working 3rd On Site";
+                    }elseif ((($validate->status == 4 || $validate->status == 5) && $sts_timeline4th->act_description == 3)) {
+                        $visit = 3;
+                        $notes = "Engineer start working 4th On Site";
+                    }else {
+                        $visit = 4;
+                        $notes = "Engineer start working 5th On Site";
                     }
                     $value = [
                         'updated_at'    => $dateTime
@@ -761,7 +782,7 @@ class TicketController extends Controller
                 
                 $alert_success = "Your log start working recorded!";
                 $alert_failed = "Error when updating!";
-            } elseif ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3) && ($sts_timeline1st->act_description == 4 || @$sts_timeline2nd->act_description == 4 || @$sts_timeline3rd->act_description == 4))) {
+            } elseif ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3 || $validate->status == 4 || $validate->status == 5) && ($sts_timeline1st->act_description == 4 || @$sts_timeline2nd->act_description == 4 || @$sts_timeline3rd->act_description == 4 || @$sts_timeline4th->act_description == 4 || @$sts_timeline5th->act_description == 4))) {
                 if ((($validate->status == 1 || $validate->status == 2) && $sts_timeline1st->act_description == 4)) {
                     $visit = 0;
                     $sts = 2;
@@ -774,10 +795,23 @@ class TicketController extends Controller
                     $notes = "Engineer Stop Working 2nd On Site";
                     $notes1 = "Engineer giving problem solving Stop Working 2nd On Site";
                     $notes2 = "Engineer Needed Part 2nd On Site";
-                }else {
+                }elseif ((($validate->status == 3 || $validate->status == 4) && $sts_timeline3rd->act_description == 4)) {
                     $visit = 2;
+                    $sts = 4;
                     $notes = "Engineer Stop Working 3nd On Site";
                     $notes1 = "Engineer giving problem solving Stop Working 3nd On Site";
+                    $notes2 = "Engineer Needed Part 3rd On Site";
+                }elseif ((($validate->status == 4 || $validate->status == 5) && $sts_timeline4th->act_description == 4)) {
+                    $visit = 3;
+                    $sts = 5;
+                    $notes = "Engineer Stop Working 4th On Site";
+                    $notes1 = "Engineer giving problem solving Stop Working 4th On Site";
+                    $notes2 = "Engineer Needed Part 4th On Site";
+                }else {
+                    $visit = 4;
+                    $notes = "Engineer Stop Working 5th On Site";
+                    $notes1 = "Engineer giving problem solving Stop Working 5th On Site";
+                    $notes2 = "Engineer Needed Part 5th On Site";
                 }
                 if ($request->check_en_part == 1) {
                         $value = [
@@ -859,16 +893,22 @@ class TicketController extends Controller
                 }
                 $alert_success = "Your log stop working recorded!";
                 $alert_failed = "Error when updating!";
-            } elseif ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3) && ($sts_timeline1st->act_description == 5 || @$sts_timeline2nd->act_description == 5 || @$sts_timeline3rd->act_description == 5))) {
+            } elseif ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3 || $validate->status == 4 || $validate->status == 5) && ($sts_timeline1st->act_description == 5 || @$sts_timeline2nd->act_description == 5 || @$sts_timeline3rd->act_description == 5 || @$sts_timeline4th->act_description == 5 || @$sts_timeline5th->act_description == 5))) {
                     if ((($validate->status == 1 || $validate->status == 2) && $sts_timeline1st->act_description == 5)) {
                         $visit = 0;
                         $notes = "Engineer Leave Site";
                     }elseif ((($validate->status == 2 || $validate->status == 3) && $sts_timeline2nd->act_description == 5)) {
                         $visit = 1;
                         $notes = "Engineer Leave Site 2nd On Site";
-                    }else {
+                    }elseif ((($validate->status == 3 || $validate->status == 4) && $sts_timeline3rd->act_description == 5)) {
                         $visit = 2;
                         $notes = "Engineer Leave Site 3rd On Site";
+                    }elseif ((($validate->status == 4 || $validate->status == 5) && $sts_timeline4th->act_description == 5)) {
+                        $visit = 3;
+                        $notes = "Engineer Leave Site 4th On Site";
+                    }else {
+                        $visit = 4;
+                        $notes = "Engineer Leave Site 5th On Site";
                     }
                     $value = [
                         'updated_at'    => $dateTime
@@ -896,40 +936,46 @@ class TicketController extends Controller
                 
                 $alert_success = "Your log leave site recorded!";
                 $alert_failed = "Error when updating!";
-            } elseif ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3) && $sts_timeline1st->act_description == 6 || @$sts_timeline2nd->act_description == 6 || @$sts_timeline3rd->act_description == 6)) {
-                    if ((($validate->status == 1 || $validate->status == 2) && $sts_timeline1st->act_description == 6)) {
-                        $visit = 0;
-                        $notes = "Travel Stop";
-                    }elseif ((($validate->status == 2 || $validate->status == 3) && $sts_timeline2nd->act_description == 6)) {
-                        $visit = 1;
-                        $notes = "Travel Stop 2nd On Site";
-                    }else {
-                        $visit = 2;
-                        $notes = "Travel Stop 3rd On Site";
-                    }
-                    $value = [
-                        'updated_at'    => $dateTime
-                    ];
+            } elseif ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3 || $validate->status == 4 || $validate->status == 5) && ($sts_timeline1st->act_description == 6 || @$sts_timeline2nd->act_description == 6 || @$sts_timeline3rd->act_description == 6 || @$sts_timeline4th->act_description == 6 || @$sts_timeline5th->act_description == 6))) {
+                if ((($validate->status == 1 || $validate->status == 2) && $sts_timeline1st->act_description == 6)) {
+                    $visit = 0;
+                    $notes = "Travel Stop";
+                }elseif ((($validate->status == 2 || $validate->status == 3) && $sts_timeline2nd->act_description == 6)) {
+                    $visit = 1;
+                    $notes = "Travel Stop 2nd On Site";
+                }elseif ((($validate->status == 3 || $validate->status == 4) && $sts_timeline3rd->act_description == 6)) {
+                    $visit = 2;
+                    $notes = "Travel Stop 3rd On Site";
+                }elseif ((($validate->status == 4 || $validate->status == 5) && $sts_timeline4th->act_description == 6)) {
+                    $visit = 3;
+                    $notes = "Travel Stop 4th On Site";
+                }else {
+                    $visit = 4;
+                    $notes = "Travel Stop 5th On Site";
+                }
+                $value = [
+                    'updated_at'    => $dateTime
+                ];
 
-                    $resp_en = [
-                        'notiket'    =>  $key,
-                        'en_id'    => $nik,
-                        'act_description'    => 7,
-                        'act_time'    => $dateTime,
-                        'latitude'    => $request->latitude,
-                        'longitude'    => $request->longitude,
-                        'visitting'    => $visit,
-                        'status'    => 0,
-                        'created_at'    => $dateTime
-                    ];
+                $resp_en = [
+                    'notiket'    =>  $key,
+                    'en_id'    => $nik,
+                    'act_description'    => 7,
+                    'act_time'    => $dateTime,
+                    'latitude'    => $request->latitude,
+                    'longitude'    => $request->longitude,
+                    'visitting'    => $visit,
+                    'status'    => 0,
+                    'created_at'    => $dateTime
+                ];
 
-                    $logging = [
-                        'notiket'    => $key,
-                        'note'    => $notes,
-                        'user'     => $nik,
-                        'type_log'     => 1,
-                        'created_at'     => $dateTime
-                    ];
+                $logging = [
+                    'notiket'    => $key,
+                    'note'    => $notes,
+                    'user'     => $nik,
+                    'type_log'     => 1,
+                    'created_at'     => $dateTime
+                ];
                 
                 $alert_success = "Your log travel stop recorded!";
                 $alert_failed = "Error when updating!";
@@ -959,7 +1005,7 @@ class TicketController extends Controller
         $result = $query->update($value);
         if($result) {
             if ($dept == 6 || $dept == 1) {
-                if ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3) && ($sts_timeline1st->act_description == 4 || @$sts_timeline2nd->act_description == 4 || @$sts_timeline3rd->act_description == 4))) {
+                if ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3 || $validate->status == 4 || $validate->status == 5) && ($sts_timeline1st->act_description == 4 || @$sts_timeline2nd->act_description == 4 || @$sts_timeline3rd->act_description == 4 || @$sts_timeline4th->act_description == 4 || @$sts_timeline5th->act_description == 4))) {
                     if ($request->check_en_part != 1) {
                         TiketInfo::where('notiket', $key)->update($tiket_info);
                     }
@@ -972,12 +1018,16 @@ class TicketController extends Controller
                         $updt_status_act = ActivityEngineer::where('notiket', $key)->where('act_description', $sts_timeline1st->act_description)->where('status', $sts_timeline1st->status_activity)->first();
                     } elseif ($list_cek_activity->sts_timeline == 1) {
                         $updt_status_act = ActivityEngineer::where('notiket', $key)->where('act_description', $sts_timeline2nd->act_description)->where('status', $sts_timeline2nd->status_activity)->first();
-                    }else {
+                    } elseif ($list_cek_activity->sts_timeline == 2) {
                         $updt_status_act = ActivityEngineer::where('notiket', $key)->where('act_description', $sts_timeline3rd->act_description)->where('status', $sts_timeline3rd->status_activity)->first();
+                    } elseif ($list_cek_activity->sts_timeline == 3) {
+                        $updt_status_act = ActivityEngineer::where('notiket', $key)->where('act_description', $sts_timeline4th->act_description)->where('status', $sts_timeline4th->status_activity)->first();
+                    } else {
+                        $updt_status_act = ActivityEngineer::where('notiket', $key)->where('act_description', $sts_timeline5th->act_description)->where('status', $sts_timeline5th->status_activity)->first();
                     }
                     $resultquery = $updt_status_act->update($values_sts_act);
                 }
-                if ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3) && ($sts_timeline1st->act_description == 4 || @$sts_timeline2nd->act_description == 4 || @$sts_timeline3rd->act_description == 4))) {
+                if ((($validate->status == 1 || $validate->status == 2 || $validate->status == 3 || $validate->status == 4 || $validate->status == 5) && ($sts_timeline1st->act_description == 4 || @$sts_timeline2nd->act_description == 4 || @$sts_timeline3rd->act_description == 4 || @$sts_timeline4th->act_description == 4 || @$sts_timeline5th->act_description == 4))) {
                     foreach ($resp_en as $value_act) {
                         ActivityEngineer::insert($value_act);
                     }
@@ -1221,6 +1271,22 @@ class TicketController extends Controller
         } else {
             $id_part = $part_detail_id->part_detail_id;
         }
+        
+        $AECek = ActivityEngineer::select('notiket', 'en_id', 'visitting')
+            ->selectRaw('ROW_NUMBER() OVER(PARTITION BY notiket ORDER BY visitting DESC) as rn');
+        $getAE = ActivityEngineer::fromSub($AECek, 'a')
+            ->where('rn', 1)
+            ->where('notiket', $id)
+            ->first();
+        $en_vis = [1, 2];
+        if (empty($getAE)) {
+            $part_onsite = 1;
+        } else if ($getAE->visitting == 0){
+            $part_onsite = 2;
+        } else if (in_array($getAE->visitting, $en_vis)){
+            $part_onsite = 3;
+        }
+        
         $values_part_dt = [
             'part_detail_id'           => $id_part,
             'unit_name'    => $request->type_unit_updt,
@@ -1230,13 +1296,13 @@ class TicketController extends Controller
             'pn'    => $request->product_number_updt,
             'sn'    => $request->serial_number_updt,
             'type_part'    => $request->status_part_updt,
+            'part_onsite'    => $part_onsite,
             'status'    => 0,
             'created_at'    => $dateTime
         ];
         $execute = TiketPartDetail::insert($values_part_dt);
 
             if($execute) {
-                // set variable in session to indicate that modal should be open
                 $nik =  auth()->user()->nik;
                 $logging = [
                     'notiket'    => $notiket,
@@ -1325,12 +1391,14 @@ class TicketController extends Controller
         $data['sts_timeline1st'] = VW_Activity_Engineer::select('act_description', 'status_activity')->where('notiket',$id)->where('sts_timeline',0)->whereNotIn('act_description',[8, 9])->groupBy('act_description')->orderBy('act_time','desc')->limit(1)->first();
         $data['sts_timeline2nd'] = VW_Activity_Engineer::select('act_description', 'status_activity')->where('notiket',$id)->where('sts_timeline',1)->whereNotIn('act_description',[8, 9])->groupBy('act_description')->orderBy('act_time','desc')->limit(1)->first();
         $data['sts_timeline3rd'] = VW_Activity_Engineer::select('act_description', 'status_activity')->where('notiket',$id)->where('sts_timeline',2)->whereNotIn('act_description',[8, 9])->groupBy('act_description')->orderBy('act_time','desc')->limit(1)->first();
+        $data['sts_timeline4th'] = VW_Activity_Engineer::select('act_description', 'status_activity')->where('notiket',$id)->where('sts_timeline',3)->whereNotIn('act_description',[8, 9])->groupBy('act_description')->orderBy('act_time','desc')->limit(1)->first();
+        $data['sts_timeline5th'] = VW_Activity_Engineer::select('act_description', 'status_activity')->where('notiket',$id)->where('sts_timeline',4)->whereNotIn('act_description',[8, 9])->groupBy('act_description')->orderBy('act_time','desc')->limit(1)->first();
         $data['onsite'] = VW_Activity_Engineer::selectRaw('COUNT(*) AS total_row')
                         ->fromSub(function ($query) use ($id) {
                             $query->selectRaw('COUNT(sts_timeline) AS jumlah')
                                 ->from('vw_hgt_activity_engineer')
                                 ->where('notiket', $id)
-                                ->whereIn('sts_timeline', [0, 1, 2])
+                                ->whereRaw('sts_timeline <= 5')
                                 ->groupBy('sts_timeline');
                         }, 'subquery')
                         ->first();
@@ -1340,6 +1408,10 @@ class TicketController extends Controller
         $data['end_sitend'] = ActivityEngineer::where('notiket',$id)->where('visitting', 1)->where('status', 1)->first();
         $data['act_engineerrd'] = VW_Activity_Engineer::all()->where('notiket',$id)->where('sts_timeline',2);
         $data['end_siterd'] = ActivityEngineer::where('notiket',$id)->where('visitting', 2)->where('status', 1)->first();
+        $data['act_engineer4th'] = VW_Activity_Engineer::all()->where('notiket',$id)->where('sts_timeline',3);
+        $data['end_site4th'] = ActivityEngineer::where('notiket',$id)->where('visitting', 3)->where('status', 1)->first();
+        $data['act_engineer5th'] = VW_Activity_Engineer::all()->where('notiket',$id)->where('sts_timeline',4);
+        $data['end_site5th'] = ActivityEngineer::where('notiket',$id)->where('visitting', 4)->where('status', 1)->first();
         return view('Pages.Ticket.timeline-ticket-en')->with($data)->with('id', $id);
     }
     // Timeline L2 Engineer

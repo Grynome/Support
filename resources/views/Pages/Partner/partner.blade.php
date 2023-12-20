@@ -95,4 +95,24 @@
 @push('custom-plug')
 @endpush
 @push('custom')
+<script>
+for (let i = 0; i < 50; i++) {
+    $('.destroy-ptn' + i + '').on('click', function () {
+
+        Swal.fire({
+            title: "Are u sure to delete this item?",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+
+                jQuery('#remove-ptn' + i + '').submit();
+            }
+        });
+        return false;
+    });
+}
+</script>
 @endpush

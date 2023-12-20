@@ -1,13 +1,22 @@
 @php
     $role = auth()->user()->role;
     $depart = auth()->user()->depart;
+    $noTabs = 0;
+    $noPane = 0;
+    $tabs = [1, 2, 3, 4, 5];
 @endphp
 @if ($sts_timeline1st->status_activity == 1)
     @php
         $activest = 'active';
         $activend = '';
+        $activerd = '';
+        $active4th = '';
+        $active5th = '';
         $txt = '1st On Site (Activity Uncomplete)';
         $txt2nd = '2nd On Site';
+        $txt3rd = '3rd On Site';
+        $txt4th = '4th On Site';
+        $txt5th = '5th On Site';
     @endphp
 @elseif (@$sts_timeline2nd->status_activity == 1)
     @php
@@ -18,10 +27,15 @@
         }
         $activend = 'active';
         $activerd = '';
+        $active4th = '';
+        $active5th = '';
         $txt = '1st On Site';
         $txt2nd = '2nd On Site (Activity Uncomplete)';
+        $txt3rd = '3rd On Site';
+        $txt4th = '4th On Site';
+        $txt5th = '5th On Site';
     @endphp
-@else
+@elseif (@$sts_timeline3rd->status_activity == 1)
     @php
         $activest = '';
         $txt = '1st On Site';
@@ -31,7 +45,46 @@
             $activend = '';
         }
         $activerd = 'active';
+        $active4th = '';
+        $active5th = '';
         $txt2nd = '2nd On Site';
+        $txt3rd = '3rd On Site (Activity Uncomplete)';
+        $txt4th = '4th On Site';
+        $txt5th = '5th On Site';
+    @endphp
+@elseif (@$sts_timeline4th->status_activity == 1)
+    @php
+        $activest = '';
+        $activend = '';
+        $txt = '1st On Site';
+        if ($status_ticket->status == 3) {
+            $activerd = 'active';
+        } else {
+            $activerd = '';
+        }
+        $active4th = 'active';
+        $active5th = '';
+        $txt2nd = '2nd On Site';
+        $txt3rd = '3rd On Site';
+        $txt4th = '4th On Site (Activity Uncomplete)';
+        $txt5th = '5th On Site';
+    @endphp
+@else
+    @php
+        $activest = '';
+        $activend = '';
+        $activerd = '';
+        $txt = '1st On Site';
+        if ($status_ticket->status == 3) {
+            $active4th = 'active';
+        } else {
+            $active4th = '';
+        }
+        $active5th = 'active';
+        $txt2nd = '2nd On Site';
+        $txt3rd = '3rd On Site';
+        $txt4th = '4th On Site';
+        $txt5th = '5th On Site (Activity Uncomplete)';
     @endphp
 @endif
 @extends('Theme/header')
@@ -75,30 +128,32 @@
                                             ->first();
                                     @endphp
                                     @if (!empty($validate_act_ticket_onsite))
-                                        @if ($status_ticket->status == 2)
-                                            <h5 class="text-center"><span
-                                                    class="badge border border-warning text-dark">second
-                                                    arrival OnSite will be rescheduled</span></h5>
-                                            <p class="text-center">*note : acitivity 2nd OnSite must be continue after the
-                                                requested
-                                                part is ready by helpdesk</p>
-                                        @else
-                                            <h5 class="text-center"><span
-                                                    class="badge border border-warning text-dark">Third
-                                                    arrival OnSite will be rescheduled</span></h5>
-                                            <p class="text-center">*note : acitivity 3rd OnSite must be continue after the
-                                                requested
-                                                part is ready by helpdesk</p>
-                                        @endif
+                                        @php
+                                            $h5 = ($status_ticket->status == 2) ? 'Second' : (
+                                                    ($status_ticket->status == 3) ? 'Third' : (
+                                                        ($status_ticket->status == 4) ? 'Fourth' : 'Fifth'
+                                                    )
+                                                );
+
+                                            $p = ($status_ticket->status == 2) ? '2nd' : (
+                                                    ($status_ticket->status == 3) ? '3rd' : (
+                                                        ($status_ticket->status == 4) ? '4th' : '5th'
+                                                    )
+                                                );
+                                        @endphp
+                                        <h5 class="text-center"><span
+                                                class="badge border border-warning text-dark">{{ $h5 }}
+                                                arrival OnSite will be rescheduled</span></h5>
+                                        <p class="text-center">*note : acitivity {{ $p }} OnSite must be continue
+                                            after the
+                                            requested
+                                            part is ready by helpdesk</p>
                                     @else
-                                        @if ($status_ticket->status == 2 && empty($sts_timeline2nd) && $sts_timeline1st->status_activity == 0)
-                                            <button type="button"
-                                                class="btn btn-inverse-primary btn-icon-text activity-engineer">
-                                                Pergi
-                                                <i class="btn-icon-append" data-feather="clock"></i>
-                                            </button>
-                                        @endif
-                                        @if ($status_ticket->status == 3 && empty($sts_timeline3rd) && $sts_timeline2nd->status_activity == 0)
+                                        @if (
+                                            ($status_ticket->status == 2 && empty($sts_timeline2nd) && $sts_timeline1st->status_activity == 0) ||
+                                                ($status_ticket->status == 3 && empty($sts_timeline3rd) && $sts_timeline2nd->status_activity == 0) ||
+                                                ($status_ticket->status == 4 && empty($sts_timeline4th) && $sts_timeline3rd->status_activity == 0) ||
+                                                ($status_ticket->status == 5 && empty($sts_timeline5th) && $sts_timeline4th->status_activity == 0))
                                             <button type="button"
                                                 class="btn btn-inverse-primary btn-icon-text activity-engineer">
                                                 Pergi
@@ -117,18 +172,22 @@
                                         <input type="hidden" id="longitude" name="longitude">
                                     </form>
                                     <input type="hidden" id="status" data-status="{{ $status_ticket->status }}">
-                                    @if ($status_ticket->status == 2 || $status_ticket->status == 3)
-                                        @if (@$sts_timeline2nd->status_activity == 0)
-                                            <input id="acdsc" type="hidden"
-                                                data-acdsc="{{ @$sts_timeline3rd->act_description }}">
-                                        @else
-                                            <input id="acdsc" type="hidden"
-                                                data-acdsc="{{ @$sts_timeline2nd->act_description }}">
-                                        @endif
-                                    @else
-                                        <input id="acdsc" type="hidden"
-                                            data-acdsc="{{ $sts_timeline1st->act_description }}">
-                                    @endif
+                                    @php
+                                        if ($status_ticket->status == 1 || ($status_ticket->status == 2 && @$sts_timeline1st->status_activity == 1)) {
+                                            $getacdsc = $sts_timeline1st->act_description;
+                                        }else {
+                                            if (@$sts_timeline2nd->status_activity == 0 && ($status_ticket->status == 3 || ($status_ticket->status == 4 && @$sts_timeline3rd->status_activity == 1))) {
+                                                $getacdsc = @$sts_timeline3rd->act_description;
+                                            } else if (@$sts_timeline3rd->status_activity == 0  && ($status_ticket->status == 4 || ($status_ticket->status == 5 && @$sts_timeline4th->status_activity == 1))) {
+                                                $getacdsc = @$sts_timeline4th->act_description;
+                                            } else if (@$sts_timeline4th->status_activity == 0  && $status_ticket->status == 5) {
+                                                $getacdsc = @$sts_timeline5th->act_description;
+                                            } else {
+                                                $getacdsc = @$sts_timeline2nd->act_description;
+                                            }
+                                        }
+                                    @endphp
+                                    <input id="acdsc" type="hidden" data-acdsc="{{ $getacdsc }}">
                                 </div>
                             @endif
                         </div>
@@ -137,247 +196,102 @@
                                 <div class="aside-content">
                                     <div class="aside-body">
                                         <ul class="nav nav-tabs nav-fill mt-3" role="tablist">
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ $activest }}" id="chats-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#timeline-first" role="tab" aria-controls="chats"
-                                                    aria-selected="true">
-                                                    <div
-                                                        class="d-flex flex-row flex-lg-column flex-xl-row align-items-center justify-content-center">
-                                                        <i data-feather="activity"
-                                                            class="icon-sm me-sm-2 me-lg-0 me-xl-2 mb-md-1 mb-xl-0"></i>
-                                                        <p class="d-none d-sm-block">{{ $txt }}</p>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            @if ($status_ticket->status == 2 || $onsite->total_row != 1)
+                                            @foreach ($tabs as $val)
+                                                @php
+                                                    if ($val == 1) {
+                                                        $cls = $activest;
+                                                        $ptxt = $txt;
+                                                    } elseif ($val == 2) {
+                                                        $cls = $activend;
+                                                        $ptxt = $txt2nd;
+                                                    } elseif ($val == 3) {
+                                                        $cls = $activerd;
+                                                        $ptxt = $txt3rd;
+                                                    } elseif ($val == 4) {
+                                                        $cls = $active4th;
+                                                        $ptxt = $txt4th;
+                                                    } else {
+                                                        $cls = $active5th;
+                                                        $ptxt = $txt5th;
+                                                    }
+                                                @endphp
                                                 <li class="nav-item">
-                                                    <a class="nav-link {{ $activend }}" id="calls-tab"
-                                                        data-bs-toggle="tab" data-bs-target="#timeline-second"
-                                                        role="tab" aria-controls="calls" aria-selected="false">
+                                                    <a class="nav-link {{ $cls }}" id="chats-tab"
+                                                        data-bs-toggle="tab" data-bs-target="#timeline-{{ $noTabs }}"
+                                                        role="tab" aria-controls="chats" aria-selected="true">
                                                         <div
                                                             class="d-flex flex-row flex-lg-column flex-xl-row align-items-center justify-content-center">
                                                             <i data-feather="activity"
                                                                 class="icon-sm me-sm-2 me-lg-0 me-xl-2 mb-md-1 mb-xl-0"></i>
-                                                            <p class="d-none d-sm-block">{{ $txt2nd }}</p>
+                                                            <p class="d-sm-block">{{ $ptxt }}</p>
                                                         </div>
                                                     </a>
                                                 </li>
-                                            @endif
-                                            @if ($status_ticket->status == 3 || ($onsite->total_row != 1 && $onsite->total_row != 2))
-                                                <li class="nav-item">
-                                                    <a class="nav-link {{ $activerd }}" id="calls-tab"
-                                                        data-bs-toggle="tab" data-bs-target="#timeline-third" role="tab"
-                                                        aria-controls="calls" aria-selected="false">
-                                                        <div
-                                                            class="d-flex flex-row flex-lg-column flex-xl-row align-items-center justify-content-center">
-                                                            <i data-feather="activity"
-                                                                class="icon-sm me-sm-2 me-lg-0 me-xl-2 mb-md-1 mb-xl-0"></i>
-                                                            <p class="d-none d-sm-block">3rd On Site</p>
-                                                        </div>
-                                                    </a>
-                                                </li>
-                                            @endif
+                                                @php
+                                                    $noTabs++;
+                                                @endphp
+                                                @if ($status_ticket->status == $val || ($onsite->total_row != 1 && $ojkvb nsite->total_row != 2 && $onsite->total_row != 3 && $onsite->total_row != 4 && $onsite->total_row != 5))
+                                                    @php
+                                                        break;
+                                                    @endphp
+                                                @endif
+                                            @endforeach
                                         </ul>
                                         <div class="tab-content mt-3">
-                                            <div class="tab-pane fade show {{ $activest }}" id="timeline-first"
-                                                role="tabpanel" aria-labelledby="chats-tab">
-                                                <div id="content">
-                                                    <ul class="timeline">
-                                                        @php
-                                                            $no = 1;
-                                                        @endphp
-                                                        @foreach ($act_engineerst as $item)
-                                                            <li class="event" data-date="{{ $item->act_time }}">
-                                                                <h3 class="title">{{ $item->sts_ticket }}
-                                                                    @if ($depart == 4)
-                                                                        <button type="button"
-                                                                            class="btn btn-inverse-success btn-icon btn-xs get-loc-st"
-                                                                            data-latitudest="{{ $item->latitude }}"
-                                                                            data-longitudest="{{ $item->longitude }}"
-                                                                            data-bs-toggle="modal" data-bs-target="#maps">
-                                                                            <i class="btn-icon-append"
-                                                                                data-feather="map"></i>
-                                                                        </button>
-                                                                        <div class="modal fade modal-lg" id="maps"
-                                                                            tabindex="-1"
-                                                                            aria-labelledby="sourceModalLabel"
-                                                                            aria-hidden="true">
-                                                                            <div class="modal-dialog">
-                                                                                <div class="modal-content">
-                                                                                    <div class="modal-header">
-                                                                                        <h5 class="modal-title"
-                                                                                            id="sourceModalLabel">Location
-                                                                                        </h5>
-                                                                                        <button type="button"
-                                                                                            class="btn-close"
-                                                                                            data-bs-dismiss="modal"
-                                                                                            aria-label="btn-close"></button>
-                                                                                    </div>
-                                                                                    <div class="modal-body">
-                                                                                        <div id="mapst"></div>
-                                                                                    </div>
-                                                                                    <div class="modal-footer">
-                                                                                        <button type="button"
-                                                                                            class="btn btn-secondary"
-                                                                                            data-bs-dismiss="modal">Cancel</button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    @elseif ($depart == 6 || $role == 1)
-                                                                        @if ($item->act_description == 1 && $item->status_activity == 1)
-                                                                            <button type="button"
-                                                                                class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                Pergi
-                                                                                <i class="btn-icon-append"
-                                                                                    data-feather="clock"></i>
-                                                                            </button>
-                                                                        @elseif ($item->act_description == 2 && $item->status_activity == 1)
-                                                                            <button type="button"
-                                                                                class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                Arrive
-                                                                                <i class="btn-icon-append"
-                                                                                    data-feather="clock"></i>
-                                                                            </button>
-                                                                        @elseif ($item->act_description == 3 && $item->status_activity == 1)
-                                                                            <button type="button"
-                                                                                class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                Work Start
-                                                                                <i class="btn-icon-append"
-                                                                                    data-feather="clock"></i>
-                                                                            </button>
-                                                                        @elseif ($item->act_description == 4 && $item->status_activity == 1)
-                                                                            <button type="button"
-                                                                                class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                Work Stop
-                                                                                <i class="btn-icon-append"
-                                                                                    data-feather="clock"></i>
-                                                                            </button>
-                                                                        @elseif ($item->act_description == 5 && $item->status_activity == 1)
-                                                                            <button type="button"
-                                                                                class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                Leave Site
-                                                                                <i class="btn-icon-append"
-                                                                                    data-feather="clock"></i>
-                                                                            </button>
-                                                                        @elseif ($item->act_description == 6 && $item->status_activity == 1)
-                                                                            <button type="button"
-                                                                                class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                Travel Stop
-                                                                                <i class="btn-icon-append"
-                                                                                    data-feather="clock"></i>
-                                                                            </button>
-                                                                        @endif
-                                                                    @endif
-                                                                </h3>
-                                                                <p class="mb-3">{{ $item->keterangan }}</p>
-                                                                @if ($item->act_description != 1)
-                                                                    @if (empty($item->en_attach_id))
-                                                                        @if ($depart == 6 || $role == 1)
-                                                                            @if (($item->status == 1 || $item->status == 2) && !empty($end_sitest))
-                                                                                <form
-                                                                                    action="{{ url('Add-Attachment/Engineer') }}"
-                                                                                    method="post"
-                                                                                    enctype="multipart/form-data">
-                                                                                    @csrf
-                                                                                    <div
-                                                                                        id="file-inputs-st{{ $no }}">
-                                                                                        @if ($item->act_description == 5)
-                                                                                            <input type="file"
-                                                                                                class="file"
-                                                                                                name="files[]"
-                                                                                                accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps"
-                                                                                                id="file-input" required />
-                                                                                        @else
-                                                                                            <input type="file"
-                                                                                                class="file"
-                                                                                                name="files[]"
-                                                                                                accept="image/*"
-                                                                                                capture="camera"
-                                                                                                id="file-input" required />
-                                                                                        @endif
-                                                                                    </div>
-                                                                                    <div class="input-group-append"
-                                                                                        style="margin-top: 7px;">
-                                                                                        <button
-                                                                                            id="add-file-button-st{{ $no }}"
-                                                                                            class="btn btn-inverse-primary btn-xs"
-                                                                                            type="button">
-                                                                                            <i class="btn-icon-append icon-md"
-                                                                                                data-feather="plus"></i>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    <label for="user"
-                                                                                        class="form-label">Note
-                                                                                        :</label>
-                                                                                    <div class="input-group mb-3">
-                                                                                        <input type="text"
-                                                                                            class="form-control"
-                                                                                            name="note_attach"
-                                                                                            placeholder="Note" required>
-                                                                                        <input type="hidden"
-                                                                                            name="status_attachment"
-                                                                                            value="{{ $item->act_description }}">
-                                                                                        <input type="hidden"
-                                                                                            name="notik"
-                                                                                            value="{{ $id }}">
-                                                                                        <input type="hidden"
-                                                                                            name="onsite" value="0">
-                                                                                        <div class="input-group-append">
-                                                                                            <button
-                                                                                                class="btn btn-inverse-primary"
-                                                                                                type="submit">
-                                                                                                <i class="btn-icon-append icon-lg"
-                                                                                                    data-feather="save"></i>
-                                                                                            </button>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </form>
-                                                                            @endif
-                                                                        @endif
-                                                                    @else
-                                                                        <a
-                                                                            href="{{ url("Ticket=$id/Attachment/$item->en_attach_id") }}">
-                                                                            <button class="btn btn-inverse-primary btn-md"
-                                                                                type="button">
-                                                                                Lihat Attachment
-                                                                                <i class="btn-icon-append icon-md"
-                                                                                    data-feather="search"></i>
-                                                                            </button>
-                                                                        </a>
-                                                                    @endif
-                                                                @endif
-                                                            </li>
-                                                            @php
-                                                                $no++;
-                                                            @endphp
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            @if ($status_ticket->status == 2 || $onsite->total_row != 1)
-                                                <div class="tab-pane fade show {{ $activend }}" id="timeline-second"
-                                                    role="tabpanel" aria-labelledby="calls-tab">
+                                            @php
+                                                $val_btn = [1,2,3,4,5,6];
+                                            @endphp
+                                            @foreach ($tabs as $val)
+                                                @php
+                                                    if ($val == 1) {
+                                                        $cls = $activest;
+                                                        $ptxt = $txt;
+                                                        $var = $act_engineerst;
+                                                        $end_site = $end_sitest;
+                                                    } elseif ($val == 2) {
+                                                        $cls = $activend;
+                                                        $ptxt = $txt2nd;
+                                                        $var = $act_engineernd;
+                                                        $end_site = $end_sitend;
+                                                    } elseif ($val == 3) {
+                                                        $cls = $activerd;
+                                                        $ptxt = $txt3rd;
+                                                        $var = $act_engineerrd;
+                                                        $end_site = $end_siterd;
+                                                    } elseif ($val == 4) {
+                                                        $cls = $active4th;
+                                                        $ptxt = $txt4th;
+                                                        $var = $act_engineer4th;
+                                                        $end_site = $end_site4th;
+                                                    } else {
+                                                        $cls = $active5th;
+                                                        $ptxt = $txt5th;
+                                                        $var = $act_engineer5th;
+                                                        $end_site = $end_site5th;
+                                                    }
+                                                @endphp
+                                                <div class="tab-pane fade show {{ $cls }}" id="timeline-{{$noPane}}"
+                                                    role="tabpanel" aria-labelledby="chats-tab">
                                                     <div id="content">
                                                         <ul class="timeline">
                                                             @php
                                                                 $no = 1;
                                                             @endphp
-                                                            @foreach ($act_engineernd as $item)
+                                                            @foreach ($var as $item)
                                                                 <li class="event" data-date="{{ $item->act_time }}">
                                                                     <h3 class="title">{{ $item->sts_ticket }}
                                                                         @if ($depart == 4)
                                                                             <button type="button"
-                                                                                class="btn btn-inverse-success btn-icon btn-xs get-loc-nd"
-                                                                                data-latitudend="{{ $item->latitude }}"
-                                                                                data-longitudend="{{ $item->longitude }}"
+                                                                                class="btn btn-inverse-success btn-icon btn-xs get-loc-{{$noPane}}"
+                                                                                data-latitudest="{{ $item->latitude }}"
+                                                                                data-longitudest="{{ $item->longitude }}"
                                                                                 data-bs-toggle="modal"
-                                                                                data-bs-target="#map2nd">
+                                                                                data-bs-target="#maps{{$noPane}}">
                                                                                 <i class="btn-icon-append"
                                                                                     data-feather="map"></i>
                                                                             </button>
                                                                             <div class="modal fade modal-lg"
-                                                                                id="map2nd" tabindex="-1"
+                                                                                id="maps{{$noPane}}" tabindex="-1"
                                                                                 aria-labelledby="sourceModalLabel"
                                                                                 aria-hidden="true">
                                                                                 <div class="modal-dialog">
@@ -393,7 +307,7 @@
                                                                                                 aria-label="btn-close"></button>
                                                                                         </div>
                                                                                         <div class="modal-body">
-                                                                                            <div id="mapnd"></div>
+                                                                                            <div id="map{{$noPane}}"></div>
                                                                                         </div>
                                                                                         <div class="modal-footer">
                                                                                             <button type="button"
@@ -404,63 +318,43 @@
                                                                                 </div>
                                                                             </div>
                                                                         @elseif ($depart == 6 || $role == 1)
-                                                                            @if ($item->act_description == 1 && $item->status_activity == 1)
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                    Pergi
-                                                                                    <i class="btn-icon-append"
-                                                                                        data-feather="clock"></i>
-                                                                                </button>
-                                                                            @elseif ($item->act_description == 2 && $item->status_activity == 1)
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                    Arrive
-                                                                                    <i class="btn-icon-append"
-                                                                                        data-feather="clock"></i>
-                                                                                </button>
-                                                                            @elseif ($item->act_description == 3 && $item->status_activity == 1)
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                    Work Start
-                                                                                    <i class="btn-icon-append"
-                                                                                        data-feather="clock"></i>
-                                                                                </button>
-                                                                            @elseif ($item->act_description == 4 && $item->status_activity == 1)
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                    Work Stop
-                                                                                    <i class="btn-icon-append"
-                                                                                        data-feather="clock"></i>
-                                                                                </button>
-                                                                            @elseif ($item->act_description == 5 && $item->status_activity == 1)
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                    Leave Site
-                                                                                    <i class="btn-icon-append"
-                                                                                        data-feather="clock"></i>
-                                                                                </button>
-                                                                            @elseif ($item->act_description == 6 && $item->status_activity == 1)
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                    Travel Stop
-                                                                                    <i class="btn-icon-append"
-                                                                                        data-feather="clock"></i>
-                                                                                </button>
-                                                                            @endif
+                                                                            @foreach ($val_btn as $btn)
+                                                                                @php
+                                                                                    $txt_btn = ($item->act_description == 1) ? "Pergi" : 
+                                                                                                (($item->act_description == 2) ? "Arrive" : 
+                                                                                                    (($item->act_description == 3) ? "Work Start" : 
+                                                                                                        (($item->act_description == 4) ? "Work Stop" : 
+                                                                                                            (($item->act_description == 5) ? "Leave Site" : "Travel Stop")
+                                                                                                        )
+                                                                                                    )
+                                                                                                );
+                                                                                @endphp
+                                                                                @if (in_array($item->act_description, $val_btn) && $item->status_activity == 1)
+                                                                                    <button type="button"
+                                                                                        class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
+                                                                                        {{$txt_btn}}
+                                                                                        <i class="btn-icon-append"
+                                                                                            data-feather="clock"></i>
+                                                                                    </button>
+                                                                                    @php
+                                                                                        break;
+                                                                                    @endphp
+                                                                                @endif
+                                                                            @endforeach
                                                                         @endif
                                                                     </h3>
                                                                     <p class="mb-3">{{ $item->keterangan }}</p>
                                                                     @if ($item->act_description != 1)
                                                                         @if (empty($item->en_attach_id))
                                                                             @if ($depart == 6 || $role == 1)
-                                                                                @if (($item->status == 2 || $item->status == 3) && !empty($end_sitend))
+                                                                                @if ((in_array($item->status, $tabs)) && !empty($end_site))
                                                                                     <form
                                                                                         action="{{ url('Add-Attachment/Engineer') }}"
                                                                                         method="post"
                                                                                         enctype="multipart/form-data">
                                                                                         @csrf
                                                                                         <div
-                                                                                            id="file-inputs-nd{{ $no }}">
+                                                                                            id="file-inputs-{{$val}}{{ $no }}">
                                                                                             @if ($item->act_description == 5)
                                                                                                 <input type="file"
                                                                                                     class="file"
@@ -481,7 +375,7 @@
                                                                                         <div class="input-group-append"
                                                                                             style="margin-top: 7px;">
                                                                                             <button
-                                                                                                id="add-file-button-nd{{ $no }}"
+                                                                                                id="add-file-button-{{ $val }}{{ $no }}"
                                                                                                 class="btn btn-inverse-primary btn-xs"
                                                                                                 type="button">
                                                                                                 <i class="btn-icon-append icon-md"
@@ -505,7 +399,7 @@
                                                                                                 value="{{ $id }}">
                                                                                             <input type="hidden"
                                                                                                 name="onsite"
-                                                                                                value="1">
+                                                                                                value="{{ $item->sts_timeline }}">
                                                                                             <div
                                                                                                 class="input-group-append">
                                                                                                 <button
@@ -540,193 +434,15 @@
                                                         </ul>
                                                     </div>
                                                 </div>
-                                            @endif
-                                            @if ($status_ticket->status == 3 || $onsite->total_row != 1)
-                                                <div class="tab-pane fade show {{ $activerd }}" id="timeline-third"
-                                                    role="tabpanel" aria-labelledby="calls-tab">
-                                                    <div id="content">
-                                                        <ul class="timeline">
-                                                            @php
-                                                                $no = 1;
-                                                            @endphp
-                                                            @foreach ($act_engineerrd as $item)
-                                                                <li class="event" data-date="{{ $item->act_time }}">
-                                                                    <h3 class="title">{{ $item->sts_ticket }}
-                                                                        @if ($depart == 4)
-                                                                            <button type="button"
-                                                                                class="btn btn-inverse-success btn-icon btn-xs get-loc-rd"
-                                                                                data-latituderd="{{ $item->latitude }}"
-                                                                                data-longituderd="{{ $item->longitude }}"
-                                                                                data-bs-toggle="modal"
-                                                                                data-bs-target="#map2rd">
-                                                                                <i class="btn-icon-append"
-                                                                                    data-feather="map"></i>
-                                                                            </button>
-                                                                            <div class="modal fade modal-lg"
-                                                                                id="map2rd" tabindex="-1"
-                                                                                aria-labelledby="sourceModalLabel"
-                                                                                aria-hidden="true">
-                                                                                <div class="modal-dialog">
-                                                                                    <div class="modal-content">
-                                                                                        <div class="modal-header">
-                                                                                            <h5 class="modal-title"
-                                                                                                id="sourceModalLabel">
-                                                                                                Location
-                                                                                            </h5>
-                                                                                            <button type="button"
-                                                                                                class="btn-close"
-                                                                                                data-bs-dismiss="modal"
-                                                                                                aria-label="btn-close"></button>
-                                                                                        </div>
-                                                                                        <div class="modal-body">
-                                                                                            <div id="maprd"></div>
-                                                                                        </div>
-                                                                                        <div class="modal-footer">
-                                                                                            <button type="button"
-                                                                                                class="btn btn-secondary"
-                                                                                                data-bs-dismiss="modal">Cancel</button>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        @elseif ($depart == 6 || $role == 1)
-                                                                            @if ($item->act_description == 1 && $item->status_activity == 1)
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                    Pergi
-                                                                                    <i class="btn-icon-append"
-                                                                                        data-feather="clock"></i>
-                                                                                </button>
-                                                                            @elseif ($item->act_description == 2 && $item->status_activity == 1)
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                    Arrive
-                                                                                    <i class="btn-icon-append"
-                                                                                        data-feather="clock"></i>
-                                                                                </button>
-                                                                            @elseif ($item->act_description == 3 && $item->status_activity == 1)
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                    Work Start
-                                                                                    <i class="btn-icon-append"
-                                                                                        data-feather="clock"></i>
-                                                                                </button>
-                                                                            @elseif ($item->act_description == 4 && $item->status_activity == 1)
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                    Work Stop
-                                                                                    <i class="btn-icon-append"
-                                                                                        data-feather="clock"></i>
-                                                                                </button>
-                                                                            @elseif ($item->act_description == 5 && $item->status_activity == 1)
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                    Leave Site
-                                                                                    <i class="btn-icon-append"
-                                                                                        data-feather="clock"></i>
-                                                                                </button>
-                                                                            @elseif ($item->act_description == 6 && $item->status_activity == 1)
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                    Travel Stop
-                                                                                    <i class="btn-icon-append"
-                                                                                        data-feather="clock"></i>
-                                                                                </button>
-                                                                            @endif
-                                                                        @endif
-                                                                    </h3>
-                                                                    <p class="mb-3">{{ $item->keterangan }}</p>
-                                                                    @if ($item->act_description != 1)
-                                                                        @if (empty($item->en_attach_id))
-                                                                            @if ($depart == 6 || $role == 1)
-                                                                                @if (($item->status == 2 || $item->status == 3) && !empty($end_siterd))
-                                                                                    <form
-                                                                                        action="{{ url('Add-Attachment/Engineer') }}"
-                                                                                        method="post"
-                                                                                        enctype="multipart/form-data">
-                                                                                        @csrf
-                                                                                        <div
-                                                                                            id="file-inputs-rd{{ $no }}">
-                                                                                            @if ($item->act_description == 5)
-                                                                                                <input type="file"
-                                                                                                    class="file"
-                                                                                                    name="files[]"
-                                                                                                    accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps"
-                                                                                                    id="file-input"
-                                                                                                    required />
-                                                                                            @else
-                                                                                                <input type="file"
-                                                                                                    class="file"
-                                                                                                    name="files[]"
-                                                                                                    accept="image/*"
-                                                                                                    capture="camera"
-                                                                                                    id="file-input"
-                                                                                                    required />
-                                                                                            @endif
-                                                                                        </div>
-                                                                                        <div class="input-group-append"
-                                                                                            style="margin-top: 7px;">
-                                                                                            <button
-                                                                                                id="add-file-button-rd{{ $no }}"
-                                                                                                class="btn btn-inverse-primary btn-xs"
-                                                                                                type="button">
-                                                                                                <i class="btn-icon-append icon-md"
-                                                                                                    data-feather="plus"></i>
-                                                                                            </button>
-                                                                                        </div>
-                                                                                        <label for="user"
-                                                                                            class="form-label">Note
-                                                                                            :</label>
-                                                                                        <div class="input-group mb-3">
-                                                                                            <input type="text"
-                                                                                                class="form-control"
-                                                                                                name="note_attach"
-                                                                                                placeholder="Note"
-                                                                                                required>
-                                                                                            <input type="hidden"
-                                                                                                name="status_attachment"
-                                                                                                value="{{ $item->act_description }}">
-                                                                                            <input type="hidden"
-                                                                                                name="notik"
-                                                                                                value="{{ $id }}">
-                                                                                            <input type="hidden"
-                                                                                                name="onsite"
-                                                                                                value="2">
-                                                                                            <div
-                                                                                                class="input-group-append">
-                                                                                                <button
-                                                                                                    class="btn btn-inverse-primary"
-                                                                                                    type="submit">
-                                                                                                    <i class="btn-icon-append icon-lg"
-                                                                                                        data-feather="save"></i>
-                                                                                                </button>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </form>
-                                                                                @endif
-                                                                            @endif
-                                                                        @else
-                                                                            <a
-                                                                                href="{{ url("Ticket=$id/Attachment/$item->en_attach_id") }}">
-                                                                                <button
-                                                                                    class="btn btn-inverse-primary btn-md"
-                                                                                    type="button">
-                                                                                    Lihat Attachment
-                                                                                    <i class="btn-icon-append icon-md"
-                                                                                        data-feather="search"></i>
-                                                                                </button>
-                                                                            </a>
-                                                                        @endif
-                                                                    @endif
-                                                                </li>
-                                                                @php
-                                                                    $no++;
-                                                                @endphp
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            @endif
+                                                @php
+                                                    $noPane++;
+                                                @endphp
+                                                @if ($status_ticket->status == $val || ($onsite->total_row != 1 && $onsite->total_row != 2  && $onsite->total_row != 3 && $onsite->total_row != 4 && $onsite->total_row != 5))
+                                                    @php
+                                                        break;
+                                                    @endphp
+                                                @endif
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>
@@ -753,19 +469,19 @@
                 }, function(error) {
                     console.log("Error occurred. Error code: " + error.code);
                 });
-                if (((status == 1 || status == 2 || status == 3) && (act_desc == 1 || act_desc.trim().length == 0))) {
+                if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && (act_desc == 1 || act_desc.trim().length == 0))) {
                     var title = "Pergi Sekarang?";
                     var confirmbtn = "Gas";
-                } else if (((status == 1 || status == 2 || status == 3) && act_desc == 2)) {
+                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc == 2)) {
                     var title = "Arrived?";
                     var confirmbtn = "Yes";
-                } else if (((status == 1 || status == 2 || status == 3) && act_desc == 3)) {
+                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc == 3)) {
                     var title = "Start to Work?";
                     var confirmbtn = "Yes";
-                } else if (((status == 1 || status == 2 || status == 3) && act_desc == 4)) {
-                    if (status == 3) {
+                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc == 4)) {
+                    if (status == 5) {
                         Swal.fire({
-                            title: 'Submit your Repair Way!',
+                            title: 'Submit your Repair Way!',   
                             text: 'this ticket will be Solve after submit repair way',
                             icon: 'info',
                             input: 'text',
@@ -799,9 +515,7 @@
                             confirmButtonText: 'Done',
                             denyButtonText: `Need Part`,
                             cancelButtonColor: '#d33',
-                            // denyButtonColor: '#3085d6',
                         }).then((result) => {
-                            /* Read more about isConfirmed, isDenied below */
                             if (result.isConfirmed) {
                                 Swal.fire({
                                     title: 'Submit your Repair Way!',
@@ -850,14 +564,14 @@
                             }
                         })
                     }
-                } else if (((status == 1 || status == 2 || status == 3) && act_desc == 5)) {
+                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc == 5)) {
                     var title = "Leave Site?";
                     var confirmbtn = "Yes";
-                } else if (((status == 1 || status == 2 || status == 3) && act_desc == 6)) {
+                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc == 6)) {
                     var title = "Travel Stop?";
                     var confirmbtn = "Yes";
                 }
-                if (((status == 1 || status == 2 || status == 3) && act_desc != 4)) {
+                if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc != 4)) {
                     Swal.fire({
                         title: title,
                         icon: 'question',
@@ -876,66 +590,34 @@
             });
         </script>
         <script>
-            for (let i = 0; i < 50; i++) {
-                $('#add-file-button-st' + i + '').on('click', function() {
-                    const fileInputs = document.getElementById('file-inputs-st' + i + '');
-                    const fileInput = document.createElement('input');
-                    fileInput.type = 'file';
-                    fileInput.name = 'files[]';
-                    fileInput.accept = 'image/*';
-                    fileInput.capture = 'camera';
-                    fileInputs.appendChild(fileInput);
-                });
-                $('#add-file-button-nd' + i + '').on('click', function() {
-                    const fileInputs = document.getElementById('file-inputs-nd' + i + '');
-                    const fileInput = document.createElement('input');
-                    fileInput.type = 'file';
-                    fileInput.name = 'files[]';
-                    fileInput.accept = 'image/*';
-                    fileInput.capture = 'camera';
-                    fileInputs.appendChild(fileInput);
-                });
-                $('#add-file-button-rd' + i + '').on('click', function() {
-                    const fileInputs = document.getElementById('file-inputs-rd' + i + '');
-                    const fileInput = document.createElement('input');
-                    fileInput.type = 'file';
-                    fileInput.name = 'files[]';
-                    fileInput.accept = 'image/*';
-                    fileInput.capture = 'camera';
-                    fileInputs.appendChild(fileInput);
-                });
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 7; j++) {
+                    $('#add-file-button-' + i + j +'').on('click', function() {
+                        const fileInputs = document.getElementById('file-inputs-' + i + j +'');
+                        const fileInput = document.createElement('input');
+                        fileInput.type = 'file';
+                        fileInput.name = 'files[]';
+                        fileInput.accept = 'image/*';
+                        fileInput.capture = 'camera';
+                        fileInputs.appendChild(fileInput);
+                    });
+                }
             }
         </script>
     @else
         <script>
-            $(document).ready(function() {
-                $('.get-loc-st').on('click', function() {
-                    var latitudest = $(this).data('latitudest');
-                    var longitudest = $(this).data('longitudest');
-                    if (!isNaN(latitudest) && !isNaN(longitudest)) {
-                        console.log(latitudest, longitudest);
-                        initMap(latitudest, longitudest, "mapst");
-                    }
+            for (let i = 0; i < 50; i++) {
+                $(document).ready(function() {
+                    $('.get-loc-'+ i'').on('click', function() {
+                        var latitudest = $(this).data('latitudest');
+                        var longitudest = $(this).data('longitudest');
+                        if (!isNaN(latitudest) && !isNaN(longitudest)) {
+                            console.log(latitudest, longitudest);
+                            initMap(latitudest, longitudest, "map"+ i"");
+                        }
+                    });
                 });
-
-                $('.get-loc-nd').on('click', function() {
-                    var latitudend = $(this).data('latitudend');
-                    var longitudend = $(this).data('longitudend');
-                    if (!isNaN(latitudend) && !isNaN(longitudend)) {
-                        console.log(latitudend, longitudend);
-                        initMap(latitudend, longitudend, "mapnd");
-                    }
-                });
-
-                $('.get-loc-rd').on('click', function() {
-                    var latituderd = $(this).data('latituderd');
-                    var longituderd = $(this).data('longituderd');
-                    if (!isNaN(latituderd) && !isNaN(longituderd)) {
-                        console.log(latituderd, longituderd);
-                        initMap(latituderd, longituderd, "maprd");
-                    }
-                });
-            });
+            }
 
             function initMap(latitude, longitude, elementId) {
                 let myLatLng = {

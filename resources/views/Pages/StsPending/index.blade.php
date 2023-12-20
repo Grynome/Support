@@ -3,7 +3,7 @@
 @extends('Theme/header')
 @section('getPage')
     <div class="page-content">
-    @include('sweetalert::alert')
+        @include('sweetalert::alert')
         <nav class="page-breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Tables</a></li>
@@ -22,7 +22,7 @@
                             <div class="col-md-2">
                                 <button type="button" class="btn btn-inverse-primary btn-icon-text" data-bs-toggle="modal"
                                     data-bs-target="#src_hgt">
-                                    ADD 
+                                    ADD
                                     <i class="btn-icon-append" data-feather="plus"></i>
                                 </button>
                                 <div class="modal fade" id="src_hgt" tabindex="-1" aria-labelledby="sourceModalLabel"
@@ -36,12 +36,14 @@
                                                     aria-label="btn-close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <form action="{{ url('Add/data=Ktgr-Pending') }}" method="post" id="str-ktgrPD">
+                                                <form action="{{ url('Add/data=Ktgr-Pending') }}" method="post"
+                                                    id="str-ktgrPD">
                                                     @csrf
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <div class="mb-3">
-                                                                <label for="ktgr_pd_name" class="form-label">Kategori Pending</label>
+                                                                <label for="ktgr_pd_name" class="form-label">Kategori
+                                                                    Pending</label>
                                                                 <input type="text" class="form-control"
                                                                     name="ktgr_pd_name" id="ktgrPD-name">
                                                             </div>
@@ -94,7 +96,8 @@
                                                                     data-bs-dismiss="modal" aria-label="btn-close"></button>
                                                             </div>
                                                             <div class="modal-body">
-                                                                <form action="{{ url("update/$item->id/data=Ktgr-Pending") }}"
+                                                                <form
+                                                                    action="{{ url("update/$item->id/data=Ktgr-Pending") }}"
                                                                     method="post" id="fm-ktgrPD{{ $no }}">
                                                                     @csrf
                                                                     {{ method_field('patch') }}
@@ -102,7 +105,8 @@
                                                                         <div class="col-md-12">
                                                                             <div class="mb-3">
                                                                                 <label for="source_name"
-                                                                                    class="form-label">Kategori Pending</label>
+                                                                                    class="form-label">Kategori
+                                                                                    Pending</label>
                                                                                 <input type="text" class="form-control"
                                                                                     name="val_edt_ktgrpd"
                                                                                     value="{{ $item->ktgr_pending }}">
@@ -125,8 +129,8 @@
                                                     class="btn btn-inverse-warning btn-icon btn-sm remove-ktgrPD{{ $no }}">
                                                     <i data-feather="delete"></i>
                                                 </button>
-                                                <form action="{{ url("remove/$item->id/data=Ktgr-Pending") }}" method="post"
-                                                    id="remove-ktgrPD{{ $no }}">
+                                                <form action="{{ url("remove/$item->id/data=Ktgr-Pending") }}"
+                                                    method="post" id="remove-ktgrPD{{ $no }}">
                                                     @csrf
                                                     {{ method_field('patch') }}
                                                 </form>
@@ -150,4 +154,60 @@
 @push('custom-plug')
 @endpush
 @push('custom')
+    <script>
+        $('.store-ktgr-pd').on('click', function() {
+
+            if ($('#ktgrPD-name').val() === "") {
+                Swal.fire({
+                    title: "Field still empty!",
+                    text: "Pls fill the field",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else {
+                jQuery("#str-ktgrPD").submit();
+            }
+            return false;
+        });
+
+        for (let i = 0; i < 50; i++) {
+            // KTGR Pending
+            $('.edit-ktgrPD' + i + '').on('click', function() {
+                Swal.fire({
+                    title: "Continues Edit?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Yes',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "No"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        jQuery('#fm-ktgrPD' + i + '').submit();
+                    }
+                });
+
+                return false;
+            });
+            $('.remove-ktgrPD' + i + '').on('click', function() {
+                Swal.fire({
+                    title: "Are u Sure to Remove this Data?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Next',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        jQuery('#remove-ktgrPD' + i + '').submit();
+                    }
+                });
+
+                return false;
+            });
+            // END KTGR Pending
+        }
+    </script>
 @endpush

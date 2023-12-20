@@ -187,6 +187,15 @@
 @push('custom-plug')
 @endpush
 @push('custom')
+<script>
+$('.select-head').click(function () {
+    let head_id = $(this).closest('tr').find('td:eq(1)').text();
+    let name_head = $(this).closest('tr').find('td:eq(2)').text();
+    $('#head-of-sp').val(head_id);
+    $('#name-head').val(name_head);
+    $('#find-head').modal('hide');
+});
+</script>
     <script>
         $('.saved-sp').on('click', function() {
 

@@ -19,7 +19,7 @@
     <!-- Sweetalert -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.0/sweetalert2.css">
     <!-- endSweetalert -->
-    <link rel="stylesheet" href="{{ asset('assets') }}/vendors/datatables.net-bs5/dataTables.bootstrap5.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     
     <link rel="stylesheet" href="{{ asset('assets') }}/fonts/feather-font/css/iconfont.css">
     <!-- endinject -->

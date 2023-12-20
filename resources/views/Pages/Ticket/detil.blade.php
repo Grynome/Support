@@ -17,7 +17,7 @@
         }
     }
 @endphp
-@if(session()->has('whatsapp_link'))
+@if (session()->has('whatsapp_link'))
     <script>
         var whatsappLink = "{{ session('whatsapp_link') }}";
         window.open(whatsappLink, '_blank');
@@ -80,23 +80,19 @@
                                                                     data-bs-dismiss="modal" aria-label="btn-close"></button>
                                                             </div>
                                                             <div class="modal-body">
-                                                                <form
-                                                                    action="{{ url("Add-Attachment/ADM/$id") }}"
-                                                                    method="post"
-                                                                    enctype="multipart/form-data">
+                                                                <form action="{{ url("Add-Attachment/ADM/$id") }}"
+                                                                    method="post" enctype="multipart/form-data">
                                                                     @csrf
                                                                     <div class="row mb-1">
                                                                         <div class="col-md-6">
-                                                                            <p
-                                                                                class="form-label fw-bolder">
+                                                                            <p class="form-label fw-bolder">
                                                                                 Type Attach :
                                                                             </p>
                                                                             <select
                                                                                 class="js-example-basic-single form-select"
-                                                                                data-width="100%"
-                                                                                name="type_attach_adm" required>
-                                                                                <option
-                                                                                    value="">
+                                                                                data-width="100%" name="type_attach_adm"
+                                                                                required>
+                                                                                <option value="">
                                                                                     -
                                                                                     Choose
                                                                                     -
@@ -110,26 +106,22 @@
                                                                             </select>
                                                                         </div>
                                                                     </div>
-                                                                    <div
-                                                                        id="adm-upload-att" class="mb-1">
-                                                                        <input type="file"
-                                                                            class="file"
+                                                                    <div id="adm-upload-att" class="mb-1">
+                                                                        <input type="file" class="file"
                                                                             name="filesAdm[]"
                                                                             accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps"
                                                                             id="file-input" required />
                                                                     </div>
-                                                                    <div class="btn-group me-2" role="group" aria-label="First group">
-                                                                        <button
-                                                                            id="addt-upload-att"
+                                                                    <div class="btn-group me-2" role="group"
+                                                                        aria-label="First group">
+                                                                        <button id="addt-upload-att"
                                                                             class="btn btn-inverse-info btn-md"
                                                                             type="button">
                                                                             <i class="btn-icon-append icon-md"
                                                                                 data-feather="plus"></i>
                                                                         </button>
                                                                         &nbsp;
-                                                                        <button
-                                                                            class="btn btn-inverse-info"
-                                                                            type="submit">
+                                                                        <button class="btn btn-inverse-info" type="submit">
                                                                             <i class="btn-icon-append icon-md"
                                                                                 data-feather="save"></i> Save
                                                                         </button>
@@ -138,8 +130,8 @@
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button data-bs-toggle="modal"
-                                                                    class="btn btn-inverse-primary btn-sm"
-                                                                    type="button" data-bs-target="#list-bundled-adm">
+                                                                    class="btn btn-inverse-primary btn-sm" type="button"
+                                                                    data-bs-target="#list-bundled-adm">
                                                                     <i class="btn-icon-append icon-sm"
                                                                         data-feather="eye"></i> view Bundle
                                                                 </button>
@@ -150,15 +142,16 @@
                                                     </div>
                                                 </div>
                                                 {{-- MODAL view adm Attachment --}}
-                                                <div class="modal fade bd-example-modal-lg" id="list-bundled-adm" tabindex="-1"
-                                                    aria-labelledby="attachModal" aria-hidden="true">
+                                                <div class="modal fade bd-example-modal-lg" id="list-bundled-adm"
+                                                    tabindex="-1" aria-labelledby="attachModal" aria-hidden="true">
                                                     <div class="modal-dialog modal-lg">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <h5 class="modal-title">Had been Uploaded
                                                                 </h5>
                                                                 <button type="button" class="btn-close"
-                                                                    data-bs-dismiss="modal" aria-label="btn-close"></button>
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-label="btn-close"></button>
                                                             </div>
                                                             <div class="modal-body">
                                                                 <div class="table-responsive">
@@ -182,7 +175,8 @@
                                                                                 <tr>
                                                                                     <td>{{ $nono }}</td>
                                                                                     <td>{{ $item->filename }}</td>
-                                                                                    <td>{{ $item->type_attach == 1 ? 'Work Order' : 'Other Documents' }}</td>
+                                                                                    <td>{{ $item->type_attach == 1 ? 'Work Order' : 'Other Documents' }}
+                                                                                    </td>
                                                                                     <td>
                                                                                         <form method="POST"
                                                                                             action="{{ url("uploaded-download/ADM/$item->id") }}"
@@ -206,7 +200,8 @@
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-inverse-secondary"
-                                                                    data-bs-toggle="modal" data-bs-target="#adm-upload-file">Cancle</button>
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#adm-upload-file">Cancle</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -259,21 +254,24 @@
                                                                         $url = url("Detail/Ticket=$id");
                                                                         $message = urlencode("You have a new Ticket with No Ticket.$id\nClick link to open the page : ($url)");
                                                                         $get_number = $detail->first()->phone_en;
-                                                                        $phone = substr("$get_number",1);
+                                                                        $phone = substr("$get_number", 1);
                                                                     @endphp
                                                                     <a class="dropdown-item d-flex align-items-center"
-                                                                        href="https://wa.me/+62{{$phone}}?text={{$message}}" target="_blank"><i data-feather="link-2"
+                                                                        href="https://wa.me/+62{{ $phone }}?text={{ $message }}"
+                                                                        target="_blank"><i data-feather="link-2"
                                                                             class="icon-sm me-2"></i>
                                                                         <span class="">Send Reminder link</span>
                                                                     </a>
                                                                 @endif
                                                                 <a class="dropdown-item d-flex align-items-center change-engineer"
                                                                     href="#engineer-change" data-bs-toggle="modal"><i
-                                                                        data-feather="user-check" class="icon-sm me-2"></i>
+                                                                        data-feather="user-check"
+                                                                        class="icon-sm me-2"></i>
                                                                     <span class="">Change Engineer</span></a>
                                                                 <a class="dropdown-item d-flex align-items-center change-engineer"
                                                                     href="#l2-engineer-change" data-bs-toggle="modal"><i
-                                                                        data-feather="user-check" class="icon-sm me-2"></i>
+                                                                        data-feather="user-check"
+                                                                        class="icon-sm me-2"></i>
                                                                     <span class="">Change L2</span></a>
                                                                 @if ($detail->first()->status != 0 && $detail->first()->status != 9)
                                                                     <a class="dropdown-item d-flex align-items-center"
@@ -296,39 +294,43 @@
                                                                     href="#updt-info-ticket" data-bs-toggle="modal"><i
                                                                         data-feather="edit" class="icon-sm me-2"></i>
                                                                     <span class="">Edit Info Ticket</span></a>
-                                                                    @if (empty($detail->first()->full_name) || $detail->first()->type_ticket == 'Deploy' 
-                                                                        || $detail->first()->type_ticket == 'Staging' || $detail->first()->type_ticket == 'Inventory'
-                                                                        || $detail->first()->type_ticket == 'Delivery')
-                                                                        <form action="{{ url("Close/Ticket/$id") }}"
-                                                                            method="post" id="close-ticket-dt">
+                                                                @if (empty($detail->first()->full_name) ||
+                                                                        $detail->first()->type_ticket == 'Install' ||
+                                                                        $detail->first()->type_ticket == 'Deploy' ||
+                                                                        $detail->first()->type_ticket == 'Staging' ||
+                                                                        $detail->first()->type_ticket == 'Breakfix' ||
+                                                                        $detail->first()->type_ticket == 'Inventory' ||
+                                                                        $detail->first()->type_ticket == 'Delivery')
+                                                                    <form action="{{ url("Close/Ticket/$id") }}"
+                                                                        method="post" id="close-ticket-dt">
+                                                                        @csrf
+                                                                        {{ method_field('patch') }}
+                                                                    </form>
+                                                                    @if (($detail->first()->type_ticket == 'Inventory' || $detail->first()->type_ticket == 'Delivery') && $role == 16)
+                                                                        <a class="dropdown-item d-flex align-items-center close-ticket-dt"
+                                                                            href="javascript:;"><i data-feather="x-square"
+                                                                                class="icon-sm me-2"></i>
+                                                                            <span class="">Close Ticket</span>
+                                                                        </a>
+                                                                    @endif
+                                                                    @if ($role == 19)
+                                                                        <a class="dropdown-item d-flex align-items-center close-ticket-dt"
+                                                                            href="javascript:;"><i data-feather="x-square"
+                                                                                class="icon-sm me-2"></i>
+                                                                            <span class="">Close Ticket</span>
+                                                                        </a>
+                                                                        <a class="dropdown-item d-flex align-items-center cancle-ticket-dt"
+                                                                            href="javascript:;"><i data-feather="x-square"
+                                                                                class="icon-sm me-2"></i>
+                                                                            <span class="">Cancel Ticket</span>
+                                                                        </a>
+                                                                        <form action="{{ url("Ticket-Cancle/$id") }}"
+                                                                            method="post" id="cancle-ticket-dt">
                                                                             @csrf
                                                                             {{ method_field('patch') }}
                                                                         </form>
-                                                                        @if (($detail->first()->type_ticket == 'Inventory' || $detail->first()->type_ticket == 'Delivery') && $role == 16)
-                                                                            <a class="dropdown-item d-flex align-items-center close-ticket-dt"
-                                                                                href="javascript:;"><i data-feather="x-square"
-                                                                                    class="icon-sm me-2"></i>
-                                                                                <span class="">Close Ticket</span>
-                                                                            </a>
-                                                                        @endif
-                                                                        @if ($role == 19)
-                                                                            <a class="dropdown-item d-flex align-items-center close-ticket-dt"
-                                                                                href="javascript:;"><i data-feather="x-square"
-                                                                                    class="icon-sm me-2"></i>
-                                                                                <span class="">Close Ticket</span>
-                                                                            </a>
-                                                                            <a class="dropdown-item d-flex align-items-center cancle-ticket-dt"
-                                                                                href="javascript:;"><i data-feather="x-square"
-                                                                                    class="icon-sm me-2"></i>
-                                                                                <span class="">Cancel Ticket</span>
-                                                                            </a>
-                                                                            <form action="{{ url("Ticket-Cancle/$id") }}"
-                                                                                method="post" id="cancle-ticket-dt">
-                                                                                @csrf
-                                                                                {{ method_field('patch') }}
-                                                                            </form>
-                                                                        @endif
                                                                     @endif
+                                                                @endif
                                                             @elseif($detail->first()->status == 10)
                                                                 @if (!empty($detail->first()->full_name))
                                                                     <a class="dropdown-item d-flex align-items-center"
@@ -361,7 +363,7 @@
                                                                 href="#list-attach" data-bs-toggle="modal"><i
                                                                     data-feather="file" class="icon-sm me-2"></i>
                                                                 <span class="">Attachment</span></a>
-                                                                
+
                                                             <a class="dropdown-item d-flex align-items-center change-engineer"
                                                                 href="#engineer-change" data-bs-toggle="modal"><i
                                                                     data-feather="user-check" class="icon-sm me-2"></i>
@@ -370,413 +372,411 @@
                                                     </div>
                                                     @if ($depart == 4 || $role == 20 || $role == 15)
                                                         @if (@$detail->first()->status != 10)
-                                                        <div class="modal fade" id="updt-info-ticket"
-                                                            tabindex="-1"
-                                                            aria-labelledby="sourceModalLabel"
-                                                            aria-hidden="true">
-                                                            <div class="modal-dialog">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title"
-                                                                            id="sourceModalLabel">
-                                                                            Edit Ticket
-                                                                        </h5>
-                                                                        <button type="button"
-                                                                            class="btn-close"
-                                                                            data-bs-dismiss="modal"
-                                                                            aria-label="btn-close"></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <form
-                                                                            action="{{ url("edit-InfoTicket/Ticket=$id") }}"
-                                                                            method="post"
-                                                                            id="form-updt-ticket">
-                                                                            @csrf
-                                                                            {{ method_field('patch') }}
-                                                                            <div
-                                                                                class="row">
-                                                                                <div class="col-md-6">
-                                                                                    <p
-                                                                                        class="form-label fw-bolder">
-                                                                                        Type Ticket :
-                                                                                    </p>
-                                                                                    <select
-                                                                                        class="js-example-basic-single form-select"
-                                                                                        data-width="100%"
-                                                                                        name="fm_dt_type_ticket">
-                                                                                        <option
-                                                                                            value="">
-                                                                                            -
-                                                                                            Choose
-                                                                                            -
-                                                                                        </option>
-                                                                                        @foreach ($typeTicket as $item)
-                                                                                            <option
-                                                                                                value="{{ $item->id }}"
-                                                                                                {{ $item->id == @$detail->first()->key_type_ticket ? 'selected' : '' }}>
-                                                                                                {{ $item->type_name }}
+                                                            <div class="modal fade" id="updt-info-ticket" tabindex="-1"
+                                                                aria-labelledby="sourceModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="sourceModalLabel">
+                                                                                Edit Ticket
+                                                                            </h5>
+                                                                            <button type="button" class="btn-close"
+                                                                                data-bs-dismiss="modal"
+                                                                                aria-label="btn-close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <form
+                                                                                action="{{ url("edit-InfoTicket/Ticket=$id") }}"
+                                                                                method="post" id="form-updt-ticket">
+                                                                                @csrf
+                                                                                {{ method_field('patch') }}
+                                                                                <div class="row">
+                                                                                    <div class="col-md-6">
+                                                                                        <p class="form-label fw-bolder">
+                                                                                            Type Ticket :
+                                                                                        </p>
+                                                                                        <select
+                                                                                            class="js-example-basic-single form-select"
+                                                                                            data-width="100%"
+                                                                                            name="fm_dt_type_ticket">
+                                                                                            <option value="">
+                                                                                                -
+                                                                                                Choose
+                                                                                                -
                                                                                             </option>
-                                                                                        @endforeach
-                                                                                    </select>
-                                                                                </div>
-                                                                                <div
-                                                                                    class="col-md-6">
-                                                                                    <p
-                                                                                        class="form-label fw-bolder">
-                                                                                        Case ID :
-                                                                                    </p>
-                                                                                    <input class="form-control" name="dt_csid" type="text"
-                                                                                        value="{{ $detail->first()->case_id }}" placeholder="Type Reference ID">
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <p
-                                                                                        class="form-label fw-bolder">
-                                                                                        Source :
-                                                                                    </p>
-                                                                                    <select
-                                                                                        class="js-example-basic-single form-select"
-                                                                                        data-width="100%"
-                                                                                        name="fm_dt_src">
-                                                                                        <option
-                                                                                            value="">
-                                                                                            -
-                                                                                            Choose
-                                                                                            -
-                                                                                        </option>
-                                                                                        @foreach ($source as $item)
-                                                                                            <option
-                                                                                                value="{{ $item->id }}"
-                                                                                                {{ $item->id == @$detail->first()->sumber_id ? 'selected' : '' }}>
-                                                                                                {{ $item->sumber_name }}
+                                                                                            @foreach ($typeTicket as $item)
+                                                                                                <option
+                                                                                                    value="{{ $item->id }}"
+                                                                                                    {{ $item->id == @$detail->first()->key_type_ticket ? 'selected' : '' }}>
+                                                                                                    {{ $item->type_name }}
+                                                                                                </option>
+                                                                                            @endforeach
+                                                                                        </select>
+                                                                                    </div>
+                                                                                    <div class="col-md-6">
+                                                                                        <p class="form-label fw-bolder">
+                                                                                            Case ID :
+                                                                                        </p>
+                                                                                        <input class="form-control"
+                                                                                            name="dt_csid" type="text"
+                                                                                            value="{{ $detail->first()->case_id }}"
+                                                                                            placeholder="Type Reference ID">
+                                                                                    </div>
+                                                                                    <div class="col-md-6">
+                                                                                        <p class="form-label fw-bolder">
+                                                                                            Source :
+                                                                                        </p>
+                                                                                        <select
+                                                                                            class="js-example-basic-single form-select"
+                                                                                            data-width="100%"
+                                                                                            name="fm_dt_src">
+                                                                                            <option value="">
+                                                                                                -
+                                                                                                Choose
+                                                                                                -
                                                                                             </option>
-                                                                                        @endforeach
-                                                                                    </select>
+                                                                                            @foreach ($source as $item)
+                                                                                                <option
+                                                                                                    value="{{ $item->id }}"
+                                                                                                    {{ $item->id == @$detail->first()->sumber_id ? 'selected' : '' }}>
+                                                                                                    {{ $item->sumber_name }}
+                                                                                                </option>
+                                                                                            @endforeach
+                                                                                        </select>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        </form>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button"
-                                                                            class="btn btn-secondary"
-                                                                            data-bs-dismiss="modal">Back</button>
-                                                                        <button type="button"
-                                                                            class="btn btn-primary save-updt-ticket">Save</button>
+                                                                            </form>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button"
+                                                                                class="btn btn-secondary"
+                                                                                data-bs-dismiss="modal">Back</button>
+                                                                            <button type="button"
+                                                                                class="btn btn-primary save-updt-ticket">Save</button>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="modal fade bd-example-modal-lg" id="updt-unit-tkt"
-                                                            tabindex="-1" aria-labelledby="sourceModalLabel"
-                                                            aria-hidden="true">
-                                                            <div class="modal-dialog modal-lg">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title" id="sourceModalLabel">
-                                                                            Update Unit
-                                                                        </h5>
-                                                                        <button type="button" class="btn-close"
-                                                                            data-bs-dismiss="modal"
-                                                                            aria-label="btn-close"></button>
+                                                            <div class="modal fade bd-example-modal-lg" id="updt-unit-tkt"
+                                                                tabindex="-1" aria-labelledby="sourceModalLabel"
+                                                                aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="sourceModalLabel">
+                                                                                Update Unit
+                                                                            </h5>
+                                                                            <button type="button" class="btn-close"
+                                                                                data-bs-dismiss="modal"
+                                                                                aria-label="btn-close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <form
+                                                                                action="{{ url("Update-Unit/$id/Detail-Ticket") }}"
+                                                                                method="post" id="dt-form-edit-unit">
+                                                                                @csrf
+                                                                                {{ method_field('patch') }}
+                                                                                <div class="row mb-3">
+                                                                                    <div class="col-md-3">
+                                                                                        <div
+                                                                                            class="justify-content-between flex-grow-1">
+                                                                                            <div>
+                                                                                                <p
+                                                                                                    class="form-label fw-bolder">
+                                                                                                    Merk :
+                                                                                                </p>
+                                                                                                <select
+                                                                                                    class="js-example-basic-single form-select"
+                                                                                                    data-width="100%"
+                                                                                                    name="dt_merk_u"
+                                                                                                    id="dt-merk-u"
+                                                                                                    {{ $disabled }}>
+                                                                                                    <option value="">
+                                                                                                        -
+                                                                                                        Choose
+                                                                                                        -
+                                                                                                    </option>
+                                                                                                    @foreach ($merk as $item)
+                                                                                                        <option
+                                                                                                            value="{{ $item->id ?? '' }}"
+                                                                                                            {{ @$detail->first()->merk == $item->merk ? 'selected' : '' }}>
+                                                                                                            {{ $item->merk ?? '' }}
+                                                                                                        </option>
+                                                                                                    @endforeach
+                                                                                                </select>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-md-3">
+                                                                                        <div
+                                                                                            class="justify-content-between flex-grow-1">
+                                                                                            <div>
+                                                                                                <p
+                                                                                                    class="form-label fw-bolder">
+                                                                                                    Category :
+                                                                                                </p>
+                                                                                                <select
+                                                                                                    class="js-example-basic-single form-select"
+                                                                                                    data-width="100%"
+                                                                                                    name="dt_ktgr_u"
+                                                                                                    id="dt-ktgr-u"
+                                                                                                    {{ $disabled }}>
+                                                                                                    <option value="">
+                                                                                                        -
+                                                                                                        Choose
+                                                                                                        -
+                                                                                                    </option>
+                                                                                                    @foreach ($ktgr_unit as $item)
+                                                                                                        <option
+                                                                                                            value="{{ $item->category_id ?? '' }}"
+                                                                                                            {{ @$detail->first()->category_name == $item->category_name ? 'selected' : '' }}>
+                                                                                                            {{ $item->category_name ?? '' }}
+                                                                                                        </option>
+                                                                                                    @endforeach
+                                                                                                </select>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-md-6">
+                                                                                        <p class="form-label fw-bolder">
+                                                                                            Type :
+                                                                                        </p>
+                                                                                        <div class="input-group mb-2">
+                                                                                            <select
+                                                                                                class="js-example-basic-single form-select"
+                                                                                                data-width="80%"
+                                                                                                name="dt_type_u"
+                                                                                                id="dt-type-u"
+                                                                                                {{ $disabled }}>
+                                                                                                <option value="">
+                                                                                                    -
+                                                                                                    Choose
+                                                                                                    -
+                                                                                                </option>
+                                                                                            </select>
+                                                                                            <button
+                                                                                                class="btn btn-inverse-primary"
+                                                                                                data-bs-toggle="modal"
+                                                                                                data-bs-target="#unitTypeDT"
+                                                                                                type="button"><i
+                                                                                                    class="btn-icon-append icon-lg"
+                                                                                                    data-feather="plus"></i>
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row">
+                                                                                    <div class="col-md-6">
+                                                                                        <div
+                                                                                            class="justify-content-between flex-grow-1">
+                                                                                            <label for="input-PN/SN"
+                                                                                                class="form-label fw-bolder">PN/SN
+                                                                                                Unit : </label>
+                                                                                            <div class="input-group mb-3"
+                                                                                                id="input-PN/SN">
+                                                                                                <input type="text"
+                                                                                                    name="dt_pn_unit"
+                                                                                                    class="form-control"
+                                                                                                    placeholder="Product Number"
+                                                                                                    aria-label="Product Number"
+                                                                                                    aria-describedby="basic-addon2"
+                                                                                                    id="unit-pn"
+                                                                                                    value="{{ @$detail->first()->pn }}">
+                                                                                                <div
+                                                                                                    class="input-group-append">
+                                                                                                    <button
+                                                                                                        class="btn btn-inverse-secondary"
+                                                                                                        type="button"
+                                                                                                        style="border : none;"
+                                                                                                        disabled>/</button>
+                                                                                                </div>
+                                                                                                <input type="text"
+                                                                                                    name="dt_sn_unit"
+                                                                                                    class="form-control"
+                                                                                                    placeholder="Serial Number"
+                                                                                                    aria-label="Serial Number"
+                                                                                                    aria-describedby="basic-addon2"
+                                                                                                    id="unit-sn"
+                                                                                                    value="{{ $detail->first()->sn }}">
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-md-6">
+                                                                                        <label for="edt-return-or-not"
+                                                                                            class="form-label fw-bolder">Warranty
+                                                                                            : </label>
+                                                                                        <fieldset id="edt-return-or-not">
+                                                                                            <div
+                                                                                                class="form-check form-check-inline">
+                                                                                                <input type="radio"
+                                                                                                    class="form-check-input"
+                                                                                                    value="1"
+                                                                                                    name="edt_warranty_dt"
+                                                                                                    {{ @$detail->first()->info_tiket->warranty == 1 ? 'checked' : '' }}>
+                                                                                                <label
+                                                                                                    class="form-check-label">
+                                                                                                    Yes
+                                                                                                </label>
+                                                                                            </div>
+                                                                                            <div
+                                                                                                class="form-check form-check-inline">
+                                                                                                <input type="radio"
+                                                                                                    class="form-check-input"
+                                                                                                    value="0"
+                                                                                                    name="edt_warranty_dt"
+                                                                                                    {{ @$detail->first()->info_tiket->warranty == 0 ? 'checked' : '' }}>
+                                                                                                <label
+                                                                                                    class="form-check-label">
+                                                                                                    No
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        </fieldset>
+                                                                                    </div>
+                                                                                    <div class="col-md-12">
+                                                                                        <div class="row">
+                                                                                            <div class="col-md-6">
+                                                                                                <div
+                                                                                                    class="justify-content-between flex-grow-1">
+                                                                                                    <div>
+                                                                                                        <p
+                                                                                                            class="form-label fw-bolder">
+                                                                                                            Problem :
+                                                                                                        </p>
+                                                                                                        <textarea class="form-control txt-note" rows="3" placeholder="Type Note" name="edt_prob">{{ @$detail->first()->problem }}</textarea>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="col-md-6">
+                                                                                                <div
+                                                                                                    class="justify-content-between flex-grow-1 border-bottom-dt">
+                                                                                                    <div>
+                                                                                                        <p
+                                                                                                            class="form-label fw-bolder">
+                                                                                                            Action Plan :
+                                                                                                        </p>
+                                                                                                        <textarea class="form-control txt-note" rows="3" placeholder="Type Note" name="edt_act_plan">{{ @$detail->first()->action_plan }}</textarea>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button"
+                                                                                class="btn btn-secondary"
+                                                                                data-bs-dismiss="modal">Cancel</button>
+                                                                            <button type="button"
+                                                                                class="btn btn-success dt-btn-save-edit-unit"
+                                                                                id="saveButton">Save</button>
+                                                                        </div>
                                                                     </div>
-                                                                    <div class="modal-body">
-                                                                        <form
-                                                                            action="{{ url("Update-Unit/$id/Detail-Ticket") }}"
-                                                                            method="post" id="dt-form-edit-unit">
-                                                                            @csrf
-                                                                            {{ method_field('patch') }}
-                                                                            <div class="row mb-3">
-                                                                                <div class="col-md-3">
-                                                                                    <div
-                                                                                        class="justify-content-between flex-grow-1">
-                                                                                        <div>
-                                                                                            <p
-                                                                                                class="form-label fw-bolder">
-                                                                                                Merk :
-                                                                                            </p>
-                                                                                            <select
-                                                                                                class="js-example-basic-single form-select"
-                                                                                                data-width="100%"
-                                                                                                name="dt_merk_u"
-                                                                                                id="dt-merk-u"
-                                                                                                {{ $disabled }}>
-                                                                                                <option value="">
-                                                                                                    -
-                                                                                                    Choose
-                                                                                                    -
-                                                                                                </option>
-                                                                                                @foreach ($merk as $item)
-                                                                                                    <option
-                                                                                                        value="{{ $item->id ?? '' }}"
-                                                                                                        {{ @$detail->first()->merk == $item->merk ? 'selected' : '' }}>
-                                                                                                        {{ $item->merk ?? '' }}
-                                                                                                    </option>
-                                                                                                @endforeach
-                                                                                            </select>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-3">
-                                                                                    <div
-                                                                                        class="justify-content-between flex-grow-1">
-                                                                                        <div>
-                                                                                            <p
-                                                                                                class="form-label fw-bolder">
-                                                                                                Category :
-                                                                                            </p>
-                                                                                            <select
-                                                                                                class="js-example-basic-single form-select"
-                                                                                                data-width="100%"
-                                                                                                name="dt_ktgr_u"
-                                                                                                id="dt-ktgr-u"
-                                                                                                {{ $disabled }}>
-                                                                                                <option value="">
-                                                                                                    -
-                                                                                                    Choose
-                                                                                                    -
-                                                                                                </option>
-                                                                                                @foreach ($ktgr_unit as $item)
-                                                                                                    <option
-                                                                                                        value="{{ $item->category_id ?? '' }}"
-                                                                                                        {{ @$detail->first()->category_name == $item->category_name ? 'selected' : '' }}>
-                                                                                                        {{ $item->category_name ?? '' }}
-                                                                                                    </option>
-                                                                                                @endforeach
-                                                                                            </select>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <p
-                                                                                        class="form-label fw-bolder">
-                                                                                        Type :
-                                                                                    </p>
-                                                                                    <div class="input-group mb-2">
+                                                                </div>
+                                                            </div>
+                                                            {{-- Modal Add Type --}}
+                                                            <div class="modal fade" id="unitTypeDT" tabindex="-1"
+                                                                aria-labelledby="slaModalLabel" aria-hidden="true"
+                                                                data-bs-backdrop="static">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="slaModalLabel">
+                                                                                Update Type Unit
+                                                                            </h5>
+                                                                            <button type="button" class="btn-close"
+                                                                                data-bs-dismiss="modal"
+                                                                                aria-label="btn-close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <p>
+                                                                                # This is for adding <b>'Unit Type'</b> that
+                                                                                doesn't exist in <b>'Select Type Unit'</b>,
+                                                                                after insert <b>'Type'</b> will update the
+                                                                                <b>'type Unit'</b> on this ticket.
+                                                                                Make sure the <b>'Type Unit'</b> is doesn't
+                                                                                exist!
+                                                                            </p>
+                                                                            <hr>
+                                                                            <form
+                                                                                action="{{ url("dt-Type/$id/Added-Updated") }}"
+                                                                                id="fm-dt-type-not-exist" method="post">
+                                                                                @csrf
+                                                                                <div class="row">
+                                                                                    <div class="col-md-6">
+                                                                                        <p class="form-label fw-bolder">
+                                                                                            Merk :
+                                                                                        </p>
                                                                                         <select
                                                                                             class="js-example-basic-single form-select"
-                                                                                            data-width="80%"
-                                                                                            name="dt_type_u"
-                                                                                            id="dt-type-u"
+                                                                                            data-width="100%"
+                                                                                            name="not_exist_merk"
+                                                                                            id="dt-val-merk-ne"
                                                                                             {{ $disabled }}>
                                                                                             <option value="">
                                                                                                 -
                                                                                                 Choose
                                                                                                 -
                                                                                             </option>
+                                                                                            @foreach ($merk as $item)
+                                                                                                <option
+                                                                                                    value="{{ $item->id ?? '' }}"
+                                                                                                    {{ @$detail->first()->merk == $item->merk ? 'selected' : '' }}>
+                                                                                                    {{ $item->merk ?? '' }}
+                                                                                                </option>
+                                                                                            @endforeach
                                                                                         </select>
-                                                                                        <button class="btn btn-inverse-primary" data-bs-toggle="modal"
-                                                                                            data-bs-target="#unitTypeDT" type="button"><i
-                                                                                                class="btn-icon-append icon-lg"
-                                                                                                data-feather="plus"></i>
-                                                                                        </button>
                                                                                     </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-6">
-                                                                                    <div
-                                                                                        class="justify-content-between flex-grow-1">
-                                                                                        <label for="input-PN/SN"
-                                                                                            class="form-label fw-bolder">PN/SN
-                                                                                            Unit : </label>
-                                                                                        <div class="input-group mb-3" id="input-PN/SN">
-                                                                                            <input type="text"
-                                                                                                name="dt_pn_unit"
-                                                                                                class="form-control"
-                                                                                                placeholder="Product Number"
-                                                                                                aria-label="Product Number"
-                                                                                                aria-describedby="basic-addon2"
-                                                                                                id="unit-pn"
-                                                                                                value="{{ @$detail->first()->pn }}">
-                                                                                            <div
-                                                                                                class="input-group-append">
-                                                                                                <button
-                                                                                                    class="btn btn-inverse-secondary"
-                                                                                                    type="button"
-                                                                                                    style="border : none;"
-                                                                                                    disabled>/</button>
-                                                                                            </div>
-                                                                                            <input type="text"
-                                                                                                name="dt_sn_unit"
-                                                                                                class="form-control"
-                                                                                                placeholder="Serial Number"
-                                                                                                aria-label="Serial Number"
-                                                                                                aria-describedby="basic-addon2"
-                                                                                                id="unit-sn"
-                                                                                                value="{{ $detail->first()->sn }}">
+                                                                                    <div class="col-md-6 mb-3">
+                                                                                        <p class="form-label fw-bolder">
+                                                                                            Category :
+                                                                                        </p>
+                                                                                        <select
+                                                                                            class="js-example-basic-single form-select"
+                                                                                            data-width="100%"
+                                                                                            name="not_exist_ktgr"
+                                                                                            id="dt-val-ktgr-ne"
+                                                                                            {{ $disabled }}>
+                                                                                            <option value="">
+                                                                                                -
+                                                                                                Choose
+                                                                                                -
+                                                                                            </option>
+                                                                                            @foreach ($ktgr_unit as $item)
+                                                                                                <option
+                                                                                                    value="{{ $item->category_id ?? '' }}"
+                                                                                                    {{ @$detail->first()->category_name == $item->category_name ? 'selected' : '' }}>
+                                                                                                    {{ $item->category_name ?? '' }}
+                                                                                                </option>
+                                                                                            @endforeach
+                                                                                        </select>
+                                                                                    </div>
+                                                                                    <div class="col-md-6">
+                                                                                        <div class="mb-3">
+                                                                                            <label for="not-exist-type-add"
+                                                                                                class="form-label fw-bolder">Type
+                                                                                                Unit</label>
+                                                                                            <input class="form-control"
+                                                                                                name="dt_type_unit_add"
+                                                                                                id="not-exist-type-add"
+                                                                                                type="text"
+                                                                                                placeholder="Type Unit">
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
-                                                                                <div class="col-md-6">
-                                                                                    <label for="edt-return-or-not"
-                                                                                        class="form-label fw-bolder">Warranty
-                                                                                        : </label>
-                                                                                    <fieldset id="edt-return-or-not">
-                                                                                        <div
-                                                                                            class="form-check form-check-inline">
-                                                                                            <input type="radio"
-                                                                                                class="form-check-input"
-                                                                                                value="1"
-                                                                                                name="edt_warranty_dt"
-                                                                                                {{ @$detail->first()->info_tiket->warranty == 1 ? 'checked' : '' }}>
-                                                                                            <label
-                                                                                                class="form-check-label">
-                                                                                                Yes
-                                                                                            </label>
-                                                                                        </div>
-                                                                                        <div
-                                                                                            class="form-check form-check-inline">
-                                                                                            <input type="radio"
-                                                                                                class="form-check-input"
-                                                                                                value="0"
-                                                                                                name="edt_warranty_dt"
-                                                                                                {{ @$detail->first()->info_tiket->warranty == 0 ? 'checked' : '' }}>
-                                                                                            <label
-                                                                                                class="form-check-label">
-                                                                                                No
-                                                                                            </label>
-                                                                                        </div>
-                                                                                    </fieldset>
-                                                                                </div>
-                                                                                <div class="col-md-12">
-                                                                                    <div class="row">
-                                                                                        <div class="col-md-6">
-                                                                                            <div
-                                                                                                class="justify-content-between flex-grow-1">
-                                                                                                <div>
-                                                                                                    <p
-                                                                                                        class="form-label fw-bolder">
-                                                                                                        Problem :
-                                                                                                    </p>
-                                                                                                    <textarea class="form-control txt-note" rows="3"
-                                                                                                            placeholder="Type Note" name="edt_prob">{{@$detail->first()->problem}}</textarea>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div class="col-md-6">
-                                                                                            <div
-                                                                                                class="justify-content-between flex-grow-1 border-bottom-dt">
-                                                                                                <div>
-                                                                                                    <p
-                                                                                                        class="form-label fw-bolder">
-                                                                                                        Action Plan :
-                                                                                                    </p>
-                                                                                                    <textarea class="form-control txt-note" rows="3"
-                                                                                                            placeholder="Type Note" name="edt_act_plan">{{@$detail->first()->action_plan}}</textarea>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </form>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary"
-                                                                            data-bs-dismiss="modal">Cancel</button>
-                                                                        <button type="button"
-                                                                            class="btn btn-success dt-btn-save-edit-unit" id="saveButton">Save</button>
+                                                                            </form>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button"
+                                                                                class="btn btn-inverse-secondary"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#updt-unit-tkt">Back</button>
+                                                                            <button type="button"
+                                                                                class="btn btn-success add-type-not-exist">Save</button>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        {{-- Modal Add Type --}}
-                                                        <div class="modal fade" id="unitTypeDT" tabindex="-1"
-                                                            aria-labelledby="slaModalLabel" aria-hidden="true"
-                                                            data-bs-backdrop="static">
-                                                            <div class="modal-dialog">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title" id="slaModalLabel">Update Type Unit
-                                                                        </h5>
-                                                                        <button type="button" class="btn-close"
-                                                                            data-bs-dismiss="modal"
-                                                                            aria-label="btn-close"></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <p>
-                                                                            # This is for adding <b>'Unit Type'</b> that doesn't exist in <b>'Select Type Unit'</b>, after insert <b>'Type'</b> will update the <b>'type Unit'</b> on this ticket.
-                                                                            Make sure the <b>'Type Unit'</b> is doesn't exist!
-                                                                        </p>
-                                                                        <hr>
-                                                                        <form action="{{url("dt-Type/$id/Added-Updated")}}" id="fm-dt-type-not-exist" method="post">
-                                                                        @csrf
-                                                                            <div class="row">
-                                                                                <div class="col-md-6">
-                                                                                    <p
-                                                                                        class="form-label fw-bolder">
-                                                                                        Merk :
-                                                                                    </p>
-                                                                                    <select
-                                                                                        class="js-example-basic-single form-select"
-                                                                                        data-width="100%"
-                                                                                        name="not_exist_merk"
-                                                                                        id="dt-val-merk-ne"
-                                                                                        {{ $disabled }}>
-                                                                                        <option value="">
-                                                                                            -
-                                                                                            Choose
-                                                                                            -
-                                                                                        </option>
-                                                                                        @foreach ($merk as $item)
-                                                                                            <option
-                                                                                                value="{{ $item->id ?? '' }}"
-                                                                                                {{ @$detail->first()->merk == $item->merk ? 'selected' : '' }}>
-                                                                                                {{ $item->merk ?? '' }}
-                                                                                            </option>
-                                                                                        @endforeach
-                                                                                    </select>
-                                                                                </div>
-                                                                                <div class="col-md-6 mb-3">
-                                                                                    <p
-                                                                                        class="form-label fw-bolder">
-                                                                                        Category :
-                                                                                    </p>
-                                                                                    <select
-                                                                                        class="js-example-basic-single form-select"
-                                                                                        data-width="100%"
-                                                                                        name="not_exist_ktgr"
-                                                                                        id="dt-val-ktgr-ne"
-                                                                                        {{ $disabled }}>
-                                                                                        <option value="">
-                                                                                            -
-                                                                                            Choose
-                                                                                            -
-                                                                                        </option>
-                                                                                        @foreach ($ktgr_unit as $item)
-                                                                                            <option
-                                                                                                value="{{ $item->category_id ?? '' }}"
-                                                                                                {{ @$detail->first()->category_name == $item->category_name ? 'selected' : '' }}>
-                                                                                                {{ $item->category_name ?? '' }}
-                                                                                            </option>
-                                                                                        @endforeach
-                                                                                    </select>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <div class="mb-3">
-                                                                                        <label for="not-exist-type-add"
-                                                                                            class="form-label fw-bolder">Type
-                                                                                            Unit</label>
-                                                                                        <input
-                                                                                            class="form-control"
-                                                                                            name="dt_type_unit_add"
-                                                                                            id="not-exist-type-add"
-                                                                                            type="text"
-                                                                                            placeholder="Type Unit">
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </form>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button"
-                                                                            class="btn btn-inverse-secondary"
-                                                                            data-bs-toggle="modal"
-                                                                            data-bs-target="#updt-unit-tkt">Back</button>
-                                                                        <button type="button" class="btn btn-success add-type-not-exist">Save</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
                                                         @endif
                                                     @elseif($depart == 9)
                                                         <div class="modal fade bd-example-modal-lg" id="awb-log-data"
@@ -840,9 +840,8 @@
                                                 </div>
                                             @endif
                                             {{-- MODAL Engineer --}}
-                                            <div class="modal fade bd-example-modal-lg" id="find-engineer"
-                                                tabindex="-1" aria-labelledby="projectModal"
-                                                aria-hidden="true">
+                                            <div class="modal fade bd-example-modal-lg" id="find-engineer" tabindex="-1"
+                                                aria-labelledby="projectModal" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -851,8 +850,7 @@
                                                                 Engineer
                                                             </h5>
                                                             <button type="button" class="btn-close"
-                                                                data-bs-dismiss="modal"
-                                                                aria-label="btn-close"></button>
+                                                                data-bs-dismiss="modal" aria-label="btn-close"></button>
                                                         </div>
                                                         <div class="modal-body">
                                                             <div class="table-responsive">
@@ -902,8 +900,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button"
-                                                                class="btn btn-inverse-primary"
+                                                            <button type="button" class="btn btn-inverse-primary"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#engineer-change">Back</button>
                                                         </div>
@@ -911,8 +908,7 @@
                                                 </div>
                                             </div>
                                             <div class="modal fade bd-example-modal-lg" id="engineer-change"
-                                                tabindex="-1" aria-labelledby="sourceModalLabel"
-                                                aria-hidden="true">
+                                                tabindex="-1" aria-labelledby="sourceModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -921,12 +917,10 @@
                                                                 to Take ticket
                                                             </h5>
                                                             <button type="button" class="btn-close"
-                                                                data-bs-dismiss="modal"
-                                                                aria-label="btn-close"></button>
+                                                                data-bs-dismiss="modal" aria-label="btn-close"></button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <form
-                                                                action="{{ url("Update/$id/Change-Engineer") }}"
+                                                            <form action="{{ url("Update/$id/Change-Engineer") }}"
                                                                 method="post" id="update-change-engineer">
                                                                 @csrf
                                                                 {{ method_field('patch') }}
@@ -934,25 +928,18 @@
                                                                     <div class="col-md-6">
                                                                         <div class="mb-3">
                                                                             <div class="input-group mb-3">
-                                                                                <input type="text"
-                                                                                    name="sp_en_name"
-                                                                                    id="get-sp-en"
-                                                                                    style="display: none;">
-                                                                                <input type="text"
-                                                                                    name="nik_engineer"
+                                                                                <input type="text" name="sp_en_name"
+                                                                                    id="get-sp-en" style="display: none;">
+                                                                                <input type="text" name="nik_engineer"
                                                                                     id="id-engineer"
                                                                                     style="display: none;">
-                                                                                <input type="text"
-                                                                                    class="form-control"
+                                                                                <input type="text" class="form-control"
                                                                                     placeholder="Engineer Name"
                                                                                     aria-label="Engineer name"
                                                                                     aria-describedby="basic-addon2"
-                                                                                    id="engineer-name"
-                                                                                    disabled>
-                                                                                <div
-                                                                                    class="input-group-append">
-                                                                                    <button
-                                                                                        class="btn btn-inverse-primary"
+                                                                                    id="engineer-name" disabled>
+                                                                                <div class="input-group-append">
+                                                                                    <button class="btn btn-inverse-primary"
                                                                                         type="button"
                                                                                         data-bs-toggle="modal"
                                                                                         data-bs-target="#find-engineer"><i
@@ -976,8 +963,7 @@
                                             </div>
                                             {{-- MODAL L2 --}}
                                             <div class="modal fade bd-example-modal-lg" id="find-l2engineer"
-                                                tabindex="-1" aria-labelledby="projectModal"
-                                                aria-hidden="true">
+                                                tabindex="-1" aria-labelledby="projectModal" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -986,8 +972,7 @@
                                                                 Engineer
                                                             </h5>
                                                             <button type="button" class="btn-close"
-                                                                data-bs-dismiss="modal"
-                                                                aria-label="btn-close"></button>
+                                                                data-bs-dismiss="modal" aria-label="btn-close"></button>
                                                         </div>
                                                         <div class="modal-body">
                                                             <div class="table-responsive">
@@ -1037,8 +1022,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button"
-                                                                class="btn btn-inverse-primary"
+                                                            <button type="button" class="btn btn-inverse-primary"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#l2-engineer-change">Back</button>
                                                         </div>
@@ -1046,8 +1030,7 @@
                                                 </div>
                                             </div>
                                             <div class="modal fade bd-example-modal-lg" id="l2-engineer-change"
-                                                tabindex="-1" aria-labelledby="sourceModalLabel"
-                                                aria-hidden="true">
+                                                tabindex="-1" aria-labelledby="sourceModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -1056,12 +1039,10 @@
                                                                 to Take ticket
                                                             </h5>
                                                             <button type="button" class="btn-close"
-                                                                data-bs-dismiss="modal"
-                                                                aria-label="btn-close"></button>
+                                                                data-bs-dismiss="modal" aria-label="btn-close"></button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <form
-                                                                action="{{ url("Update/$id/Change-L2") }}"
+                                                            <form action="{{ url("Update/$id/Change-L2") }}"
                                                                 method="post" id="update-change-l2-engineer">
                                                                 @csrf
                                                                 {{ method_field('patch') }}
@@ -1069,21 +1050,15 @@
                                                                     <div class="col-md-6">
                                                                         <div class="mb-3">
                                                                             <div class="input-group mb-3">
-                                                                                <input type="text"
-                                                                                    name="nik_engineer"
-                                                                                    id="id-l2"
-                                                                                    style="display: none;">
-                                                                                <input type="text"
-                                                                                    class="form-control"
+                                                                                <input type="text" name="nik_engineer"
+                                                                                    id="id-l2" style="display: none;">
+                                                                                <input type="text" class="form-control"
                                                                                     placeholder="Engineer Name"
                                                                                     aria-label="Engineer name"
                                                                                     aria-describedby="basic-addon2"
-                                                                                    id="l2-name"
-                                                                                    disabled>
-                                                                                <div
-                                                                                    class="input-group-append">
-                                                                                    <button
-                                                                                        class="btn btn-inverse-primary"
+                                                                                    id="l2-name" disabled>
+                                                                                <div class="input-group-append">
+                                                                                    <button class="btn btn-inverse-primary"
                                                                                         type="button"
                                                                                         data-bs-toggle="modal"
                                                                                         data-bs-target="#find-l2engineer"><i
@@ -1537,11 +1512,10 @@
                                                                                                             </div>
                                                                                                             <div
                                                                                                                 class="justify-content-between flex-grow-1">
-                                                                                                                    <p class="text-body fw-bolder"
-                                                                                                                        type="Address:">
-                                                                                                                            <textarea name="address_eu" rows="2"
-                                                                                                                            placeholder="Type Address" {{$readonly}}>{{ @$detail->first()->address }}</textarea>
-                                                                                                                    </p>
+                                                                                                                <p class="text-body fw-bolder"
+                                                                                                                    type="Address:">
+                                                                                                                    <textarea name="address_eu" rows="2" placeholder="Type Address" {{ $readonly }}>{{ @$detail->first()->address }}</textarea>
+                                                                                                                </p>
                                                                                                             </div>
                                                                                                             <div
                                                                                                                 class="mb-3">
@@ -1611,7 +1585,7 @@
                                                                                 @else
                                                                                     {{ $detail->first()->full_name }}
                                                                                     <br>
-                                                                                    {{$detail->first()->phone_en . ' ~ ' . $detail->first()->service_name}}
+                                                                                    {{ $detail->first()->phone_en . ' ~ ' . $detail->first()->service_name }}
                                                                                 @endif
                                                                                 &nbsp;
                                                                                 @if ($depart == 4)
@@ -1647,7 +1621,7 @@
                                                                                     No Engineer
                                                                                 @else
                                                                                     {{ $detail->first()->l2_en }} ~
-                                                                                    {{$detail->first()->l2_phone}}
+                                                                                    {{ $detail->first()->l2_phone }}
                                                                                 @endif
                                                                                 &nbsp;
                                                                                 @if ($depart == 4)
@@ -2046,7 +2020,8 @@
                                                                                         id="add-part" tabindex="-1"
                                                                                         aria-labelledby="sourceModalLabel"
                                                                                         aria-hidden="true">
-                                                                                        <div class="modal-dialog modal-lg">
+                                                                                        <div
+                                                                                            class="modal-dialog modal-lg">
                                                                                             <div class="modal-content">
                                                                                                 <div class="modal-header">
                                                                                                     <h5 class="modal-title"
@@ -2078,7 +2053,8 @@
                                                                                                                     </label>
                                                                                                                     <select
                                                                                                                         class="js-example-basic-single form-select"
-                                                                                                                        data-width="100%" id="choose-type-part"
+                                                                                                                        data-width="100%"
+                                                                                                                        id="choose-type-part"
                                                                                                                         name="status_part_updt">
                                                                                                                         <option
                                                                                                                             value="">
@@ -2475,88 +2451,76 @@
             </div>
         </div>
         @if ($depart == 4 || $role == 20 || $role == 15)
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="d-flex justify-content-between align-items-center pb-2 mb-2">
-                                    <div class="d-flex align-items-center">
-                                        <div>
-                                            <h6>Log Note Ticket</h6>
-                                        </div>
-                                    </div>
-                                    @if ($detail->first()->status != 10)
-                                        <div class="dropdown">
-                                            <a type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                                aria-haspopup="true" aria-expanded="false">
-                                                <i class="icon-xl text-muted pb-3px" data-feather="settings"></i>
-                                            </a>
-                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                <a class="dropdown-item d-flex align-items-center" href="#add-note"
-                                                    data-bs-toggle="modal"><i data-feather="plus" class="icon-sm me-2"></i>
-                                                    <span class="">Add Note</span>
-                                                </a>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <h6>Log Note Ticket</h6>
                                             </div>
                                         </div>
-                                    @endif
+                                        @if ($detail->first()->status != 10)
+                                            <div class="dropdown">
+                                                <a type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
+                                                    aria-haspopup="true" aria-expanded="false">
+                                                    <i class="icon-xl text-muted pb-3px" data-feather="settings"></i>
+                                                </a>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <a class="dropdown-item d-flex align-items-center" href="#add-note"
+                                                        data-bs-toggle="modal"><i data-feather="plus"
+                                                            class="icon-sm me-2"></i>
+                                                        <span class="">Add Note</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <table id="display" class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                                No</th>
-                                            <th>
-                                                Activity</th>
-                                            <th>
-                                                Note</th>
-                                            <th>
-                                                User</th>
-                                            <th>
-                                                Created At</th>
-                                            <th>
-                                                Option</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php
-                                            $no = 1;
-                                        @endphp
-                                        @foreach ($log_detil as $item)
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table id="display" class="table">
+                                        <thead>
                                             <tr>
-                                                <td>{{ $no }}</td>
-                                                <td>{{ @$item->typeNote->ktgr_name }}
-                                                <td>{!! $item->note !!}</td>
-                                                <td>{{ @$item->get_user->full_name }}
-                                                </td>
-                                                <td>{{ $item->created_at }}</td>
-                                                <td>
-                                                    <div class="btn-toolbar" role="toolbar"
-                                                        aria-label="Toolbar with button groups">
-                                                        <div class="btn-group me-2" role="group"
-                                                            aria-label="First group">
-                                                            @if($nik == 'HGT-KR016' && $item->type_log != 1)
-                                                                <button type="button"
-                                                                data-bs-target="#edit-note{{ $no }}"
-                                                                data-bs-toggle="modal"
-                                                                    class="btn btn-inverse-info btn-icon btn-sm">
-                                                                    <i data-feather="edit"></i>
-                                                                </button>
-                                                                &nbsp;
-                                                                <button type="button"
-                                                                    class="btn btn-inverse-danger btn-icon btn-sm btn-remove-dt-log{{ $no }}">
-                                                                    <i data-feather="trash-2"></i>
-                                                                </button>
-                                                            @else
-                                                                @if ($nik == $item->user && $item->type_log != 1)
+                                                <th>
+                                                    No</th>
+                                                <th>
+                                                    Activity</th>
+                                                <th>
+                                                    Note</th>
+                                                <th>
+                                                    User</th>
+                                                <th>
+                                                    Created At</th>
+                                                <th>
+                                                    Option</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $no = 1;
+                                            @endphp
+                                            @foreach ($log_detil as $item)
+                                                <tr>
+                                                    <td>{{ $no }}</td>
+                                                    <td>{{ @$item->typeNote->ktgr_name }}
+                                                    <td>{!! $item->note !!}</td>
+                                                    <td>{{ @$item->get_user->full_name }}
+                                                    </td>
+                                                    <td>{{ $item->created_at }}</td>
+                                                    <td>
+                                                        <div class="btn-toolbar" role="toolbar"
+                                                            aria-label="Toolbar with button groups">
+                                                            <div class="btn-group me-2" role="group"
+                                                                aria-label="First group">
+                                                                @if ($nik == 'HGT-KR016' && $item->type_log != 1)
                                                                     <button type="button"
-                                                                    data-bs-target="#edit-note{{ $no }}"
-                                                                    data-bs-toggle="modal"
+                                                                        data-bs-target="#edit-note{{ $no }}"
+                                                                        data-bs-toggle="modal"
                                                                         class="btn btn-inverse-info btn-icon btn-sm">
                                                                         <i data-feather="edit"></i>
                                                                     </button>
@@ -2565,176 +2529,215 @@
                                                                         class="btn btn-inverse-danger btn-icon btn-sm btn-remove-dt-log{{ $no }}">
                                                                         <i data-feather="trash-2"></i>
                                                                     </button>
+                                                                @else
+                                                                    @if ($nik == $item->user && $item->type_log != 1)
+                                                                        <button type="button"
+                                                                            data-bs-target="#edit-note{{ $no }}"
+                                                                            data-bs-toggle="modal"
+                                                                            class="btn btn-inverse-info btn-icon btn-sm">
+                                                                            <i data-feather="edit"></i>
+                                                                        </button>
+                                                                        &nbsp;
+                                                                        <button type="button"
+                                                                            class="btn btn-inverse-danger btn-icon btn-sm btn-remove-dt-log{{ $no }}">
+                                                                            <i data-feather="trash-2"></i>
+                                                                        </button>
+                                                                    @endif
                                                                 @endif
-                                                            @endif
-                                                            @if ($item->type_log != 1)
-                                                                <form action="{{ url("Delete/Log-Note/$item->id") }}"
-                                                                    id="form-remove-dt-log{{ $no }}"
-                                                                    method="post">
-                                                                    @csrf
-                                                                    {{ method_field('delete') }}
-                                                                </form>
-                                                                <div class="modal fade bd-example-modal-lg" id="edit-note{{ $no }}" tabindex="-1"
-                                                                    aria-labelledby="sourceModalLabel" aria-hidden="true">
-                                                                    <div class="modal-dialog modal-lg">
-                                                                        <div class="modal-content">
-                                                                            <div class="modal-header">
-                                                                                <h5 class="modal-title" id="sourceModalLabel">
-                                                                                    Edit Log Note
-                                                                                </h5>
-                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                                                    aria-label="btn-close"></button>
-                                                                            </div>
-                                                                            <div class="modal-body">
-                                                                                <form action="{{ url("edit/Log-Note/$item->id") }}" method="post"
-                                                                                    id="form-edt-note{{ $no }}">
-                                                                                    @csrf
-                                                                                    {{ method_field('patch') }}
-                                                                                    <div class="row">
+                                                                @if ($item->type_log != 1)
+                                                                    <form
+                                                                        action="{{ url("Delete/Log-Note/$item->id") }}"
+                                                                        id="form-remove-dt-log{{ $no }}"
+                                                                        method="post">
+                                                                        @csrf
+                                                                        {{ method_field('delete') }}
+                                                                    </form>
+                                                                    <div class="modal fade bd-example-modal-lg"
+                                                                        id="edit-note{{ $no }}"
+                                                                        tabindex="-1"
+                                                                        aria-labelledby="sourceModalLabel"
+                                                                        aria-hidden="true">
+                                                                        <div class="modal-dialog modal-lg">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title"
+                                                                                        id="sourceModalLabel">
+                                                                                        Edit Log Note
+                                                                                    </h5>
+                                                                                    <button type="button"
+                                                                                        class="btn-close"
+                                                                                        data-bs-dismiss="modal"
+                                                                                        aria-label="btn-close"></button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    <form
+                                                                                        action="{{ url("edit/Log-Note/$item->id") }}"
+                                                                                        method="post"
+                                                                                        id="form-edt-note{{ $no }}">
+                                                                                        @csrf
+                                                                                        {{ method_field('patch') }}
                                                                                         <div class="row">
-                                                                                            <div class="col-md-6">
-                                                                                                <div class="row">
-                                                                                                    <div class="col-md-12">
-                                                                                                        <div class="mb-3">
+                                                                                            <div class="row">
+                                                                                                <div class="col-md-6">
+                                                                                                    <div class="row">
+                                                                                                        <div
+                                                                                                            class="col-md-12">
                                                                                                             <div
-                                                                                                                class="d-flex justify-content-between align-items-baseline">
-                                                                                                                <label for="choose-type-note"
-                                                                                                                    class="form-label fw-bolder">Type
-                                                                                                                    Note : </label>
-                                                                                                            </div>
-                                                                                                            <select id="choose-type-note"
-                                                                                                                class="js-example-basic-single form-select"
-                                                                                                                data-width="100%" name="edt_type_note">
-                                                                                                                <option value="">
-                                                                                                                    - Choose -
-                                                                                                                </option>
-                                                                                                                @foreach ($type_note as $tn)
-                                                                                                                    <option value="{{ $tn->id }}"
-                                                                                                                        {{ $item->type_note == $tn->id ? 'selected' : '' }}>
-                                                                                                                        {{ $tn->ktgr_name }}
+                                                                                                                class="mb-3">
+                                                                                                                <div
+                                                                                                                    class="d-flex justify-content-between align-items-baseline">
+                                                                                                                    <label
+                                                                                                                        for="choose-type-note"
+                                                                                                                        class="form-label fw-bolder">Type
+                                                                                                                        Note
+                                                                                                                        :
+                                                                                                                    </label>
+                                                                                                                </div>
+                                                                                                                <select
+                                                                                                                    id="choose-type-note"
+                                                                                                                    class="js-example-basic-single form-select"
+                                                                                                                    data-width="100%"
+                                                                                                                    name="edt_type_note">
+                                                                                                                    <option
+                                                                                                                        value="">
+                                                                                                                        -
+                                                                                                                        Choose
+                                                                                                                        -
                                                                                                                     </option>
-                                                                                                                @endforeach
-                                                                                                            </select>
+                                                                                                                    @foreach ($type_note as $tn)
+                                                                                                                        <option
+                                                                                                                            value="{{ $tn->id }}"
+                                                                                                                            {{ $item->type_note == $tn->id ? 'selected' : '' }}>
+                                                                                                                            {{ $tn->ktgr_name }}
+                                                                                                                        </option>
+                                                                                                                    @endforeach
+                                                                                                                </select>
+                                                                                                            </div>
                                                                                                         </div>
-                                                                                                    </div>
-                                                                                                    <div class="col-md-12">
-                                                                                                        <div class="mb-3">
-                                                                                                            <label for="edt-input-desc-note"
-                                                                                                                class="form-label fw-bolder">Description
-                                                                                                                : </label>
-                                                                                                            <textarea class="form-control txt-note" rows="3" id="edt-input-desc-note"
-                                                                                                                placeholder="Type Note" name="edt_log_note">{{$item->note}}</textarea>
+                                                                                                        <div
+                                                                                                            class="col-md-12">
+                                                                                                            <div
+                                                                                                                class="mb-3">
+                                                                                                                <label
+                                                                                                                    for="edt-input-desc-note"
+                                                                                                                    class="form-label fw-bolder">Description
+                                                                                                                    :
+                                                                                                                </label>
+                                                                                                                <textarea class="form-control txt-note" rows="3" id="edt-input-desc-note" placeholder="Type Note"
+                                                                                                                    name="edt_log_note">{{ $item->note }}</textarea>
+                                                                                                            </div>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
-                                                                                    </div>
-                                                                                </form>
-                                                                            </div>
-                                                                            <div class="modal-footer">
-                                                                                <button type="button" class="btn btn-inverse-secondary"
-                                                                                    data-bs-dismiss="modal">Cancel</button>
-                                                                                <button type="button"
-                                                                                    class="btn btn-inverse-primary edt-dt-note{{ $no }}">Save</button>
+                                                                                    </form>
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="button"
+                                                                                        class="btn btn-inverse-secondary"
+                                                                                        data-bs-dismiss="modal">Cancel</button>
+                                                                                    <button type="button"
+                                                                                        class="btn btn-inverse-primary edt-dt-note{{ $no }}">Save</button>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            @endif
+                                                                @endif
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            @php
-                                                $no++;
-                                            @endphp
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                                <div class="modal fade bd-example-modal-lg" id="add-note" tabindex="-1"
-                                    aria-labelledby="sourceModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="sourceModalLabel">
-                                                    Adding
-                                                    Log
-                                                    Note Ticketing
-                                                </h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="btn-close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form action="{{ url("Note/$id/Added") }}" method="post"
-                                                    id="store-note">
-                                                    @csrf
-                                                    <div class="row">
-                                                        <div class="col-md-3">
-                                                            <div class="mb-3">
-                                                                <div
-                                                                    class="d-flex justify-content-between align-items-baseline">
-                                                                    <label for="type-note"
-                                                                        class="form-label fw-bolder">Aktivitas Helpdesk : </label>
-                                                                    <a href="#"
-                                                                        id="refresh-type-note">
-                                                                        <i class="icon-sm"
-                                                                            data-feather="rotate-cw"></i>
-                                                                    </a>
-                                                                </div>
-                                                                <select
-                                                                    class="js-example-basic-single form-select"
-                                                                    data-width="100%" name="type_note"
-                                                                    id="type-note">
-                                                                    <option value="">
-                                                                        - Choose -
-                                                                    </option>
-                                                                    @foreach ($type_note as $item)
-                                                                        <option value="{{ $item->id }}">
-                                                                            {{ $item->ktgr_name }}
+                                                    </td>
+                                                </tr>
+                                                @php
+                                                    $no++;
+                                                @endphp
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                    <div class="modal fade bd-example-modal-lg" id="add-note" tabindex="-1"
+                                        aria-labelledby="sourceModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="sourceModalLabel">
+                                                        Adding
+                                                        Log
+                                                        Note Ticketing
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="btn-close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="{{ url("Note/$id/Added") }}" method="post"
+                                                        id="store-note">
+                                                        @csrf
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <div class="mb-3">
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-baseline">
+                                                                        <label for="type-note"
+                                                                            class="form-label fw-bolder">Aktivitas
+                                                                            Helpdesk : </label>
+                                                                        <a href="#" id="refresh-type-note">
+                                                                            <i class="icon-sm"
+                                                                                data-feather="rotate-cw"></i>
+                                                                        </a>
+                                                                    </div>
+                                                                    <select class="js-example-basic-single form-select"
+                                                                        data-width="100%" name="type_note"
+                                                                        id="type-note">
+                                                                        <option value="">
+                                                                            - Choose -
                                                                         </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label for="input-desc-note"
-                                                                    class="form-label fw-bolder">Description
-                                                                    : </label>
-                                                                <textarea class="form-control txt-note" rows="3" id="input-desc-note"
-                                                                    placeholder="Type Note" name="log_note"></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="mb-3">
-                                                                <div
-                                                                    class="d-flex justify-content-between align-items-baseline">
-                                                                    <label for="rc_dt_note"
-                                                                        class="form-label fw-bolder">Pending Karena : </label>
+                                                                        @foreach ($type_note as $item)
+                                                                            <option value="{{ $item->id }}">
+                                                                                {{ $item->ktgr_name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
                                                                 </div>
-                                                                <select
-                                                                    class="js-example-basic-single form-select"
-                                                                    data-width="100%" name="ktgr_pending" id="rc_dt_note">
-                                                                    <option value="">
-                                                                        - Choose -
-                                                                    </option>
-                                                                    @foreach ($getStsP as $item)
-                                                                        <option value="{{ $item->id }}">
-                                                                            {{ $item->ktgr_pending }}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3">
+                                                                    <label for="input-desc-note"
+                                                                        class="form-label fw-bolder">Description
+                                                                        : </label>
+                                                                    <textarea class="form-control txt-note" rows="3" id="input-desc-note" placeholder="Type Note"
+                                                                        name="log_note"></textarea>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="mb-3">
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-baseline">
+                                                                        <label for="rc_dt_note"
+                                                                            class="form-label fw-bolder">Pending Karena :
+                                                                        </label>
+                                                                    </div>
+                                                                    <select class="js-example-basic-single form-select"
+                                                                        data-width="100%" name="ktgr_pending"
+                                                                        id="rc_dt_note">
+                                                                        <option value="">
+                                                                            - Choose -
                                                                         </option>
-                                                                    @endforeach
-                                                                </select>
+                                                                        @foreach ($getStsP as $item)
+                                                                            <option value="{{ $item->id }}">
+                                                                                {{ $item->ktgr_pending }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-inverse-secondary"
-                                                    data-bs-dismiss="modal">Cancel</button>
-                                                <button type="button"
-                                                    class="btn btn-inverse-primary add-note">Save</button>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-inverse-secondary"
+                                                        data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="button"
+                                                        class="btn btn-inverse-primary add-note">Save</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -2744,7 +2747,6 @@
                     </div>
                 </div>
             </div>
-        </div>
         @endif
     </div>
 @endsection
@@ -2770,7 +2772,7 @@
                         jQuery('#download-ticket-file' + i + '').submit();
                     }
                 });
-                document.addEventListener("keydown", function (event) {
+                document.addEventListener("keydown", function(event) {
                     if (event.key === "Enter") {
                         const nextButton = document.querySelector(".swal2-confirm");
                         if (nextButton) {
@@ -2793,7 +2795,7 @@
                         jQuery('#form-remove-dt-log' + i + '').submit();
                     }
                 });
-                document.addEventListener("keydown", function (event) {
+                document.addEventListener("keydown", function(event) {
                     if (event.key === "Enter") {
                         const nextButton = document.querySelector(".swal2-confirm");
                         if (nextButton) {
@@ -2816,7 +2818,7 @@
                         jQuery('#form-edt-note' + i + '').submit();
                     }
                 });
-                document.addEventListener("keydown", function (event) {
+                document.addEventListener("keydown", function(event) {
                     if (event.key === "Enter") {
                         const nextButton = document.querySelector(".swal2-confirm");
                         if (nextButton) {
@@ -2827,7 +2829,7 @@
             });
         }
     </script>
-    @if ($detail->first()->status < 10)
+    @if ($detail->first()->status < 10 && $depart == 4)
         <script>
             $('.save-updt-ticket').on('click', function() {
                 Swal.fire({
@@ -2843,7 +2845,7 @@
                         jQuery('#form-updt-ticket').submit();
                     }
                 });
-                document.addEventListener("keydown", function (event) {
+                document.addEventListener("keydown", function(event) {
                     if (event.key === "Enter") {
                         const nextButton = document.querySelector(".swal2-confirm");
                         if (nextButton) {
@@ -2867,7 +2869,7 @@
                         jQuery('#dtFrom-remove-en').submit();
                     }
                 });
-                document.addEventListener("keydown", function (event) {
+                document.addEventListener("keydown", function(event) {
                     if (event.key === "Enter") {
                         const nextButton = document.querySelector(".swal2-confirm");
                         if (nextButton) {
@@ -2892,7 +2894,7 @@
                         jQuery('#dtFrom-remove-l2en').submit();
                     }
                 });
-                document.addEventListener("keydown", function (event) {
+                document.addEventListener("keydown", function(event) {
                     if (event.key === "Enter") {
                         const nextButton = document.querySelector(".swal2-confirm");
                         if (nextButton) {
@@ -2917,7 +2919,7 @@
                         jQuery('#updt-eu').submit();
                     }
                 });
-                document.addEventListener("keydown", function (event) {
+                document.addEventListener("keydown", function(event) {
                     if (event.key === "Enter") {
                         const nextButton = document.querySelector(".swal2-confirm");
                         if (nextButton) {
@@ -2932,6 +2934,7 @@
                     var type_id_val = document.getElementById("type-note").value;
                     return type_id_val;
                 };
+
                 function getRootCauseValue() {
                     var rc_id_val = document.getElementById("rc_dt_note").value;
                     return rc_id_val;
@@ -2944,7 +2947,7 @@
                         confirmButtonColor: '#d33',
                         confirmButtonText: 'OK',
                     });
-                }else if(getRootCauseValue() === ""){
+                } else if (getRootCauseValue() === "") {
                     Swal.fire({
                         title: "Root Cause must be choosen!",
                         text: "Choose the Root Cause!",
@@ -2955,7 +2958,7 @@
                 } else {
                     jQuery('#store-note').submit();
                 }
-                document.addEventListener("keydown", function (event) {
+                document.addEventListener("keydown", function(event) {
                     if (event.key === "Enter") {
                         const nextButton = document.querySelector(".swal2-confirm");
                         if (nextButton) {
@@ -2989,7 +2992,7 @@
                             jQuery('#update-change-engineer').submit();
                         }
                     });
-                    document.addEventListener("keydown", function (event) {
+                    document.addEventListener("keydown", function(event) {
                         if (event.key === "Enter") {
                             const nextButton = document.querySelector(".swal2-confirm");
                             if (nextButton) {
@@ -3024,7 +3027,7 @@
                             jQuery('#update-change-l2-engineer').submit();
                         }
                     });
-                    document.addEventListener("keydown", function (event) {
+                    document.addEventListener("keydown", function(event) {
                         if (event.key === "Enter") {
                             const nextButton = document.querySelector(".swal2-confirm");
                             if (nextButton) {
@@ -3059,7 +3062,7 @@
                             jQuery('#dt-form-edit-unit').submit();
                         }
                     });
-                    document.addEventListener("keydown", function (event) {
+                    document.addEventListener("keydown", function(event) {
                         if (event.key === "Enter") {
                             const nextButton = document.querySelector(".swal2-confirm");
                             if (nextButton) {
@@ -3085,7 +3088,7 @@
                         jQuery('#part-form').submit();
                     }
                 });
-                document.addEventListener("keydown", function (event) {
+                document.addEventListener("keydown", function(event) {
                     if (event.key === "Enter") {
                         const nextButton = document.querySelector(".swal2-confirm");
                         if (nextButton) {
@@ -3136,7 +3139,7 @@
                         jQuery('#close-ticket-dt').submit();
                     }
                 });
-                document.addEventListener("keydown", function (event) {
+                document.addEventListener("keydown", function(event) {
                     if (event.key === "Enter") {
                         const nextButton = document.querySelector(".swal2-confirm");
                         if (nextButton) {
@@ -3161,7 +3164,7 @@
                         jQuery('#cancle-ticket-dt').submit();
                     }
                 });
-                document.addEventListener("keydown", function (event) {
+                document.addEventListener("keydown", function(event) {
                     if (event.key === "Enter") {
                         const nextButton = document.querySelector(".swal2-confirm");
                         if (nextButton) {
@@ -3195,7 +3198,7 @@
                             jQuery('#fm-dt-type-not-exist').submit();
                         }
                     });
-                    document.addEventListener("keydown", function (event) {
+                    document.addEventListener("keydown", function(event) {
                         if (event.key === "Enter") {
                             const nextButton = document.querySelector(".swal2-confirm");
                             if (nextButton) {
@@ -3205,6 +3208,110 @@
                     });
                     return false;
                 }
+            });
+
+            $('.change-part-reqs').on('click', function() {
+
+                let status = document.getElementById('status-part-reqs').dataset.statusrqs;
+                if (status == 'Yes') {
+                    var title = "No need Parts?";
+                    var text = "Status of part Request will be change to No!";
+                } else {
+                    var title = "Need Parts?";
+                    var text = "Status of part Request will be change to Yes!";
+                }
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Yes',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "No"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        jQuery('#form-change-part-reqs').submit();
+                    }
+                });
+                return false;
+            });
+            $('.send-to-engineer').on('click', function() {
+
+                Swal.fire({
+                    title: "Tickets Ready?",
+                    text: "Ticket will be sent to engineer!",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Yes',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "No"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        jQuery('#form-send-ticket-to-engineer').submit();
+                    }
+                });
+                return false;
+            });
+            for (let i = 0; i < 50; i++) {
+                $('.btn-update-journey' + i + '').on('click', function() {
+                    $('#part-detail').modal('hide');
+                    if ($('#cek-journey-part' + i + '').val() === "0") {
+                        var text = "This part will be update to send!";
+                    } else {
+                        var text = "The part will be update to received!";
+                    }
+                    Swal.fire({
+                        title: "Update?",
+                        text: text,
+                        icon: 'question',
+                        showCancelButton: false,
+                        showDenyButton: true,
+                        confirmButtonColor: '#34a853',
+                        confirmButtonText: 'Yes',
+                        denyButtonColor: '#d33',
+                        denyButtonText: "No"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            jQuery('#form-update-journey' + i + '').submit();
+                        } else if (result.isDenied) {
+                            $('#part-detail').modal('show');
+                        }
+                    });
+                    return false;
+                });
+            }
+            $('.save-updt-sch-en').on('click', function() {
+                if ($('#dt-sch-en').val() === "") {
+                    Swal.fire({
+                        title: "The field cannot be empty!",
+                        text: "Select date and time for updating schedule Engineer!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                } else {
+                    jQuery('#form-updt-sch-en').submit();
+                }
+                return false;
+            });
+            $('.save-updt-sla').on('click', function() {
+                Swal.fire({
+                    title: "Continue change SLA?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Next',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        jQuery('#form-updt-sla').submit();
+                    }
+                });
+                return false;
             });
         </script>
     @endif
@@ -3352,45 +3459,45 @@
                 });
             });
         </script>
-    <script>
-        $('#addt-upload-att').on('click', function() {
-            const fileInputs = document.getElementById('adm-upload-att');
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.name = 'filesAdm[]';
-            fileInput.accept = 'image/jpeg,image/gif,image/png,application/pdf,image/x-eps';
-            fileInput.capture = 'camera';
-            fileInputs.appendChild(fileInput);
-        });
-
-        for (let i = 0; i < 50; i++) {
-            $('.dld-upd-adm' + i + '').on('click', function() {
-                Swal.fire({
-                    title: 'Download this file?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#34a853',
-                    confirmButtonText: 'yes',
-                    cancelButtonColor: '#d33',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        jQuery('#fm-dld-adm' + i + '').submit();
-                    }
-                });
-                document.addEventListener("keydown", function (event) {
-                    if (event.key === "Enter") {
-                        const nextButton = document.querySelector(".swal2-confirm");
-                        if (nextButton) {
-                            nextButton.click();
-                        }
-                    }
-                });
+        <script>
+            $('#addt-upload-att').on('click', function() {
+                const fileInputs = document.getElementById('adm-upload-att');
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.name = 'filesAdm[]';
+                fileInput.accept = 'image/jpeg,image/gif,image/png,application/pdf,image/x-eps';
+                fileInput.capture = 'camera';
+                fileInputs.appendChild(fileInput);
             });
-        }
-    </script>
+
+            for (let i = 0; i < 50; i++) {
+                $('.dld-upd-adm' + i + '').on('click', function() {
+                    Swal.fire({
+                        title: 'Download this file?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#34a853',
+                        confirmButtonText: 'yes',
+                        cancelButtonColor: '#d33',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            jQuery('#fm-dld-adm' + i + '').submit();
+                        }
+                    });
+                    document.addEventListener("keydown", function(event) {
+                        if (event.key === "Enter") {
+                            const nextButton = document.querySelector(".swal2-confirm");
+                            if (nextButton) {
+                                nextButton.click();
+                            }
+                        }
+                    });
+                });
+            }
+        </script>
     @endif
-    @if(session('whatsapp_link_1') || session('whatsapp_link_2'))
+    @if (session('whatsapp_link_1') || session('whatsapp_link_2'))
         @if (session('whatsapp_link_1') && session('whatsapp_link_2'))
             <script>
                 const whatsappLink1 = "{{ session('whatsapp_link_1') }}";

@@ -29,6 +29,7 @@ use App\Http\Controllers\BoardController;
 use App\Http\Controllers\TrelloController;
 use App\Http\Controllers\PICController;
 use App\Http\Controllers\IssueController;
+use App\Http\Controllers\LogAsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,8 @@ Route::auth();
 Route::group(['middleware'=>'auth'], function(){
     Route::get('/', [HomeController::class, 'main']);
     Route::get('/WhatsNews', [HomeController::class, 'wn_form']);
+        Route::get('/Choose-dept', [LogAsController::class, 'vw_choose']);
+        Route::PATCH('Update/Dept', [LogAsController::class, 'update_dept']);
         // Download Docs
         Route::post('/Docs-download', [HomeController::class, 'downloadDocs']);
         // Time Square Input
@@ -255,12 +258,12 @@ Route::group(['middleware'=>'auth'], function(){
         // Report
         Route::get('Report/data=Ticket', [ReportCOntroller::class, 'report']);
         // Compare
-        Route::get('Compare/Report/data=Ticket', [ReportCOntroller::class, 'compare']);
+        Route::get('Compare/report=Ticket', [ReportCOntroller::class, 'compare']);
             // KPI Detil Report
             Route::get('Data/Detil-Report/{notiket}', [ReportCOntroller::class, 'getViewDetilReport'])->where(['notiket' => '.*']);
             Route::get('getAjaxDetil/{notiket}', [ReportCOntroller::class, 'getReportDetil'])->where(['notiket' => '.*']);
         Route::post('Report/data=Ticket/sorting', [ReportCOntroller::class, 'report'])->name('sorting.report');
-        Route::post('Compare/Report/data=Ticket/sorting', [ReportCOntroller::class, 'compare'])->name('sorting.compare');
+        Route::post('Compare/report=Ticket/sorting', [ReportCOntroller::class, 'compare'])->name('sorting.compare');
             // Export Excel
             Route::post('export-ticket/Report', [ReportCOntroller::class, 'export']);
             Route::post('Data/Report/PIC', [ReportCOntroller::class, 'exportDataPIC']);

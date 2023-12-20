@@ -27,7 +27,6 @@ $(function() {
     // Date Time
     if ($('#flatpickr-date-time').length) {
         flatpickr("#flatpickr-date-time", {
-            static: true,
             wrap: true,
             enableTime: true,
             dateFormat: "Y-m-d H:i",

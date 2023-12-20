@@ -3,8 +3,6 @@
     <link rel="stylesheet" href="{{ asset('assets') }}/vendors/dropzone/dropzone.min.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/vendors/pickr/themes/classic.min.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/vendors/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets') }}/vendors/dropify/dist/dropify.min.css">
 @endpush
 @extends('Theme/header')
@@ -1127,5 +1125,268 @@
                 });
             });
         });
+    </script>
+    <script>
+        $('.create').on('click', function() {
+
+            // fungsi get value double function id unit
+            function getTypeValue() {
+                var unit_type_id = document.getElementById("unit-type-id").value;
+                return unit_type_id;
+            };
+
+            function getProjectValue() {
+                var project_id_val = document.getElementById("project-id").value;
+                return project_id_val;
+            };
+
+            function getPartnerValue() {
+                var partner_id_val = document.getElementById("partner-select").value;
+                return partner_id_val;
+            };
+
+            function getProvinceValue() {
+                var province_id_val = document.getElementById("provinces").value;
+                return province_id_val;
+            };
+
+            function getCitiesValue() {
+                var cities_id_val = document.getElementById("cities-select").value;
+                return cities_id_val;
+            };
+
+            function getEngineerValue() {
+                var engineer_id_val = document.getElementById("engineer").value;
+                return engineer_id_val;
+            };
+
+            function getServPValue() {
+                var sp_id_val = document.getElementById("servp").value;
+                return sp_id_val;
+            };
+            // end funsi
+            // Form Part Request
+            var rqs_part_sts = document.getElementById("rqs-part-validate").getElementsByTagName('input');
+            var checked_rqs_part_sts = false;
+            let val_rqs_part_sts = "";
+            for (var i = 0; i < rqs_part_sts.length; i++) {
+                if (rqs_part_sts[i].checked) {
+                    checked_rqs_part_sts = true;
+                    val_rqs_part_sts = rqs_part_sts[i].value;
+                    break;
+                }
+            }
+            // end form
+            if ($('#type-ticket').val() === "" || $('.dt-incoming-tc').val() === "" ||
+                $('#id-source').val() === "" || $('#id-sla').val() === "" || !checked_rqs_part_sts ||
+                getProjectValue() === "") {
+                if ($('#type-ticket').val() === "") {
+                    Swal.fire({
+                        title: "Type ticket must be choosen!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                } else if ($('.dt-incoming-tc').val() === "") {
+                    Swal.fire({
+                        title: "Pick Date Time Ticket Coming!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                } else if ($('#id-source').val() === "") {
+                    Swal.fire({
+                        title: "Choose source ticket from!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                } else if ($('#id-sla').val() === "") {
+                    Swal.fire({
+                        title: "Select SLA for the ticket!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                } else if (!checked_rqs_part_sts) {
+                    Swal.fire({
+                        title: "Checked Part Request!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                } else if (getProjectValue() === "") {
+                    if (getPartnerValue() === "") {
+                        Swal.fire({
+                            title: "Select Partner for show Project!",
+                            icon: "warning",
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'OK',
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Find and Select the Project!",
+                            icon: "warning",
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'OK',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#find-project').modal('show');
+                            }
+                        });
+                    }
+                }
+            } else {
+                if (getTypeValue() !== "" && $('#type-unit-optional').val() !== "") {
+                    Swal.fire({
+                        title: "Select one of unit type name!!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK',
+                    });
+                } else if ($('#type-unit-optional').val() !== "" && ($('#ctgr-cu-id').val() === "" || $(
+                        '#merk-u-id').val() === "")) {
+                    if ($('#ctgr-cu-id').val() === "" && $('#merk-u-id').val() === "") {
+                        Swal.fire({
+                            title: "Name type is not initialized!!",
+                            text: "Select Category and Merk for initialize!!",
+                            icon: "warning",
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'OK'
+                        });
+                    } else if ($('#ctgr-cu-id').val() === "") {
+                        Swal.fire({
+                            title: "Initialize Category is Null!!",
+                            text: "Select Category for initialize!!",
+                            icon: "warning",
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'OK'
+                        });
+                    } else if ($('#merk-u-id').val() === "") {
+                        Swal.fire({
+                            title: "Initialize Merk is Null!!",
+                            text: "Select Merk for initialize!!",
+                            icon: "warning",
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                } else if (($('#ctgr-cu-id').val() !== "" && $('#merk-u-id').val() !== "") && (getTypeValue() ===
+                        "" && $('#type-unit-optional').val() === "")) {
+                    Swal.fire({
+                        title: "Type Unit is Null!!",
+                        text: "Select or type a new name unit!!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK'
+                    });
+                } else if (val_rqs_part_sts === '1' && ($('#part-status').val() === "" || $('#kat-part').val() ===
+                        "" || $('#part-name-detail').val() === "")) {
+                    if ($('#part-status').val() === "") {
+                        Swal.fire({
+                            title: "Status of Part its empty!!",
+                            text: "Select Status for this part!!",
+                            icon: "warning",
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#find-part').modal('show');
+                            }
+                        });
+                    } else if ($('#kat-part').val() === "") {
+                        Swal.fire({
+                            title: "Category Part must be choosen!!",
+                            text: "Choose Category!!",
+                            icon: "warning",
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#find-part').modal('show');
+                            }
+                        });
+                    } else if ($('#part-name-detail').val() === "") {
+                        Swal.fire({
+                            title: "Part name is Null!!",
+                            text: "Initialize part name!!",
+                            icon: "warning",
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#find-part').modal('show');
+                            }
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        title: 'Continue Create Ticket?',
+                        text: 'Put how much you want to create ticket!',
+                        icon: 'question',
+                        input: 'number',
+                        inputValue: 1,
+                        inputAttributes: {
+                            autocapitalize: 'off',
+                            max: 150,
+                            name: "how_many",
+                            required: true
+                        },
+                        showCancelButton: true,
+                        confirmButtonColor: '#34a853',
+                        confirmButtonText: 'Save',
+                        cancelButtonColor: '#d33',
+                        cancelButtonText: 'Cancel',
+                        inputPlaceholder: "Many Tickets",
+                        allowOutsideClick: false, // Prevent closing the dialog by clicking outside
+                        inputValidator: (value) => {
+                            if (!value || value > 150) {
+                                return 'Please enter a number up to 150.';
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.value && result.value <= 150) {
+                            jQuery('#many-tickets').val(result.value);
+                            jQuery('#create_ticket').submit();
+                        }
+                    });
+                }
+            }
+            return false;
+        });
+        $(document).on("click", ".select-project", function() {
+            let prj_id = $(this).closest('tr').find('td:eq(1)').text();
+            let prj_name = $(this).closest('tr').find('td:eq(2)').text();
+            let prj_owner = $(this).closest('tr').find('td:eq(3)').text();
+            let prj_pic = $(this).closest('tr').find('td:eq(4)').text();
+            $('#project-id').val(prj_id);
+            $('#project-name').val(prj_name);
+            $('#find-project').modal('hide');
+        });
+        $('.clear-prj').click(function() {
+            $('#project-id').val('');
+            $('#project-name').val('');
+        });
+
+        function modalPart() {
+            var selectedRadio = document.querySelector('input[name="part_reqs"]:checked');
+            switch (selectedRadio.value) {
+                case "1": {
+                    setTimeout(function() {
+                        $('#find-part').modal('show')
+                    }, 500);
+                }
+                break;
+            }
+        };
+
+        function showClearButton() {
+            document.querySelector('.file-clear').style.display = 'inline-block';
+        }
+
+        function clearFileInput() {
+            document.querySelector('.file').value = '';
+            document.querySelector('.file-clear').style.display = 'none';
+        }
     </script>
 @endpush

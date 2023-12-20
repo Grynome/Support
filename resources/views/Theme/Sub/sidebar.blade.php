@@ -137,12 +137,10 @@
                             <li class="nav-item">
                                 <a href="{{ url('Report/data=Ticket') }}" class="nav-link">Data Report Ticket</a>
                             </li>
-                            @if ($role == 15 || $role == 20)
+                            @if (($role == 16 && $depart == 4) || $role == 15 || $role == 20)
                                 <li class="nav-item">
-                                    <a href="{{ url('Compare/Report/data=Ticket') }}" class="nav-link">Compare Report Ticket</a>
+                                    <a href="{{ url('Compare/report=Ticket') }}" class="nav-link">Compare Report Ticket</a>
                                 </li>
-                            @endif
-                            @if ($role == 16 && $depart == 4)
                                 <li class="nav-item">
                                     <a href="{{ url('Report/data=Each-Week') }}" class="nav-link">Weekly
                                         Ticket</a>

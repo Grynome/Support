@@ -229,3 +229,79 @@
         </div>
     </div>
 @endsection
+@push('custom')
+    <script>
+        $('.store-pic-act').on('click', function() {
+            if ($('#act-pic-desc').val() === "" && $('#select-val-tap').val() === "" && $('.date-time-tap')
+                .val() === "") {
+                Swal.fire({
+                    title: "Field Cannot be Empty",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else if ($('.date-time-tap').val() === "") {
+                Swal.fire({
+                    title: "Choose the date & time!!",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else if ($('#select-val-tap').val() === "") {
+                Swal.fire({
+                    title: "Select type of Activity!",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else if ($('#act-pic-desc').val() === "") {
+                Swal.fire({
+                    title: "Type your description!",
+                    icon: "warning",
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                });
+            } else {
+                jQuery("#store-pic-act").submit();
+            }
+            return false;
+        });
+
+        for (let i = 0; i < 999; i++) {
+            // CRUD Add Activity
+            $('.fm-dt-desc' + i + '').on('click', function() {
+                Swal.fire({
+                    title: "Continues Edit?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Yes',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "No"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        jQuery('#fm-dt-desc' + i + '').submit();
+                    }
+                });
+
+                return false;
+            });
+            $('.remove-act-desc' + i + '').on('click', function() {
+                Swal.fire({
+                    title: "Continues Delete?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Yes',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "No"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        jQuery('#remove-act-desc' + i + '').submit();
+                    }
+                });
+                return false;
+            });
+        }
+    </script>
+@endpush

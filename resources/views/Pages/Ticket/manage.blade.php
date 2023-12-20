@@ -6,6 +6,7 @@
     use Carbon\Carbon;
     $role = auth()->user()->role;
     $depart = auth()->user()->depart;
+    $ar_sts = [1,2,3,4,5];
 @endphp
 @extends('Theme/header')
 @section('getPage')
@@ -271,6 +272,34 @@
                                                                         : ($item->act_desc == 7
                                                                             ? 'On site 3rd : Travel Stop' . $item->solve_en
                                                                             : ''))))) }}
+                                                @elseif ($item->status == 4 && $item->sts_act == 3)
+                                                    {{ $item->act_desc == 2
+                                                        ? 'On site 4th : Go to Location'
+                                                        : ($item->act_desc == 3
+                                                            ? 'On site 4th : Arrived on location'
+                                                            : ($item->act_desc == 4
+                                                                ? 'On site 4th : Start Working'
+                                                                : ($item->act_desc == 5
+                                                                    ? 'On site 4th : Stop Working' . $item->solve_en
+                                                                    : ($item->act_desc == 6
+                                                                        ? 'On site 4th : Leave Site' . $item->solve_en
+                                                                        : ($item->act_desc == 7
+                                                                            ? 'On site 4th : Travel Stop' . $item->solve_en
+                                                                            : ''))))) }}
+                                                @elseif ($item->status == 5 && $item->sts_act == 4)
+                                                    {{ $item->act_desc == 2
+                                                        ? 'On site 5th : Go to Location'
+                                                        : ($item->act_desc == 3
+                                                            ? 'On site 5th : Arrived on location'
+                                                            : ($item->act_desc == 4
+                                                                ? 'On site 5th : Start Working'
+                                                                : ($item->act_desc == 5
+                                                                    ? 'On site 5th : Stop Working' . $item->solve_en
+                                                                    : ($item->act_desc == 6
+                                                                        ? 'On site 5th : Leave Site' . $item->solve_en
+                                                                        : ($item->act_desc == 7
+                                                                            ? 'On site 5th : Travel Stop' . $item->solve_en
+                                                                            : ''))))) }}
                                                 @else
                                                     {{ $item->dtStatus . ' ' . $item->solve_en }}
                                                 @endif
@@ -387,7 +416,7 @@
                                                             </button>
                                                             &nbsp;
                                                         @endif
-                                                        @if ($item->status == 2 || $item->status == 3)
+                                                        @if (in_array($item->status, array_slice($ar_sts, 1)))
                                                             @if ($item->reqsCek == 1)
                                                                 <form
                                                                     action="{{ url("Fulfilled/Part-Reqs/$item->notiket") }}"
