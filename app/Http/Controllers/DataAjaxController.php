@@ -18,6 +18,7 @@ use App\Models\Severity;
 use App\Models\OfficeType;
 use App\Models\ServicePoint;
 use App\Models\CategoryNote;
+use App\Models\CategoryReqs;
 
 class DataAjaxController extends Controller
 {
@@ -80,7 +81,7 @@ class DataAjaxController extends Controller
                             $query->selectRaw('COUNT(*) AS total_progpen')
                                 ->from('hgt_ticket')
                                 ->where('schedule', 'LIKE','%'.$tgl.'%')
-                                ->where('status', '!=', 10)
+                                ->where('status', '<', 10)
                                 ->groupBy('notiket');
                         }, 'subquery')
                         ->first();
@@ -159,5 +160,11 @@ class DataAjaxController extends Controller
         ];
         
         return response()->json($response);
+    }
+    public function getCategories()
+    {
+        $categories = CategoryReqs::all();
+
+        return response()->json($categories);
     }
 }

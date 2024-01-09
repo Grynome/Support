@@ -21,6 +21,6 @@ class VW_ReportTicket extends Model
         return $this->hasMany(VW_Log_Note_Tiket::class, 'notiket', 'notiket');
     }
     public function info_tiket(){
-        return $this->belongsTo(VW_Log_Note_Tiket::class, 'notiket', 'notiket');
+        return $this->belongsTo('\App\Models\TiketInfo', 'notiket', 'notiket');
     }
 }

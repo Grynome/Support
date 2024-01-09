@@ -1645,7 +1645,6 @@
                                                                         </div>
                                                                     </div>
                                                                 @endif
-                                                                @if (!empty($detail->first()->full_name))
                                                                     <div class="col-md-12 border-bottom-dt mb-2">
                                                                         <div class="row text-body fw-bolder">
                                                                             <div class="col-3">
@@ -1655,7 +1654,11 @@
                                                                                 :
                                                                             </div>
                                                                             <div class="col-8">
-                                                                                {{ @$detail->first()->departure }}
+                                                                                @if (empty(@$detail->first()->departure))
+                                                                                    No Schedule
+                                                                                @else
+                                                                                    {{ @$detail->first()->departure }}
+                                                                                @endif
                                                                                 &nbsp;
                                                                                 @if ($depart == 4)
                                                                                     @if (@$detail->first()->status != 10)
@@ -1733,7 +1736,6 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                @endif
                                                                 <div class="col-md-12 border-bottom-dt mb-2">
                                                                     <div class="row text-body fw-bolder">
                                                                         <div class="col-3">
@@ -2450,7 +2452,7 @@
                 </div>
             </div>
         </div>
-        @if ($depart == 4 || $role == 20 || $role == 15)
+        @if ($depart == 4 || $role == 20 || $role == 15 || $role == 19)
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
@@ -2463,7 +2465,7 @@
                                                 <h6>Log Note Ticket</h6>
                                             </div>
                                         </div>
-                                        @if ($detail->first()->status != 10)
+                                        @if ($detail->first()->status != 10 && $depart == 4)
                                             <div class="dropdown">
                                                 <a type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
                                                     aria-haspopup="true" aria-expanded="false">
@@ -2751,8 +2753,10 @@
     </div>
 @endsection
 @push('plugin-page')
+    <script src="{{ asset('assets') }}/vendors/inputmask/jquery.inputmask.min.js"></script>
 @endpush
 @push('custom-plug')
+    <script src="{{ asset('assets') }}/js/inputmask.js"></script>
     <script src="{{ asset('assets') }}/js/chat.js"></script>
 @endpush
 @push('custom')

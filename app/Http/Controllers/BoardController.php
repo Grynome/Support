@@ -40,7 +40,7 @@ class BoardController extends Controller
                             $query->selectRaw('COUNT(*) AS total_progpen')
                                 ->from('hgt_ticket')
                                 ->where('schedule', 'LIKE','%'.$tgl.'%')
-                                ->where('status', '!=', 10)
+                                ->where('status', '<', 10)
                                 ->groupBy('notiket');
                         }, 'subquery')
                         ->first();
@@ -53,7 +53,7 @@ class BoardController extends Controller
     public function getTickets()
     {
         $tgl = date("Y-m-d", strtotime("+7 hours"));
-        $tickets = VW_Ticket::where('status', '!=', 10)->where('departure', 'LIKE','%'.$tgl.'%')->get();
+        $tickets = VW_Ticket::where('status', '<', 10)->where('departure', 'LIKE','%'.$tgl.'%')->get();
                                 // ->where(function($query) {
                                 //     $query->whereBetween('departure', [Carbon::now()->addHours(7)->subDay(), Carbon::now()->addHours(7)])
                                 //     ->orWhere(function($query) {

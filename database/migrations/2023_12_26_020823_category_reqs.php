@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('hgt_act_pic', function (Blueprint $table) {
+        Schema::create('hgt_category_reqs', function (Blueprint $table) {
             $table->id();
-            $table->string('nik', 25);
-            $table->text('description');
+            $table->string('description', 100);
+            $table->integer('deleted');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('hgt_act_pic');
+        Schema::dropIfExists('hgt_category_reqs');
     }
 };

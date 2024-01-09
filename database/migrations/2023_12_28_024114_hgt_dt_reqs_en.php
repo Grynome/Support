@@ -13,10 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('hgt_type_act_pic', function (Blueprint $table) {
+        Schema::create('hgt_reqs_en_dt', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
-            $table->integer('deleted');
+            $table->integer('id_dt_reqs');
+            $table->integer('ctgr_reqs');
+            $table->integer('nominal');
+            $table->string('attach_rq', 255);
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('hgt_type_act_pic');
+        Schema::dropIfExists('hgt_reqs_en_dt');
     }
 };

@@ -21,6 +21,11 @@
 <script src="{{ asset('assets') }}/js/flatpickr.js"></script>
 <script src="{{ asset('assets') }}/js/select2.js"></script>
 <script>
+    $(document).on('shown.bs.modal', function(e) {
+        $('input:visible:enabled:first', e.target).focus();
+    });
+</script>
+<script>
     $('.log-out').on('click', function() {
         var getLink = $(this).attr('href');
         window.location.href = getLink;

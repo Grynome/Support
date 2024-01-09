@@ -40,4 +40,11 @@ $(function() {
             time_24hr: true
         });
     }
+    if ($('#flatpickr-xps').length) {
+        flatpickr("#flatpickr-dtc", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true
+        });
+    }
 });

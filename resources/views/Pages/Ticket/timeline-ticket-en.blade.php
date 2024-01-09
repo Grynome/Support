@@ -230,7 +230,7 @@
                                                 @php
                                                     $noTabs++;
                                                 @endphp
-                                                @if ($status_ticket->status == $val || ($onsite->total_row != 1 && $ojkvb nsite->total_row != 2 && $onsite->total_row != 3 && $onsite->total_row != 4 && $onsite->total_row != 5))
+                                                @if ($status_ticket->status == $val || ($onsite->total_row != 1 && $onsite->total_row != 2 && $onsite->total_row != 3 && $onsite->total_row != 4 && $onsite->total_row != 5))
                                                     @php
                                                         break;
                                                     @endphp

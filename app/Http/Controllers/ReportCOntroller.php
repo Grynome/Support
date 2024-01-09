@@ -34,6 +34,8 @@ use App\Models\VW_FinalReport;
 use App\Models\LastActEn;
 use App\Models\VW_Ticket_Split;
 use App\Models\TCCompare;
+use App\Models\VW_Act_Report_L2;
+use App\Models\VW_Activity_L2Engineer;
 
 class ReportCOntroller extends Controller
 {
@@ -718,8 +720,8 @@ class ReportCOntroller extends Controller
     }
     public function exportDataSplit(Request $request)
     {
-        $extanggal1 = $request->ex_stS.' '.'00:00:00';
-        $extanggal2 = $request->ex_ndS.' '.'23:59:59';
+        $extanggal1 = $request->ex_stSp.' '.'00:00:00';
+        $extanggal2 = $request->ex_ndSp.' '.'23:59:59';
         $ex_sts = $request->ex_stsS;
         $ex_prj = $request->ex_prjS;
         $ex_prt = $request->ex_prtS;
@@ -939,168 +941,333 @@ class ReportCOntroller extends Controller
         return response()->json($chartData);
     }
     // KPI Report
-    public function kpi(Request $request){
-        $now = Carbon::now()->addHours(7)->format('Y-m-d');
-        $oneMonthAgo = Carbon::parse($now)->subMonth(1)->format('Y-m-d');
+        // Engineer
+        public function kpi(Request $request){
+            $now = Carbon::now()->addHours(7)->format('Y-m-d');
+            $oneMonthAgo = Carbon::parse($now)->subMonth(1)->format('Y-m-d');
+            
+            if (!isset($request->sort_kpi_project) && !isset($request->kpi_st_date_report) && !isset($request->kpi_nd_date_report)) {
+                $data['report'] = VW_Act_Report_EN::where('status', 10)->whereBetween('entrydate', [$oneMonthAgo.' '.'00:00:00', $now.' '.'23:59:59'])->get();
+                $data['total_ticket'] = VW_Act_Report_EN::selectRaw('*')
+                                        ->fromSub(function ($query) {
+                                            $query->select('*')
+                                                ->from('vw_act_report_engineer')
+                                                ->where('status', 10)
+                                                ->groupBy('notiket');
+                                        }, 'subquery')
+                                        ->whereBetween('entrydate', [$oneMonthAgo.' '.'00:00:00', $now.' '.'23:59:59'])->count();
+                $data['all_total'] = VW_Activity_Engineer::selectRaw('COUNT(*) AS onsite')
+                                        ->fromSub(function ($query) {
+                                            $query->select('*')
+                                                ->from('vw_hgt_activity_engineer')
+                                                ->whereIn('sts_timeline', [0, 1, 2, 3, 4])
+                                                ->groupBy('notiket', 'sts_timeline');
+                                        }, 'subquery')
+                                        ->where('status', 10)
+                                        ->whereBetween('entrydate', [$oneMonthAgo.' '.'00:00:00', $now.' '.'23:59:59'])
+                                        ->first();
+            } elseif(isset($request->sort_kpi_project) || isset($request->sort_kpi_en) || isset($request->kpi_st_date_report) || isset($request->kpi_nd_date_report)) {
+                $data['report'] = VW_Act_Report_EN::where('status', 10)->where('project_id', 'LIKE','%'.$request->sort_kpi_project.'%')
+                                ->where('nik', 'LIKE','%'.$request->sort_kpi_en.'%')
+                                ->whereBetween('entrydate', [$request->kpi_st_date_report.' '.'00:00:00', $request->kpi_nd_date_report.' '.'23:59:59'])->get();
+                $data['total_ticket'] = VW_Act_Report_EN::selectRaw('*')
+                                        ->fromSub(function ($query) use($request) {
+                                            $query->select('*')
+                                                ->from('vw_act_report_engineer')
+                                                ->where('status', 10)
+                                                ->where('project_id', 'LIKE','%'.$request->sort_kpi_project.'%')
+                                                ->where('nik', 'LIKE','%'.$request->sort_kpi_en.'%')
+                                                ->groupBy('notiket');
+                                        }, 'subquery')
+                                        ->whereBetween('entrydate', [$request->kpi_st_date_report.' '.'00:00:00', $request->kpi_nd_date_report.' '.'23:59:59'])->count();
+                $data['all_total'] = VW_Activity_Engineer::selectRaw('COUNT(*) AS onsite')
+                                        ->fromSub(function ($query) {
+                                            $query->select('*')
+                                                ->from('vw_hgt_activity_engineer')
+                                                ->whereIn('sts_timeline', [0, 1, 2, 3, 4])
+                                                ->groupBy('notiket', 'sts_timeline');
+                                        }, 'subquery')
+                                        ->where('status', 10)
+                                        ->where('project_id', 'LIKE','%'.$request->sort_kpi_project.'%')
+                                        ->where('nik', 'LIKE','%'.$request->sort_kpi_en.'%')
+                                        ->whereBetween('entrydate', [$request->kpi_st_date_report.' '.'00:00:00', $request->kpi_nd_date_report.' '.'23:59:59'])
+                                        ->first();
+            }
+            $data['project'] = VW_ReportKPI::select('project_id', 'project_name')->groupBy('project_id')->get();
+            $data['en'] = VW_ReportKPI::select('nik', 'full_name')->whereNotNull('nik')->groupBy('nik')->get();
+            
+            return view('Pages.Report.kpi')->with($data)
+            ->with('stsd', $oneMonthAgo)
+            ->with('nded', $now)
+            ->with('str', $request->kpi_st_date_report)
+            ->with('ndr', $request->kpi_nd_date_report)
+            ->with('skp', $request->sort_kpi_project)
+            ->with('ske', $request->sort_kpi_en);
+        }
         
-        if (!isset($request->sort_kpi_project) && !isset($request->kpi_st_date_report) && !isset($request->kpi_nd_date_report)) {
-            $data['report'] = VW_Act_Report_EN::where('status', 10)->whereBetween('entrydate', [$oneMonthAgo.' '.'00:00:00', $now.' '.'23:59:59'])->get();
-            $data['total_ticket'] = VW_Act_Report_EN::selectRaw('*')
-                                    ->fromSub(function ($query) {
-                                        $query->select('*')
-                                            ->from('vw_act_report_engineer')
-                                            ->where('status', 10)
-                                            ->groupBy('notiket');
-                                    }, 'subquery')
-                                    ->whereBetween('entrydate', [$oneMonthAgo.' '.'00:00:00', $now.' '.'23:59:59'])->count();
-            $data['all_total'] = VW_Activity_Engineer::selectRaw('COUNT(*) AS onsite')
-                                    ->fromSub(function ($query) {
-                                        $query->select('*')
-                                            ->from('vw_hgt_activity_engineer')
-                                            ->whereIn('sts_timeline', [0, 1, 2, 3, 4])
-                                            ->groupBy('notiket', 'sts_timeline');
-                                    }, 'subquery')
-                                    ->where('status', 10)
-                                    ->whereBetween('entrydate', [$oneMonthAgo.' '.'00:00:00', $now.' '.'23:59:59'])
-                                    ->first();
-        } elseif(isset($request->sort_kpi_project) || isset($request->sort_kpi_en) || isset($request->kpi_st_date_report) || isset($request->kpi_nd_date_report)) {
-            $data['report'] = VW_Act_Report_EN::where('status', 10)->where('project_id', 'LIKE','%'.$request->sort_kpi_project.'%')
-                            ->where('nik', 'LIKE','%'.$request->sort_kpi_en.'%')
-                            ->whereBetween('entrydate', [$request->kpi_st_date_report.' '.'00:00:00', $request->kpi_nd_date_report.' '.'23:59:59'])->get();
-            $data['total_ticket'] = VW_Act_Report_EN::selectRaw('*')
-                                    ->fromSub(function ($query) use($request) {
-                                        $query->select('*')
-                                            ->from('vw_act_report_engineer')
-                                            ->where('status', 10)
-                                            ->where('project_id', 'LIKE','%'.$request->sort_kpi_project.'%')
-                                            ->where('nik', 'LIKE','%'.$request->sort_kpi_en.'%')
-                                            ->groupBy('notiket');
-                                    }, 'subquery')
-                                    ->whereBetween('entrydate', [$request->kpi_st_date_report.' '.'00:00:00', $request->kpi_nd_date_report.' '.'23:59:59'])->count();
-            $data['all_total'] = VW_Activity_Engineer::selectRaw('COUNT(*) AS onsite')
-                                    ->fromSub(function ($query) {
-                                        $query->select('*')
-                                            ->from('vw_hgt_activity_engineer')
-                                            ->whereIn('sts_timeline', [0, 1, 2, 3, 4])
-                                            ->groupBy('notiket', 'sts_timeline');
-                                    }, 'subquery')
-                                    ->where('status', 10)
-                                    ->where('project_id', 'LIKE','%'.$request->sort_kpi_project.'%')
-                                    ->where('nik', 'LIKE','%'.$request->sort_kpi_en.'%')
-                                    ->whereBetween('entrydate', [$request->kpi_st_date_report.' '.'00:00:00', $request->kpi_nd_date_report.' '.'23:59:59'])
-                                    ->first();
+        public function export_kpi(Request $request)
+        {        
+            if (!isset($request->srt_kpi_prj) && !isset($request->srt_kpi_st) && !isset($request->srt_kpi_nd)) {
+                $data_ticket = VW_Act_Report_EN::where('status', 10)->whereBetween('entrydate', [$request->srt_kpi_st.' '.'00:00:00', $request->srt_kpi_nd.' '.'23:59:59'])->get();
+            }else{
+                $data_ticket = VW_Act_Report_EN::where('status', 10)->where('project_id', 'LIKE','%'.$request->srt_kpi_prj.'%')->where('nik', 'LIKE','%'.$request->srt_kpi_en.'%')->whereBetween('entrydate', [$request->srt_kpi_st.' '.'00:00:00', $request->srt_kpi_nd.' '.'23:59:59'])->get();
+            }
+
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('Sheet 1');
+            $headers = 
+            [
+                'No',
+                'No Tiket',
+                'Onsite',
+                'Engineer',
+                'Service Name',
+                'Project',
+                'Kabupaten',
+                'Entry Date',
+                'Receive',
+                'Go',
+                'Arrive',
+                'Start Work',
+                'Stop Work',
+                'Leave Site',
+                'Travel Stop',
+                'Close Date'
+            ];
+            $sheet->fromArray([$headers], NULL, 'A1');
+
+            $no = 1;
+            $row = 2;
+            $style = [
+                'font' => [
+                    'bold' => true,
+                    'size' => 11,
+                ],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_DOUBLE,
+                        'color' => ['rgb' => '000000'],
+                    ],
+                ],
+                'alignment' => [
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                ]
+            ];
+            $style1 = [
+                'alignment' => [
+                    'vertical' => Alignment::VERTICAL_TOP,
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                ],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => '000000'],
+                    ],
+                ]
+            ];
+            $sheet->getStyle("A1:P1")->applyFromArray($style);
+            foreach ($data_ticket as $item) {
+                    $data = [
+                        $no,
+                        $item->notiket,
+                        $item->OnSite,
+                        $item->full_name,
+                        $item->service_name,
+                        $item->project_name,
+                        $item->kab,
+                        $item->entrydate,
+                        $item->received,
+                        $item->gow,
+                        $item->arrived,
+                        $item->work_start,
+                        $item->work_stop,
+                        $item->leave_site,
+                        $item->travel_stop,
+                        $item->closedate
+                    ];
+
+                    $sheet->fromArray([$data], NULL, "A$row");
+
+                    $sheet->getStyle("A$row:P$row")->applyFromArray($style1);
+
+                $row++;
+                $no++;
+            }
+            $filename = "Data Report Engineer.xlsx";
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="'. $filename .'"');
+            header('Cache-Control: max-age=0');
+
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+            exit();
         }
-        $data['project'] = VW_ReportKPI::select('project_id', 'project_name')->groupBy('project_id')->get();
-        $data['en'] = VW_ReportKPI::select('nik', 'full_name')->whereNotNull('nik')->groupBy('nik')->get();
+        // end Engineer
+        // L2
+        public function kpiL2(Request $request){
+            $now = Carbon::now()->endOfDay();
+            $oneMonthAgo = $now->copy()->startOfDay()->subMonth(1);
+            $tanggal1 = $request->kpiL2_st_date_report.' '.'00:00:00';
+            $tanggal2 = $request->kpiL2_nd_date_report.' '.'23:59:59';
+            if (!empty($request->kpiL2_st_date_report) && !empty($request->kpiL2_nd_date_report)) {
+                $eventTgl1 = $tanggal1;
+                $eventTgl2 = $tanggal2;
+            } else {
+                $eventTgl1 = $oneMonthAgo;
+                $eventTgl2 = $now;
+            }
+            
+            if (!isset($request->srt_kpi_L2)) {
+                $data['report'] = VW_Act_Report_L2::where('status', 10)->whereBetween('entrydate', [$eventTgl1.' '.'00:00:00', $eventTgl2.' '.'23:59:59'])->get();
+                $data['total_ticket'] = VW_Act_Report_L2::selectRaw('*')
+                                        ->fromSub(function ($query) {
+                                            $query->select('*')
+                                                ->from('vw_act_report_l2_en')
+                                                ->where('status', 10)
+                                                ->groupBy('notiket');
+                                        }, 'subquery')
+                                        ->whereBetween('entrydate', [$eventTgl1.' '.'00:00:00', $eventTgl2.' '.'23:59:59'])->count();
+                $data['all_total'] = VW_Activity_L2Engineer::selectRaw('COUNT(*) AS onsite')
+                                        ->fromSub(function ($query) {
+                                            $query->select('*')
+                                                ->from('vw_hgt_activity_l2engineer')
+                                                ->whereIn('sts_timeline', [0, 1, 2])
+                                                ->groupBy('notiket', 'sts_timeline');
+                                        }, 'subquery')
+                                        ->where('status', 10)
+                                        ->whereBetween('entrydate', [$eventTgl1.' '.'00:00:00', $eventTgl2.' '.'23:59:59'])
+                                        ->first();
+            } elseif(isset($request->srt_kpi_L2)) {
+                $data['report'] = VW_Act_Report_L2::where('status', 10)->where('nik', 'LIKE','%'.$request->l2_list.'%')
+                                ->whereBetween('entrydate', [$eventTgl1.' '.'00:00:00', $eventTgl2.' '.'23:59:59'])->get();
+                $data['total_ticket'] = VW_Act_Report_L2::selectRaw('*')
+                                        ->fromSub(function ($query) use($request) {
+                                            $query->select('*')
+                                                ->from('vw_act_report_l2_en')
+                                                ->where('status', 10)
+                                                ->where('nik', 'LIKE','%'.$request->l2_list.'%')
+                                                ->groupBy('notiket');
+                                        }, 'subquery')
+                                        ->whereBetween('entrydate', [$eventTgl1.' '.'00:00:00', $eventTgl2.' '.'23:59:59'])->count();
+                $data['all_total'] = VW_Activity_L2Engineer::selectRaw('COUNT(*) AS onsite')
+                                        ->fromSub(function ($query) {
+                                            $query->select('*')
+                                                ->from('vw_hgt_activity_l2engineer')
+                                                ->whereIn('sts_timeline', [0, 1, 2])
+                                                ->groupBy('notiket', 'sts_timeline');
+                                        }, 'subquery')
+                                        ->where('status', 10)
+                                        ->where('nik', 'LIKE','%'.$request->l2_list.'%')
+                                        ->whereBetween('entrydate', [$eventTgl1.' '.'00:00:00', $eventTgl2.' '.'23:59:59'])
+                                        ->first();
+            }
+            $data['l2'] = VW_Act_Report_L2::select('nik', 'full_name')->groupBy('nik')->get();
+            
+            return view('Pages.Report.kpiL2')->with($data)
+            ->with('stsd', $oneMonthAgo)
+            ->with('nded', $now)
+            ->with('str', $request->kpiL2_st_date_report)
+            ->with('ndr', $request->kpiL2_nd_date_report)
+            ->with('ske', $request->l2_list);
+        }
         
-        return view('Pages.Report.kpi')->with($data)
-        ->with('stsd', $oneMonthAgo)
-        ->with('nded', $now)
-        ->with('str', $request->kpi_st_date_report)
-        ->with('ndr', $request->kpi_nd_date_report)
-        ->with('skp', $request->sort_kpi_project)
-        ->with('ske', $request->sort_kpi_en);
-    }
-    
-    public function export_kpi(Request $request)
-    {        
-        if (!isset($request->srt_kpi_prj) && !isset($request->srt_kpi_st) && !isset($request->srt_kpi_nd)) {
-            $data_ticket = VW_Act_Report_EN::where('status', 10)->whereBetween('entrydate', [$request->srt_kpi_st.' '.'00:00:00', $request->srt_kpi_nd.' '.'23:59:59'])->get();
-        }else{
-            $data_ticket = VW_Act_Report_EN::where('status', 10)->where('project_id', 'LIKE','%'.$request->srt_kpi_prj.'%')->where('nik', 'LIKE','%'.$request->srt_kpi_en.'%')->whereBetween('entrydate', [$request->srt_kpi_st.' '.'00:00:00', $request->srt_kpi_nd.' '.'23:59:59'])->get();
-        }
+        public function export_kpiL2(Request $request)
+        {        
+            if (!isset($request->srt_kpi_L2) && !isset($request->srt_kpiL2_st) && !isset($request->srt_kpiL2_nd)) {
+                $data_ticket = VW_Act_Report_L2::where('status', 10)->whereBetween('entrydate', [$request->srt_kpiL2_st.' '.'00:00:00', $request->srt_kpiL2_nd.' '.'23:59:59'])->get();
+            }else{
+                $data_ticket = VW_Act_Report_L2::where('status', 10)->where('nik', 'LIKE','%'.$request->srt_kpi_L2.'%')->whereBetween('entrydate', [$request->srt_kpiL2_st.' '.'00:00:00', $request->srt_kpiL2_nd.' '.'23:59:59'])->get();
+            }
 
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Sheet 1');
-        $headers = 
-        [
-            'No',
-            'No Tiket',
-            'Onsite',
-            'Engineer',
-            'Service Name',
-            'Project',
-            'Kabupaten',
-            'Entry Date',
-            'Receive',
-            'Go',
-            'Arrive',
-            'Start Work',
-            'Stop Work',
-            'Leave Site',
-            'Travel Stop',
-            'Close Date'
-        ];
-        $sheet->fromArray([$headers], NULL, 'A1');
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('Sheet 1');
+            $headers = 
+            [
+                'No',
+                'No Tiket',
+                'Support',
+                'Engineer',
+                'Service Name',
+                'Project',
+                'Kabupaten',
+                'Entry Date',
+                'Stand By',
+                'Work Start',
+                'Work Stop',
+                'End Case',
+                'Close Date'
+            ];
+            $sheet->fromArray([$headers], NULL, 'A1');
 
-        $no = 1;
-        $row = 2;
-        $style = [
-            'font' => [
-                'bold' => true,
-                'size' => 11,
-            ],
-            'borders' => [
-                'allBorders' => [
-                    'borderStyle' => Border::BORDER_DOUBLE,
-                    'color' => ['rgb' => '000000'],
+            $no = 1;
+            $row = 2;
+            $style = [
+                'font' => [
+                    'bold' => true,
+                    'size' => 11,
                 ],
-            ],
-            'alignment' => [
-                'vertical' => Alignment::VERTICAL_CENTER,
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-            ]
-        ];
-        $style1 = [
-            'alignment' => [
-                'vertical' => Alignment::VERTICAL_TOP,
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-            ],
-            'borders' => [
-                'allBorders' => [
-                    'borderStyle' => Border::BORDER_THIN,
-                    'color' => ['rgb' => '000000'],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_DOUBLE,
+                        'color' => ['rgb' => '000000'],
+                    ],
                 ],
-            ]
-        ];
-        $sheet->getStyle("A1:P1")->applyFromArray($style);
-        foreach ($data_ticket as $item) {
-                $data = [
-                    $no,
-                    $item->notiket,
-                    $item->OnSite,
-                    $item->full_name,
-                    $item->service_name,
-                    $item->project_name,
-                    $item->kab,
-                    $item->entrydate,
-                    $item->received,
-                    $item->gow,
-                    $item->arrived,
-                    $item->work_start,
-                    $item->work_stop,
-                    $item->leave_site,
-                    $item->travel_stop,
-                    $item->closedate
-                ];
+                'alignment' => [
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                ]
+            ];
+            $style1 = [
+                'alignment' => [
+                    'vertical' => Alignment::VERTICAL_TOP,
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                ],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => '000000'],
+                    ],
+                ]
+            ];
+            $sheet->getStyle("A1:M1")->applyFromArray($style);
+            foreach ($data_ticket as $item) {
+                    $data = [
+                        $no,
+                        $item->notiket,
+                        $item->OnSite,
+                        $item->full_name,
+                        $item->service_name,
+                        $item->project_name,
+                        $item->kab,
+                        $item->entrydate,
+                        $item->sb,
+                        $item->work_start,
+                        $item->work_stop,
+                        $item->end_case,
+                        $item->closedate
+                    ];
 
-                $sheet->fromArray([$data], NULL, "A$row");
+                    $sheet->fromArray([$data], NULL, "A$row");
 
-                $sheet->getStyle("A$row:P$row")->applyFromArray($style1);
+                    $sheet->getStyle("A$row:M$row")->applyFromArray($style1);
 
-            $row++;
-            $no++;
+                $row++;
+                $no++;
+            }
+            $filename = "Data KPI L2.xlsx";
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="'. $filename .'"');
+            header('Cache-Control: max-age=0');
+
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+            exit();
         }
-        $filename = "Data Report Engineer.xlsx";
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'. $filename .'"');
-        header('Cache-Control: max-age=0');
-
-        $writer = new Xlsx($spreadsheet);
-        $writer->save('php://output');
-        exit();
-    }
+        // end L2
+    // End KPI Report
     public function getTicketDetails($notiket)
     {
         $data['get_act_en'] = VW_Activity_Engineer::select('full_name', 'sts_timeline', 'act_description', 'sts_ticket', 'act_time')->where('notiket', $notiket)->get();

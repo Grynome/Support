@@ -67,7 +67,7 @@
                     <div class="card-body">
                         <div class="row mb-3">
                             <div class="col">
-                                <h6 class="card-title">Tomorrow</h6>
+                                <h6 class="card-title">Next Day</h6>
                             </div>
                         </div>
                         <div class="table-responsive">
@@ -116,7 +116,7 @@
                     <div class="card-body">
                         <div class="row mb-3">
                             <div class="col">
-                                <h6 class="card-title">Day after Tomorrow</h6>
+                                <h6 class="card-title">Overmorrow</h6>
                             </div>
                         </div>
                         <div class="table-responsive">

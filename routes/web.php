@@ -30,6 +30,7 @@ use App\Http\Controllers\TrelloController;
 use App\Http\Controllers\PICController;
 use App\Http\Controllers\IssueController;
 use App\Http\Controllers\LogAsController;
+use App\Http\Controllers\AccomodationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +79,8 @@ Route::group(['middleware'=>'auth'], function(){
     Route::get('filter/user-KPI', [DataAjaxController::class,'kpi_user'])->name('filter_user_kpi');
     // Filter Raw Data Report Ticket
     Route::get('dtProject', [DataAjaxController::class,'dtProject'])->name('GetdtProject');
+    // Category Reqs AJax
+    Route::get('/categories/fetch', [DataAjaxController::class, 'getCategories'])->name('fetch.category.reqs');
     // MANAGE TICKET
     Route::get('helpdesk/manage=Ticket', [TicketController::class, 'manage'])->name('manage.ticket');
         Route::post('helpdesk/manage=Ticket/sorting', [TicketController::class, 'manage'])->name('sorting.ticket');
@@ -131,8 +134,6 @@ Route::group(['middleware'=>'auth'], function(){
             Route::patch('Update-Unit/{id}/Detail-Ticket', [TicketController::class, 'dt_updt_unit'])->where(['id' => '.*']);
             // Reqs Reimburse 
             Route::get('preview-Attach/Reimburse/{fk}', [TicketController::class, 'previewReimburse']);
-                // Add Reimburse
-                Route::post('add/Reimburse/En/{id}', [TicketController::class, 'add_attach_reimburse_en'])->where(['id' => '.*']);
                 // Download Attachment Reimburse
                 Route::post('attach-Reimburse/Download/en/{fk_id}', [VAttachmentController::class, 'downloadAttachReimburse']);
                 // Delete Reimburse Attach
@@ -274,12 +275,20 @@ Route::group(['middleware'=>'auth'], function(){
                 // Get Data Chart
                 Route::get('/chart', [ReportCOntroller::class, 'getDataMonthlyChart'])->name('chart.data');
             // Report KPI
-            Route::get('Report/data=KPI-User', [ReportCOntroller::class, 'kpi']);
-            Route::post('Report/data=KPI-User/sorting', [ReportCOntroller::class, 'kpi'])->name('sorting.kpi');
-                // Export Excel KPI
-                Route::post('export-KPI/Report', [ReportCOntroller::class, 'export_kpi']);
-            // KPI Detil Report
-            Route::get('Detil-Report/{notiket}', [ReportCOntroller::class, 'getTicketDetails'])->where(['notiket' => '.*']);
+                // Engineer
+                Route::get('Report/data=KPI-User', [ReportCOntroller::class, 'kpi']);
+                Route::post('Report/data=KPI-User/sorting', [ReportCOntroller::class, 'kpi'])->name('sorting.kpi');
+                    // Export Excel KPI
+                    Route::post('export-KPI/Report', [ReportCOntroller::class, 'export_kpi']);
+                // KPI Detil Report
+                Route::get('Detil-Report/{notiket}', [ReportCOntroller::class, 'getTicketDetails'])->where(['notiket' => '.*']);
+                // END Engineer
+                // L2
+                Route::get('Report/KPI/data=L2-en', [ReportCOntroller::class, 'kpiL2']);
+                Route::post('Report/KPI/data=L2-en/sorting', [ReportCOntroller::class, 'kpiL2'])->name('sorting.kpiL2');
+                    // Export Excel KPI
+                    Route::post('export-KPI/L2/Report', [ReportCOntroller::class, 'export_kpiL2']);
+                // end L2
             // Lat & Lng Report
             Route::get('Report/data=Lat&Lng', [ReportCOntroller::class, 'latlng']);
             Route::post('Report/data=LatLng/sorting', [ReportCOntroller::class, 'latlng'])->name('sorting.latlng');
@@ -416,6 +425,24 @@ Route::group(['middleware'=>'auth'], function(){
             Route::post('Add/data=Category-Part', [MasterController::class, 'store_ktgr_part']);
             Route::patch('update/{id}/data=Category-Part', [MasterController::class, 'update_ktgr_part']);
             Route::patch('remove/{id}/data=Category-Part', [MasterController::class, 'remove_ktgr_part']);
+        // Category Expenses
+        Route::get('Master/data=Ctgr-Expenses', [MasterController::class, 'CxP']);
+            // ~ CRUD
+            Route::post('Add/Data=CtgrExpenses', [MasterController::class, 'store_CxP']);
+            Route::patch('Update/{id}/Data=CtgrExpenses', [MasterController::class, 'update_CxP']);
+            Route::patch('Remove/{id}/Data=CtgrExpenses', [MasterController::class, 'remove_CxP']);
+        // Category Reqs
+        Route::get('Master/data=Ctgr-Reqs', [MasterController::class, 'Creqs']);
+            // ~ CRUD
+            Route::post('Add/Data=CtgrReqs', [MasterController::class, 'store_Creqs']);
+            Route::patch('Update/{id}/Data=CtgrReqs', [MasterController::class, 'update_Creqs']);
+            Route::patch('Remove/{id}/Data=CtgrReqs', [MasterController::class, 'remove_Creqs']);
+        // Category Reqs
+        Route::get('Master/Data=TypeOfTransportation', [MasterController::class, 'TTns']);
+            // ~ CRUD
+            Route::post('Add/Data=TypeOfTransportation', [MasterController::class, 'store_TTns']);
+            Route::patch('Update/{id}/Data=TypeOfTransportation', [MasterController::class, 'update_TTns']);
+            Route::patch('Remove/{id}/Data=TypeOfTransportation', [MasterController::class, 'remove_TTns']);
         // Main Website HGT Services
             // Category Product
             Route::get('Master/data-Web=Category-Product', [WebsiteController::class, 'vw_web_ctgr_prd']);
@@ -425,6 +452,29 @@ Route::group(['middleware'=>'auth'], function(){
                 Route::post('Add/data-Web=Product', [WebsiteController::class, 'store_wb_upload']);
             // Inquiry Message
             Route::get('Data/Inquiry-Message', [WebsiteController::class, 'vw_web_inquiry_msg']);
+    // Expenses
+    Route::get('Form/Reqs-Expenses/{id}', [AccomodationController::class, 'expenses']);
+        // Request Accomodation
+        Route::get('{dsc}/Reqs-Accomodation/{id}', [AccomodationController::class, 'request_reimburse']);
+            // Add Reqs
+            Route::post('{dsc}/{id}/Reqs-Reimburse/En', [AccomodationController::class, 'add_req_reimburse_en']);
+            // Delete Reqs
+            Route::delete('Delete/Reqs-En/{id}', [AccomodationController::class, 'destroy_reqs']);
+            // DELETE DETIL
+            Route::delete('Delete/Detil/Reqs-En/{id}', [AccomodationController::class, 'destroy_dt_en']);
+            // Check update Detil
+            Route::patch('/Update-Detil', [AccomodationController::class, 'check_detail_reqs_en']);
+            // Check update Attach
+            Route::patch('/Update-Attach', [AccomodationController::class, 'attach_detail_reqs_en']);
+        // Confirm Lead EN
+        Route::patch('Confirm/Reqs-En/{id}', [AccomodationController::class, 'confirm_reqs']);
+        // Reject Accounting
+        Route::patch('Reject/{dsc}/Reqs-En/{id}', [AccomodationController::class, 'reject_reqs'])->name('reject.reqs');
+        // Store Expenses
+        Route::post('Store/Expenses/Reqs-{id}', [AccomodationController::class, 'store_expenses'])->name('store.expenses');
+        // Execute Reqs
+        Route::patch('Execute/Reqs-En/{id}', [AccomodationController::class, 'execute_reqs'])->name('execute.reqs');
+    Route::get('/My-Expenses', [AccomodationController::class, 'vw_request_reimburse']);
 
     
     // Search Issue

@@ -60,7 +60,6 @@ use App\Models\ProjectInTicket;
 use App\Models\ManageTicketProcs;
 use App\Models\Ticketing;
 use App\Models\LogAdmin;
-use App\Models\ReimburseEn;
 use App\Models\AttReimburseEn;
 use App\Models\StsPending;
 use App\Models\ActivityL2En;
@@ -106,7 +105,7 @@ class TicketController extends Controller
             if ($role == 1) {
                 $data['ticket'] = ManageTicketProcs::where('status', '!=', 0)->get();
             } elseif ($depart == 6) {
-                $data['ticket'] = ManageTicketProcs::where('nik', $nik)->where('status', '!=', 0)->get();
+                $data['ticket'] = ManageTicketProcs::where('nik', $nik)->get();
             } elseif ($depart == 13) {
                 $data['ticket'] = ManageTicketProcs::where('l2_nik', $nik)->where('status', '!=', 0)->get();
             }
@@ -354,7 +353,14 @@ class TicketController extends Controller
                 $id_part = "HGT-PART-00".$autonumber;
             }
         }
-
+        if (isset($request->type_unit_adding) && !isset($request->type_id)) {
+            $values_unit_model = [
+                'type_name'           => $request->type_unit_adding,
+                'category_id'    => $request->ctgrpi_id,
+                'merk_id'    => $request->merk_id
+            ];
+            TypeUnit::insert($values_unit_model);
+        }
         for ($i = 0; $i < $request->how_many; $i++) {
             $values_ticket = [
                 'notiket'           => $kode_awal,
@@ -428,12 +434,6 @@ class TicketController extends Controller
                 }
             }
             if (isset($request->type_unit_adding) && !isset($request->type_id)) {
-                $values_unit_model = [
-                    'type_name'           => $request->type_unit_adding,
-                    'category_id'    => $request->ctgrpi_id,
-                    'merk_id'    => $request->merk_id
-                ];
-                TypeUnit::insert($values_unit_model);
                 $unitType = TypeUnit::all()->where('type_name',$request->type_unit_adding)->first();
                 $values_info = [
                     'notiket'           => $kode_awal,
@@ -511,29 +511,28 @@ class TicketController extends Controller
             }elseif($ai > 9999){
             	$id_cust = "CUST-".str_pad($ai, 5, "0", STR_PAD_LEFT)."-HGT";
             }
+            $files = $request->file('file');
+            if (isset($files)) {
+                foreach($files as $file) {
+                    $fileName = uniqid().'_'.$file->getClientOriginalName();
+                    $path = 'files/'.$fileName;
+                    if (!$path) {
+                        return response()->json([
+                            'error' => 'File upload failed.',
+                        ], 500);
+                    }
+                    $file->move(public_path('files'),$fileName);
+                    $fileModel = new AttachmentFile();
+                    $fileModel->notiket = $kode_awal;
+                    $fileModel->type_attach = 0;
+                    $fileModel->filename = $fileName;
+                    $fileModel->path = $path;
+                    $fileModel->save();
+                }
+            }
             $kode_awal = $dtGenerate.str_pad($int, 3, "0", STR_PAD_LEFT);
         }
             
-        $files = $request->file('file');
-        if (isset($files)) {
-            foreach($files as $file) {
-                $fileName = uniqid().'_'.$file->getClientOriginalName();
-                $path = 'files/'.$fileName;
-                if (!$path) {
-                    return response()->json([
-                        'error' => 'File upload failed.',
-                    ], 500);
-                }
-                $file->move(public_path('files'),$fileName);
-                $fileModel = new AttachmentFile();
-                $fileModel->notiket = $kode_awal;
-                $fileModel->type_attach = 0;
-                $fileModel->filename = $fileName;
-                $fileModel->path = $path;
-                $fileModel->save();
-            }
-        }
-        
         if($query_ticket) {
             Alert::toast('Data Berhasil Disimpan', 'success');
             return redirect('helpdesk/manage=Ticket');
@@ -2353,67 +2352,5 @@ class TicketController extends Controller
             Alert::toast('Error when upload attachment!', 'error');
             return back();
         }
-    }
-    public function add_attach_reimburse_en(Request $request, $id)
-    {
-        $files = $request->file('filesRR');
-        $now = Carbon::now()->addHours(7);
-        $get_id = ReimburseEn::orderBy('id','desc')->take(1)->get();
-        if ($get_id->isEmpty()) {
-            $int = 1;
-                $fk_id = "REA00".$int;
-        } else {
-            $fk_id = $get_id[0]->fk_id;
-            $num = substr($fk_id, 3,3);
-            $int = (int)$num;
-            $int++;
-            if($int > 9 && $int < 100){
-                $fk_id = "REA0".$int;
-            }elseif($int > 99 && $int < 1000){
-                $fk_id = $int;
-            }elseif($int <= 9){
-                $fk_id = "REA00".$int;
-            }
-        }
-        $getAmount = $request->nominal;
-        $cleanedAmount = str_replace(['Rp', ',', '.'], '', $getAmount);
-        
-        $amount = (int) $cleanedAmount;
-        $val = [
-            'notiket'           => $id,
-            'fk_id'    => $fk_id,
-            'nominal'    => $amount,
-            'description'    => $request->desc_reimburse,
-            'created_at'    => $now
-        ];
-        
-        $result = ReimburseEn::insert($val);
-        if($result) {
-            foreach ($files as $file) {
-                $fileName = uniqid().'_'.$file->getClientOriginalName();
-                $file->move(public_path('/uploads/reimburse_EN'), $fileName);
-                
-                $path = '/uploads/reimburse_EN/'.$fileName;
-
-                $val_attach = [
-                    'fk_id'           => $fk_id,
-                    'filename'    => $fileName,
-                    'path'    => $path
-                ];
-                
-                AttReimburseEn::insert($val_attach);
-            }
-            Alert::toast('Atacchment Successfully Added!', 'success');
-            return redirect("Detail/Ticket=$id");
-        }
-        else {
-            Alert::toast('Error when upload attachment!', 'error');
-            return back();
-        }
-    }
-    public function previewReimburse($fk)
-    {
-        $data['attachEN'] = AttReimburseEn::where('fk_id', $fk)->get();
-        return view('Pages.Ticket.Reimburse.preview-reimburse')->with($data);
     }
 }

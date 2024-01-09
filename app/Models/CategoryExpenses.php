@@ -5,15 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ReimburseEn extends Model
+class CategoryExpenses extends Model
 {
-    protected $table = 'hgt_reimburse_en';
+    protected $table = 'hgt_category_expenses';
 
     public $primaryKey = 'id';
 
     protected $fillable = [
-        'notiket', 'id_attach_reimburse', 'nominal', 'description'
+        'description', 'deleted'
     ];
-    
+
     public $incrementing = false;
 }

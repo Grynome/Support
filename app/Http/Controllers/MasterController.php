@@ -17,6 +17,9 @@ use App\Models\WB_Category_Product;
 use App\Models\CategoryNote;
 use App\Models\StsPending;
 use App\Models\TypeActPIC;
+use App\Models\CategoryExpenses;
+use App\Models\CategoryReqs;
+use App\Models\TypeTransport;
 
 class MasterController extends Controller
 {
@@ -548,4 +551,163 @@ class MasterController extends Controller
             }
         }
     // END Status Pending
+    // Start Crud Category Expenses
+    public function CxP()
+    {
+        $data['cxp'] = CategoryExpenses::all()->where('deleted', 0);
+        return view('Pages.CategoryExpenses.index')->with($data);
+    }
+    public function store_CxP(Request $request)
+    {
+        $values = [
+            'description'           => $request->val_desc
+        ];
+        
+        if($values) {
+            CategoryExpenses::create($values);
+            Alert::toast('Success on Saving Data', 'success');
+            return back();
+        }
+        else {
+            Alert::toast('Failed saving', 'error');
+            return back();
+        }
+    }
+    public function update_CxP(Request $request, $id){
+        $value = [
+            'description'    => $request->val_updt_desc
+        ];
+        $query = CategoryExpenses::where('id', $id)->first();
+        if ($value && $query) {
+            $query->update($value);
+            Alert::toast('Success Updating!', 'success');
+            return back();
+        }
+        else {
+            Alert::toast('Error When Updating', 'error');
+            return back();
+        }
+    }
+    public function remove_CxP(Request $request, $id){
+        $value = [
+            'deleted'    => 1
+        ];
+        $query = CategoryExpenses::where('id', $id)->first();
+        if ($value && $query) {
+            $query->update($value);
+            Alert::toast('Success Remove Data', 'success');
+            return back();
+        }
+        else {
+            Alert::toast('Failed to Remove', 'error');
+            return back();
+        }
+    }
+    // End Crud
+    // Start Crud Category Reqs
+    public function Creqs()
+    {
+        $data['creqs'] = CategoryReqs::all()->where('deleted', 0);
+        return view('Pages.CategoryReqs.index')->with($data);
+    }
+    public function store_Creqs(Request $request)
+    {
+        $values = [
+            'description'           => $request->val_desc
+        ];
+        
+        if($values) {
+            CategoryReqs::create($values);
+            Alert::toast('Success on Saving Data', 'success');
+            return back();
+        }
+        else {
+            Alert::toast('Failed saving', 'error');
+            return back();
+        }
+    }
+    public function update_Creqs(Request $request, $id){
+        $value = [
+            'description'    => $request->val_updt_desc
+        ];
+        $query = CategoryReqs::where('id', $id)->first();
+        if ($value && $query) {
+            $query->update($value);
+            Alert::toast('Success Updating!', 'success');
+            return back();
+        }
+        else {
+            Alert::toast('Error When Updating', 'error');
+            return back();
+        }
+    }
+    public function remove_Creqs(Request $request, $id){
+        $value = [
+            'deleted'    => 1
+        ];
+        $query = CategoryReqs::where('id', $id)->first();
+        if ($value && $query) {
+            $query->update($value);
+            Alert::toast('Success Remove Data', 'success');
+            return back();
+        }
+        else {
+            Alert::toast('Failed to Remove', 'error');
+            return back();
+        }
+    }
+    // End Crud
+    // Start Crud Type of Transportation
+    public function TTns()
+    {
+        $data['ttns'] = TypeTransport::all()->where('deleted', 0);
+        return view('Pages.PartOfTransport.index')->with($data);
+    }
+    public function store_TTns(Request $request)
+    {
+        $values = [
+            'description' => strtoupper($request->val_desc)
+        ];
+        
+        if($values) {
+            TypeTransport::create($values);
+            Alert::toast('Success on Saving Data', 'success');
+            return back();
+        }
+        else {
+            Alert::toast('Failed saving', 'error');
+            return back();
+        }
+    }
+    public function update_TTns(Request $request, $id){
+        $value = [
+            'description'    => strtoupper($request->val_updt_desc)
+        ];
+        $query = TypeTransport::where('id', $id)->first();
+        if ($value && $query) {
+            $query->update($value);
+            Alert::toast('Success Updating!', 'success');
+            return back();
+        }
+        else {
+            Alert::toast('Error When Updating', 'error');
+            return back();
+        }
+    }
+    public function remove_TTns(Request $request, $id){
+        $value = [
+            'deleted'    => 1
+        ];
+        $query = TypeTransport::where('id', $id)->first();
+        if ($value && $query) {
+            $query->update($value);
+            Alert::toast('Success Remove Data', 'success');
+            return back();
+        }
+        else {
+            Alert::toast('Failed to Remove', 'error');
+            return back();
+        }
+    }
+    // End Crud
 }

@@ -5,8 +5,9 @@
     use App\Models\ActivityL2En;
     use Carbon\Carbon;
     $role = auth()->user()->role;
+    $nik = auth()->user()->nik;
     $depart = auth()->user()->depart;
-    $ar_sts = [1,2,3,4,5];
+    $ar_sts = [1, 2, 3, 4, 5];
 @endphp
 @extends('Theme/header')
 @section('getPage')
@@ -136,6 +137,7 @@
                                             <th>Project</th>
                                             <th>Service Point</th>
                                         @elseif ($depart == 6 || $depart == 13 || $role == 1)
+                                            <th>Notiket</th>
                                             <th>Case ID</th>
                                             <th>Company</th>
                                             <th>Problem</th>
@@ -173,6 +175,7 @@
                                         $date = Carbon::now()
                                             ->addHours(7)
                                             ->format('Y-m-d');
+                                        use App\Models\ReqsEn;
                                     @endphp
                                     @foreach ($ticket as $item)
                                         @php
@@ -199,7 +202,7 @@
                                         @endphp
                                         @if ($rounded_percentage > 75)
                                             <tr style="background: rgba(246, 10, 10, 0.1);">
-                                        @else
+                                            @else
                                             <tr>
                                         @endif
                                         <td>{{ $num }}</td>
@@ -208,6 +211,7 @@
                                             <td>{{ $item->project_name }}</td>
                                             <td>{{ $item->service_name }}</td>
                                         @elseif ($depart == 6 || $depart == 13 || $role == 1)
+                                            <td>{{ $item->notiket }}</td>
                                             <td>{{ $item->case_id }}</td>
                                             <td>{{ $item->company }}</td>
                                             <td>{{ $item->problem }}</td>
@@ -357,12 +361,29 @@
                                                             name="longitude">
                                                     </form>
                                                     @if ($depart == 6 || $role == 1)
-                                                        @if ($item->status == 0 || $item->status == 9)
+                                                        @php
+                                                            $valid_reqs = ReqsEn::where('notiket', $item->notiket)->where('en_id', $nik)->first();
+                                                        @endphp
+                                                        @if (empty($valid_reqs))
+                                                            <a href="{{ url("Add/Reqs-Accomodation/$item->notiket") }}"
+                                                                class="btn btn-inverse-info btn-icon btn-sm">
+                                                                <i data-feather="credit-card"></i>
+                                                            </a>
+                                                        @else
+                                                            <button type="button"
+                                                                class="btn btn-inverse-danger btn-icon btn-sm"
+                                                                data-bs-toggle="popover" title="This Ticket already have a Request!"
+                                                                data-bs-content="create a new one? <a href='{{ url("Add/Reqs-Accomodation/$item->notiket") }}'>ADD </a> or Want to visit it? <a href='{{ url('/My-Expenses') }}'>Visit!"><i
+                                                                    data-feather="credit-card"></i></button>
+                                                        @endif
+                                                        &nbsp;
+                                                        @if ($item->status == 9)
                                                             <button type="button"
                                                                 class="btn btn-inverse-info btn-icon btn-sm updt-en-ticket{{ $num }}">
                                                                 <i data-feather="edit"></i>
                                                             </button>
-                                                        @else
+                                                            &nbsp;
+                                                        @elseif (!in_array($item->status, [0, 9]))
                                                             <a
                                                                 href="{{ url("Timeline/Engineer/Ticket=$item->notiket") }}">
                                                                 <button type="button"
@@ -370,6 +391,7 @@
                                                                     <i data-feather="activity"></i>
                                                                 </button>
                                                             </a>
+                                                            &nbsp;
                                                         @endif
                                                     @elseif ($depart == 13)
                                                         @php
@@ -481,6 +503,8 @@
     </div>
 @endsection
 @push('plugin-page')
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script> --}}
 @endpush
 @push('custom-plug')
 @endpush

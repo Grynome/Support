@@ -46,6 +46,11 @@
         @endforeach
     </div>
 @endsection
+
+
+
+
+
 @push('plugin-page')
     <script src="{{ asset('assets') }}/vendors/apexcharts/apexcharts.min.js"></script>
 @endpush
