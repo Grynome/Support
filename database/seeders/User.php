@@ -18,14 +18,14 @@ class User extends Seeder
     public function run()
     {
         DB::table('hgt_users')->insert([
-            'nik' => 'HGT-KR055',
-            'full_name' => 'Bagus Sunggono',
-            'username' => 'Bsunggono',
+            'nik' => 'HGT-KR053',
+            'full_name' => 'Franky Kumendong',
+            'username' => 'franky',
             'gender' => 'L',
             'role' => '16',
-            'depart' => '5',
-            'email' => 'nelson@hgt-services.com',
-            'phone' => '081289687505',
+            'depart' => '13',
+            'email' => 'franky@hgt-services.com',
+            'phone' => '08128154692',
             'verify' => '1',
             'verify_at' => '2023-06-15 01:35:10',
             'password' => Hash::make('Admin'),

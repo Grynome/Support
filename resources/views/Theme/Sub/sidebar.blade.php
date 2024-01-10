@@ -209,10 +209,6 @@
                                 @else
                                     @if ($depart == 3 || $depart == 10)
                                         <li class="nav-item">
-                                            <a href="{{ url('Report/data=KPI-User') }}" class="nav-link">Timestamps
-                                                Engineer</a>
-                                        </li>
-                                        <li class="nav-item">
                                             <a href="{{ url('Report/data=Each-Week') }}" class="nav-link">Weekly
                                                 Ticket</a>
                                         </li>
@@ -220,13 +216,7 @@
                                             <a href="{{ url('Report/data=Each-Month') }}" class="nav-link">Monthly
                                                 Ticket</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a href="{{ url("Report/Helpdesk=Each-$timeFrameWeek") }}" class="nav-link">Act Weekly Helpdesk</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="{{ url("Report/Helpdesk=Each-$timeFrameMonth") }}" class="nav-link">Act Monthly Helpdesk</a>
-                                        </li>
-                                    @elseif ($depart == 6 && $depart == 13)
+                                    @elseif ($depart == 6 || $depart == 13)
                                         @if ($role == 19)
                                             <li class="nav-item">
                                                 <a href="{{ url('Report/data=KPI-User') }}" class="nav-link">Timestamps

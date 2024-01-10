@@ -320,79 +320,83 @@
                                                                     <h4 class="mb-md-0">Add Fields</h4>
                                                                 </div>
                                                                 <div class="d-flex align-items-center flex-wrap text-nowrap">
-                                                                    <button class="btn btn-inverse-primary add-fields" type="button"><i
+                                                                    <button class="btn btn-inverse-primary add-records-part" type="button"><i
                                                                             class="btn-icon-append icon-lg" data-feather="plus"></i></button>
                                                                 </div>
                                                             </div>
                                                             <hr>
-                                                            <div class="row mb-3">
-                                                                <div class="col-md-4">
-                                                                    <label for="date_mail"
-                                                                        class="form-label">Status</label>
-                                                                    <select class="js-example-basic-single form-select"
-                                                                        data-width="100%" id="part-status"
-                                                                        name="status_part">
-                                                                        <option value="">
-                                                                            - Select Status -
-                                                                        </option>
-                                                                        @foreach ($type as $item)
-                                                                            <option value="{{ $item->id }}">
-                                                                                {{ $item->part_type }}
+                                                            <div class="part-records">
+                                                                <div class="row mb-3">
+                                                                    <div class="col-md-4">
+                                                                        <label for="date_mail"
+                                                                            class="form-label">Status</label>
+                                                                        <select class="js-example-basic-single form-select"
+                                                                            data-width="100%" id="part-status"
+                                                                            name="status_part">
+                                                                            <option value="">
+                                                                                - Select Status -
                                                                             </option>
-                                                                        @endforeach
-                                                                    </select>
+                                                                            @foreach ($type as $item)
+                                                                                <option value="{{ $item->id }}">
+                                                                                    {{ $item->part_type }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <label for="reference" class="form-label">Category
+                                                                            Part</label>
+                                                                        <select class="js-example-basic-single form-select"
+                                                                            data-width="100%" name="kat_part"
+                                                                            id="kat-part">
+                                                                            <option value="">- Choose -</option>
+                                                                            @foreach ($ctgr_part as $item)
+                                                                                <option value="{{ $item->id }}">
+                                                                                    {{ $item->type_name }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <label for="date_mail" class="form-label">Part
+                                                                            Name</label>
+                                                                        <input class="form-control" name="type_unit"
+                                                                            type="text" id="part-name-detail"
+                                                                            placeholder="Type Unit">
+                                                                    </div>
                                                                 </div>
-                                                                <div class="col-md-4">
-                                                                    <label for="reference" class="form-label">Category
-                                                                        Part</label>
-                                                                    <select class="js-example-basic-single form-select"
-                                                                        data-width="100%" name="kat_part"
-                                                                        id="kat-part">
-                                                                        <option value="">- Choose -</option>
-                                                                        @foreach ($ctgr_part as $item)
-                                                                            <option value="{{ $item->id }}">
-                                                                                {{ $item->type_name }}</option>
-                                                                        @endforeach
-                                                                    </select>
+                                                                <div class="row mb-3">
+                                                                    <div class="col-md-3">
+                                                                        <label for="date_mail" class="form-label">SO
+                                                                            Number</label>
+                                                                        <input id="reqs-part" class="form-control"
+                                                                            name="so_num" type="text"
+                                                                            placeholder="SO Number">
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <label class="form-label">RMA</label>
+                                                                        <input class="form-control" name="rma_num"
+                                                                            type="text" id="rma-part"
+                                                                            placeholder="Type RMA Number">
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <label for="date_mail" class="form-label">Part
+                                                                            Number</label>
+                                                                        <input id="pn-2" class="form-control"
+                                                                            name="product_number" type="text"
+                                                                            placeholder="Sparepart Number">
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <label for="time_mail" class="form-label">CT
+                                                                            Number</label>
+                                                                        <input id="sn-2" class="form-control"
+                                                                            name="serial_number" type="text"
+                                                                            placeholder="CT Number">
+                                                                    </div>
                                                                 </div>
-                                                                <div class="col-md-4">
-                                                                    <label for="date_mail" class="form-label">Part
-                                                                        Name</label>
-                                                                    <input class="form-control" name="type_unit"
-                                                                        type="text" id="part-name-detail"
-                                                                        placeholder="Type Unit">
-                                                                </div>
+                                                                <hr>
                                                             </div>
-                                                            <div class="row mb-3">
-                                                                <div class="col-md-3">
-                                                                    <label for="date_mail" class="form-label">SO
-                                                                        Number</label>
-                                                                    <input id="reqs-part" class="form-control"
-                                                                        name="so_num" type="text"
-                                                                        placeholder="SO Number">
-                                                                </div>
-                                                                <div class="col-md-3">
-                                                                    <label class="form-label">RMA</label>
-                                                                    <input class="form-control" name="rma_num"
-                                                                        type="text" id="rma-part"
-                                                                        placeholder="Type RMA Number">
-                                                                </div>
-                                                                <div class="col-md-3">
-                                                                    <label for="date_mail" class="form-label">Part
-                                                                        Number</label>
-                                                                    <input id="pn-2" class="form-control"
-                                                                        name="product_number" type="text"
-                                                                        placeholder="Sparepart Number">
-                                                                </div>
-                                                                <div class="col-md-3">
-                                                                    <label for="time_mail" class="form-label">CT
-                                                                        Number</label>
-                                                                    <input id="sn-2" class="form-control"
-                                                                        name="serial_number" type="text"
-                                                                        placeholder="CT Number">
-                                                                </div>
+                                                            <div class="part-records-multiple">
                                                             </div>
-                                                            <hr>
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-inverse-success"

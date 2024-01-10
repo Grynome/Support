@@ -1275,7 +1275,7 @@ class TicketController extends Controller
             ->selectRaw('ROW_NUMBER() OVER(PARTITION BY notiket ORDER BY visitting DESC) as rn');
         $getAE = ActivityEngineer::fromSub($AECek, 'a')
             ->where('rn', 1)
-            ->where('notiket', $id)
+            ->where('notiket', $notiket)
             ->first();
         $en_vis = [1, 2];
         if (empty($getAE)) {

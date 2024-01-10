@@ -223,7 +223,7 @@ class AccomodationController extends Controller
         if($get_id && $get_dt) {
             $data_file = $get_dt->get();
             foreach ($data_file as $value) {
-                $pathFile = public_path("$value->path");
+                $pathFile = public_path("/$value->path");
 
                 if (file_exists($pathFile)) {
                     unlink($pathFile);

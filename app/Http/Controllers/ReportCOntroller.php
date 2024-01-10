@@ -169,7 +169,7 @@ class ReportCOntroller extends Controller
             $eventTgl2 = $now;
         }
         if (!isset($request->stats_report) && 
-            !isset($request->sort_sp_report) && 
+            !isset($request->sort_sp_report) &&
             (!isset($request->prt_id) && !isset($request->sort_prj_report))) {
             $data['report'] = TCCompare::all()->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2]);
         } elseif(isset($request->stats_report) || (isset($request->prt_id) || isset($request->sort_prj_report)) || isset($request->sort_sp_report)) {
@@ -177,9 +177,11 @@ class ReportCOntroller extends Controller
                 if ($request->stats_report == 1) {
                     $data['report'] = TCCompare::where('status', '!=', 10)
                                         ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
-                } else {
+                } else if ($request->stats_report == 2) {
                     $data['report'] = TCCompare::where('status', 10)
                     ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                } else {
+                    $data['report'] = TCCompare::whereBetween('schedule', [$eventTgl1, $eventTgl2])->get();
                 }
             } elseif ((!empty($request->prt_id) || !empty($request->sort_prj_report)) && empty($request->stats_report) && empty($request->sort_sp_report)) {
                 if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
@@ -205,7 +207,7 @@ class ReportCOntroller extends Controller
                                             ->where('project_id', $request->sort_prj_report)
                                             ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
                     }
-                } else {
+                } else if ($request->stats_report == 2) {
                     if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
                         $data['report'] = TCCompare::where('status', 10)
                                             ->where('partner_id', $request->prt_id)
@@ -216,16 +218,28 @@ class ReportCOntroller extends Controller
                                             ->where('project_id', $request->sort_prj_report)
                                             ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
                     }
+                } else {
+                    if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
+                        $data['report'] = TCCompare::where('partner_id', $request->prt_id)
+                                            ->whereBetween('schedule', [$eventTgl1, $eventTgl2])->get();
+                    } else {
+                        $data['report'] = TCCompare::where('partner_id', $request->prt_id)
+                                            ->where('project_id', $request->sort_prj_report)
+                                            ->whereBetween('schedule', [$eventTgl1, $eventTgl2])->get();
+                    }
                 }
             } elseif (!empty($request->stats_report) && (empty($request->prt_id) && empty($request->sort_prj_report)) && !empty($request->sort_sp_report)) {
                 if ($request->stats_report == 1) {
                     $data['report'] = TCCompare::where('status', '!=', 10)
                                         ->where('service_id', $request->sort_sp_report)
                                         ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
-                } else {
+                } else if ($request->stats_report == 2) {
                     $data['report'] = TCCompare::where('status', 10)
                                         ->where('service_id', $request->sort_sp_report)
                                         ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                } else {
+                    $data['report'] = TCCompare::where('service_id', $request->sort_sp_report)
+                                        ->whereBetween('schedule', [$eventTgl1, $eventTgl2])->get();
                 }
             } elseif (empty($request->stats_report) && (!empty($request->prt_id) || !empty($request->sort_prj_report)) && !empty($request->sort_sp_report)) {
                 if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
@@ -245,12 +259,17 @@ class ReportCOntroller extends Controller
                                         ->where('project_id', $request->sort_prj_report)
                                         ->where('service_id', $request->sort_sp_report)
                                         ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
-                } else {
+                } else if ($request->stats_report == 2) {
                     $data['report'] = TCCompare::where('status', 10)
                                         ->where('partner_id', $request->prt_id)
                                         ->where('project_id', $request->sort_prj_report)
                                         ->where('service_id', $request->sort_sp_report)
                                         ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                } else {
+                    $data['report'] = TCCompare::where('partner_id', $request->prt_id)
+                                        ->where('project_id', $request->sort_prj_report)
+                                        ->where('service_id', $request->sort_sp_report)
+                                        ->whereBetween('schedule', [$eventTgl1, $eventTgl2])->get();
                 }
             }
         }
@@ -292,9 +311,11 @@ class ReportCOntroller extends Controller
                 if ($ex_sts == 1) {
                     $data_ticket = VW_FinalReport::whereRaw('status < 10')
                                         ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
-                } else {
+                } else if ($ex_sts == 2) {
                     $data_ticket = VW_FinalReport::whereRaw('status = 10')
                     ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
+                } else {
+                    $data_ticket = VW_FinalReport::whereRaw("schedule BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 }
             } elseif ((!empty($ex_prt) || !empty($ex_prj)) && empty($ex_sts) && empty($ex_sp)) {
                 if (!empty($ex_prt) && empty($ex_prj)) {
@@ -320,7 +341,7 @@ class ReportCOntroller extends Controller
                                             ->whereRaw("project_id = '$ex_prj'")
                                             ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                     }
-                } else {
+                } else if ($ex_sts == 2) {
                     if (!empty($ex_prt) && empty($ex_prj)) {
                         $data_ticket = VW_FinalReport::whereRaw('status = 10')
                                             ->whereRaw("partner_id = '$ex_prt'")
@@ -331,16 +352,28 @@ class ReportCOntroller extends Controller
                                             ->whereRaw("project_id = '$ex_prj'")
                                             ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                     }
+                } else {
+                    if (!empty($ex_prt) && empty($ex_prj)) {
+                        $data_ticket = VW_FinalReport::whereRaw("partner_id = '$ex_prt'")
+                                            ->whereRaw("schedule BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
+                    } else {
+                        $data_ticket = VW_FinalReport::whereRaw("partner_id = '$ex_prt'")
+                                            ->whereRaw("project_id = '$ex_prj'")
+                                            ->whereRaw("schedule BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
+                    }
                 }
             } elseif (!empty($ex_sts) && (empty($ex_prt) && empty($ex_prj)) && !empty($ex_sp)) {
                 if ($ex_sts == 1) {
                     $data_ticket = VW_FinalReport::whereRaw('status < 10')
                                         ->whereRaw("service_id = '$ex_sp'")
                                         ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
-                } else {
+                } else if ($ex_sts == 2) {
                     $data_ticket = VW_FinalReport::whereRaw('status = 10')
                                         ->whereRaw("service_id = '$ex_sp'")
                                         ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
+                } else {
+                    $data_ticket = VW_FinalReport::whereRaw("service_id = '$ex_sp'")
+                                        ->whereRaw("schedule BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 }
             } elseif (empty($ex_sts) && (!empty($ex_prt) || !empty($ex_prj)) && !empty($ex_sp)) {
                 if (!empty($ex_prt) && empty($ex_prj)) {
@@ -360,12 +393,17 @@ class ReportCOntroller extends Controller
                                         ->whereRaw("project_id = '$ex_prj'")
                                         ->whereRaw("service_id = '$ex_sp'")
                                         ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
-                } else {
+                } else if ($ex_sts == 2) {
                     $data_ticket = VW_FinalReport::whereRaw('status = 10')
                                         ->whereRaw("partner_id = '$ex_prt'")
                                         ->whereRaw("project_id = '$ex_prj'")
                                         ->whereRaw("service_id = '$ex_sp'")
                                         ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
+                } else {
+                    $data_ticket = VW_FinalReport::whereRaw("partner_id = '$ex_prt'")
+                                        ->whereRaw("project_id = '$ex_prj'")
+                                        ->whereRaw("service_id = '$ex_sp'")
+                                        ->whereRaw("schedule BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 }
             }
         }
@@ -552,9 +590,11 @@ class ReportCOntroller extends Controller
                 if ($ex_sts == 1) {
                     $data_ticket = VW_FinalReport::where('status', '!=', 10)
                                         ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
-                } else {
+                } else if ($ex_sts == 2) {
                     $data_ticket = VW_FinalReport::where('status', 10)
                     ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                } else {
+                    $data_ticket = VW_FinalReport::whereBetween('schedule', [$extanggal1, $extanggal2])->get();
                 }
             } elseif ((!empty($ex_prt) || !empty($ex_prj)) && empty($ex_sts) && empty($ex_sp)) {
                 if (!empty($ex_prt) && empty($ex_prj)) {
@@ -580,16 +620,25 @@ class ReportCOntroller extends Controller
                                             ->where('project_id', $ex_prj)
                                             ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
                     }
-                } else {
+                } else if ($ex_sts == 2) {
                     if (!empty($ex_prt) && empty($ex_prj)) {
                         $data_ticket = VW_FinalReport::where('status', 10)
                                             ->where('partner_id', $ex_prt)
-                                            ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                                            ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
                     } else {
                         $data_ticket = VW_FinalReport::where('status', 10)
                                             ->where('partner_id', $ex_prt)
                                             ->where('project_id', $ex_prj)
-                                            ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                                            ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                    }
+                } else {
+                    if (!empty($ex_prt) && empty($ex_prj)) {
+                        $data_ticket = VW_FinalReport::where('partner_id', $ex_prt)
+                                            ->whereBetween('schedule', [$extanggal1, $extanggal2])->get();
+                    } else {
+                        $data_ticket = VW_FinalReport::where('partner_id', $ex_prt)
+                                            ->where('project_id', $ex_prj)
+                                            ->whereBetween('schedule', [$extanggal1, $extanggal2])->get();
                     }
                 }
             } elseif (!empty($ex_sts) && (empty($ex_prt) && empty($ex_prj)) && !empty($ex_sp)) {
@@ -597,10 +646,13 @@ class ReportCOntroller extends Controller
                     $data_ticket = VW_FinalReport::where('status', '!=', 10)
                                         ->where('service_id', $ex_sp)
                                         ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
-                } else {
+                } else if ($ex_sts == 2) {
                     $data_ticket = VW_FinalReport::where('status', 10)
                                         ->where('service_id', $ex_sp)
                                         ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                } else {
+                    $data_ticket = VW_FinalReport::where('service_id', $ex_sp)
+                                        ->whereBetween('schedule', [$extanggal1, $extanggal2])->get();
                 }
             } elseif (empty($ex_sts) && (!empty($ex_prt) || !empty($ex_prj)) && !empty($ex_sp)) {
                 if (!empty($ex_prt) && empty($ex_prj)) {
@@ -620,12 +672,17 @@ class ReportCOntroller extends Controller
                                         ->where('project_id', $ex_prj)
                                         ->where('service_id', $ex_sp)
                                         ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
-                } else {
+                } else if ($ex_sts == 2) {
                     $data_ticket = VW_FinalReport::where('status', 10)
                                         ->where('partner_id', $ex_prt)
                                         ->where('project_id', $ex_prj)
                                         ->where('service_id', $ex_sp)
                                         ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                } else {
+                    $data_ticket = VW_FinalReport::where('partner_id', $ex_prt)
+                                        ->where('project_id', $ex_prj)
+                                        ->where('service_id', $ex_sp)
+                                        ->whereBetween('schedule', [$extanggal1, $extanggal2])->get();
                 }
             }
         }
@@ -736,9 +793,11 @@ class ReportCOntroller extends Controller
                 if ($ex_sts == 1) {
                     $data_ticket = VW_Ticket_Split::where('status', '!=', 10)
                                         ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
-                } else {
+                } else if ($ex_sts == 2) {
                     $data_ticket = VW_Ticket_Split::where('status', 10)
                     ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                } else {
+                    $data_ticket = VW_Ticket_Split::whereBetween('schedule', [$extanggal1, $extanggal2])->get();
                 }
             } elseif ((!empty($ex_prt) || !empty($ex_prj)) && empty($ex_sts) && empty($ex_sp)) {
                 if (!empty($ex_prt) && empty($ex_prj)) {
@@ -764,16 +823,25 @@ class ReportCOntroller extends Controller
                                             ->where('project_id', $ex_prj)
                                             ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
                     }
-                } else {
+                } else if ($ex_sts == 2) {
                     if (!empty($ex_prt) && empty($ex_prj)) {
                         $data_ticket = VW_Ticket_Split::where('status', 10)
                                             ->where('partner_id', $ex_prt)
-                                            ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                                            ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
                     } else {
                         $data_ticket = VW_Ticket_Split::where('status', 10)
                                             ->where('partner_id', $ex_prt)
                                             ->where('project_id', $ex_prj)
-                                            ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
+                                            ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                    }
+                } else {
+                    if (!empty($ex_prt) && empty($ex_prj)) {
+                        $data_ticket = VW_Ticket_Split::where('partner_id', $ex_prt)
+                                            ->whereBetween('schedule', [$extanggal1, $extanggal2])->get();
+                    } else {
+                        $data_ticket = VW_Ticket_Split::where('partner_id', $ex_prt)
+                                            ->where('project_id', $ex_prj)
+                                            ->whereBetween('schedule', [$extanggal1, $extanggal2])->get();
                     }
                 }
             } elseif (!empty($ex_sts) && (empty($ex_prt) && empty($ex_prj)) && !empty($ex_sp)) {
@@ -781,10 +849,13 @@ class ReportCOntroller extends Controller
                     $data_ticket = VW_Ticket_Split::where('status', '!=', 10)
                                         ->where('service_id', $ex_sp)
                                         ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
-                } else {
+                } else if ($ex_sts == 2) {
                     $data_ticket = VW_Ticket_Split::where('status', 10)
                                         ->where('service_id', $ex_sp)
                                         ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                } else {
+                    $data_ticket = VW_Ticket_Split::where('service_id', $ex_sp)
+                                        ->whereBetween('schedule', [$extanggal1, $extanggal2])->get();
                 }
             } elseif (empty($ex_sts) && (!empty($ex_prt) || !empty($ex_prj)) && !empty($ex_sp)) {
                 if (!empty($ex_prt) && empty($ex_prj)) {
@@ -804,12 +875,17 @@ class ReportCOntroller extends Controller
                                         ->where('project_id', $ex_prj)
                                         ->where('service_id', $ex_sp)
                                         ->whereBetween('ticketcoming', [$extanggal1, $extanggal2])->get();
-                } else {
+                } else if ($ex_sts == 2) {
                     $data_ticket = VW_Ticket_Split::where('status', 10)
                                         ->where('partner_id', $ex_prt)
                                         ->where('project_id', $ex_prj)
                                         ->where('service_id', $ex_sp)
                                         ->whereBetween('closedate', [$extanggal1, $extanggal2])->get();
+                } else {
+                    $data_ticket = VW_Ticket_Split::where('partner_id', $ex_prt)
+                                        ->where('project_id', $ex_prj)
+                                        ->where('service_id', $ex_sp)
+                                        ->whereBetween('schedule', [$extanggal1, $extanggal2])->get();
                 }
             }
         }

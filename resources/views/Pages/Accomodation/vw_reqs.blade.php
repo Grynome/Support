@@ -196,7 +196,7 @@
                                                 </div>
                                             </td>
                                             <td>{{ $no }}</td>
-                                            <td>{{ $item->notike }}</td>
+                                            <td>{{ $item->notiket }}</td>
                                             @if ($role == 19 && $depart == 15)
                                                 <td>{{@$item->get_expenses->description}}</td>
                                                 <td>{{@$item->get_expenses->ctgr_exp->description}}</td>
