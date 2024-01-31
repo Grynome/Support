@@ -838,7 +838,7 @@ class TicketController extends Controller
                         ];
                         $logging = [
                             ['notiket'    => $key,
-                            'note'    => $notes2,
+                            'note'    => $notes2.' : '.$request->note_reqs_part,
                             'user'     => $nik,
                             'type_log'     => 1,
                             'created_at'     => $dateTime],
