@@ -34,7 +34,7 @@
                             <div class="col-md-10">
                                 <h6 class="card-title">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        @if ($depart == 6)
+                                        @if ($depart == 6 && $role == 16)
                                             <a href="{{ url("Past/Reqs-Accomodation/$dtrs") }}">
                                                 <button type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                                 title="Request for Past Tickets" class="btn btn-inverse-primary btn-icon-text">
@@ -148,7 +148,7 @@
                                                             </form>
                                                             {{-- END FM --}}
                                                             @if ($role == 19)
-                                                                @if ($status == 0)
+                                                                @if (in_array($status, [0, 1]))
                                                                     @if (empty($item->reject) )
                                                                         <button type="button"
                                                                             class="btn btn-inverse-primary btn-icon btn-sm btn-prc-reqs-en"
@@ -176,7 +176,7 @@
                                                                     @php
                                                                         list($urlDsc, $title) = $checked->isNotEmpty() && empty($item->reject) ? ["Re", "Re-Create"] : ["Refs" ,"Additional Detil"];
                                                                     @endphp
-                                                                    @if ($status == 0 || $checked->isNotEmpty() && empty($item->reject))
+                                                                    @if ($status == 0 || $item->reject > 0)
                                                                         <button type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                                                             title="Delete Request" class="btn btn-inverse-danger btn-icon btn-sm btn-dstr-reqs-en"
                                                                             data-form-id="{{ $no }}">
@@ -189,6 +189,8 @@
                                                                             @method('DELETE')
                                                                         </form>
                                                                         &nbsp;
+                                                                    @endif
+                                                                    @if ($status == 0 && $checked->isEmpty() && $item->reject == 0)
                                                                         <a
                                                                             href="{{ url("$urlDsc/Reqs-Accomodation/$item->id_dt_reqs") }}">
                                                                             <button type="button" data-bs-toggle="tooltip" data-bs-placement="top"
@@ -313,7 +315,7 @@
                                                     </div>
                                                 </td>
                                                 <td>{{ $no }}</td>
-                                                <td>{{ $item->type_reqs }}</td>
+                                                <td>{{ $item->desc_reqs }}</td>
                                                 @if ($role == 19 && $depart == 15)
                                                     <td>{{@$item->get_expenses->description}}</td>
                                                     <td>{{@$item->get_expenses->ctgr_exp->description}}</td>
