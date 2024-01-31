@@ -18,7 +18,7 @@
                                 <span class="h4 ms-3 text-dark">{{ $profile->full_name }} ~
                                     {{ @$profile->dept->department }}</span>
                             </div>
-                            <div class="d-none d-md-block">
+                            <div class="d-md-block">
                                 <button class="btn btn-inverse-primary btn-icon-text" data-bs-toggle="modal"
                                     data-bs-target="#edit-profile">
                                     <i data-feather="edit" class="btn-icon-prepend"></i> Edit profile

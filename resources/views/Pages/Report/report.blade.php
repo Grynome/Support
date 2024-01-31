@@ -65,7 +65,7 @@
                                         &nbsp;
                                         <form action="{{ url('Data/Report/Split') }}" method="POST">
                                             @csrf
-                                            <input type="hidden" value="{{ $sts }}" name="ex_stS">
+                                            <input type="hidden" value="{{ $sts }}" name="ex_stsS">
                                             <input type="hidden" value="{{ $prt }}" name="ex_prtS">
                                             <input type="hidden" value="{{ $prj }}" name="ex_prjS">
                                             <input type="hidden" value="{{ $sp }}" name="ex_spS">

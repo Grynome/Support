@@ -25,7 +25,6 @@ use App\Models\Merk;
 use App\Models\Customer;
 use App\Models\NewPart;
 use App\Models\ReqsPart;
-use App\Models\TiketPart;
 use App\Models\TiketPartNew;
 use App\Models\TiketPartDetail;
 use App\Models\TiketInfo;
@@ -115,7 +114,7 @@ class TicketController extends Controller
         } else if ($depart == 10){
             $data['ticket'] = Ticketing::where('status', 10)->where('status_docs', 0)->get();
         }
-        
+                    
         return view('Pages.Ticket.manage')->with($data)
             ->with('prt_id', $get_partner)
             ->with('prj_id', $get_project)
@@ -267,12 +266,10 @@ class TicketController extends Controller
         $data['merk'] = Merk::all()->where('deleted', 0);
         $data['severity'] = Severity::all()->where('deleted', 0);
         $data['partner'] = Partner::all()->where('deleted', 0);
-        $data['type'] = PartType::all()->where('deleted', 0);
         $data['customer'] = Customer::all()->where('deleted', 0);
         $data['office_type'] = OfficeType::all()->where('deleted', 0);
         $data['unit_detil'] = MerkCategory::all()->where('deleted', 0);
         $data['type_ticket'] = TypeTicket::all()->where('deleted', 0);
-        $data['ctgr_part'] = CategoryPart::all()->where('deleted', 0);
         return view('Pages.Ticket.page')->with($data);
     }
     public function add_ticket(Request $request){
@@ -410,21 +407,22 @@ class TicketController extends Controller
                     'notiket'           => $kode_awal,
                     'part_detail_id'    => $id_part
                 ];
-                $values_tiket_part_dt = [
-                    'part_detail_id'           => $id_part,
-                    'unit_name'    => $request->type_unit,
-                    'category_part'    => $request->kat_part,
-                    'so_num'    => $request->so_num,
-                    'rma'    => $request->rma_num,
-                    'pn'    => $request->product_number,
-                    'sn'    => $request->serial_number,
-                    'type_part'    => $request->status_part,
-                    'part_onsite'    => 1,
-                    'status'    => 0,
-                    'created_at'    => $dateTime
-                ];
                 $queryPartN = TiketPartNew::insert($values_tiket_part_n);
-                $queryTPD = TiketPartDetail::insert($values_tiket_part_dt);
+                foreach ($request->input('status_part') as $index => $stp) {
+                    $execute = TiketPartDetail::create([
+                        'part_detail_id'           => $id_part,
+                        'unit_name'    => $request->input('type_unit')[$index],
+                        'category_part'    => $request->input('kat_part')[$index],
+                        'so_num'    => $request->input('so_num')[$index],
+                        'rma'    =>  $request->input('rma_num')[$index],
+                        'pn'    => $request->input('product_number')[$index],
+                        'sn'    => $request->input('serial_number')[$index],
+                        'type_part'    => $stp,
+                        'part_onsite'    => 1,
+                        'status'    => 0,
+                        'created_at'    => $dateTime
+                    ]);
+                }
                 if($ai < 1000){
                     $id_part = "HGT-PART-".str_pad($autonumber, 3, "0", STR_PAD_LEFT);
                 }elseif($ai > 999 && $ai < 10000){
@@ -1057,7 +1055,7 @@ class TicketController extends Controller
                                 ->from(function ($innerSubquery) {
                                     $innerSubquery->select('notiket', 
                                                 DB::raw('max(act_description) AS last_act'),
-                                                DB::raw('MAX(visiting) AS last_visit'),  
+                                                DB::raw('MAX(visiting) AS last_visit'),
                                                 DB::raw('MAX(status) AS status'))
                                         ->from('hgt_activity_l2engineer')
                                         ->groupBy('notiket', 'visiting')
@@ -1277,13 +1275,17 @@ class TicketController extends Controller
             ->where('rn', 1)
             ->where('notiket', $notiket)
             ->first();
-        $en_vis = [1, 2];
-        if (empty($getAE)) {
+        
+        if (empty($getAE) || $getAE->visitting == 0) {
             $part_onsite = 1;
-        } else if ($getAE->visitting == 0){
+        } else if ($getAE->visitting == 1){
             $part_onsite = 2;
-        } else if (in_array($getAE->visitting, $en_vis)){
+        } else if ($getAE->visitting == 2){
             $part_onsite = 3;
+        } else if ($getAE->visitting == 3){
+            $part_onsite = 4;
+        } else if ($getAE->visitting == 4){
+            $part_onsite = 5;
         }
         
         $values_part_dt = [
@@ -2271,6 +2273,7 @@ class TicketController extends Controller
         $value = [
             'type_ticket'    => $request->fm_dt_type_ticket,
             'case_id'    => $request->dt_csid,
+            'ticketcoming'    => $request->ie_dt,
             'sumber_id'    => $request->fm_dt_src
         ];
         $query = Ticket::where('notiket', $id)->first();

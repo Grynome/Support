@@ -3,6 +3,9 @@
 @php
     use App\Models\VW_Tiket_Part;
     use App\Models\ActivityL2En;
+    use App\Models\RefReqs;
+    use App\Models\TiketPartDetail;
+    use App\Models\TiketPartNew;
     use Carbon\Carbon;
     $role = auth()->user()->role;
     $nik = auth()->user()->nik;
@@ -140,6 +143,7 @@
                                             <th>Notiket</th>
                                             <th>Case ID</th>
                                             <th>Company</th>
+                                            <th>SN</th>
                                             <th>Problem</th>
                                             <th>Schedule</th>
                                             <th>Deadline</th>
@@ -154,12 +158,12 @@
                                                 <th>No Tiket</th>
                                                 <th>Case ID</th>
                                                 <th>Schedule</th>
-                                                <th>Partner</th>
                                                 <th>Project</th>
                                                 <th>Company</th>
                                                 <th>SN</th>
+                                                <th>Aging Ticket(Days)</th>
+                                                <th>Onsite Ke</th>
                                                 <th>Aging Part(Days)</th>
-                                                <th>Aging En(Days)</th>
                                                 <th>Parts</th>
                                                 <th>last update</th>
                                             @endif
@@ -175,20 +179,51 @@
                                         $date = Carbon::now()
                                             ->addHours(7)
                                             ->format('Y-m-d');
-                                        use App\Models\ReqsEn;
+                                    $getDT = TiketPartDetail::select('sub1.part_detail_id', 'sub1.send', 'sub1.arrive', 'sub1.part_onsite')
+                                                ->from(function ($query) {
+                                                    $query->select(DB::raw('MAX(sub2.id) AS id'))
+                                                        ->from(function ($subquery) {
+                                                            $subquery->select('htpd.*')
+                                                                ->from('hgt_tiket_part_detail as htpd')
+                                                                ->leftJoin('hgt_sts_type_part as hstp', 'htpd.type_part', '=', 'hstp.id')
+                                                                ->whereRaw('hstp.status = 0');
+                                                        }, 'sub2')
+                                                        ->groupBy('part_detail_id', 'part_onsite');
+                                                }, 'aa')
+                                                ->leftJoin('hgt_tiket_part_detail as sub1', 'aa.id', '=', 'sub1.id');
                                     @endphp
                                     @foreach ($ticket as $item)
                                         @php
+                                            $part_onsite = in_array($item->status, [0, 1, 9])
+                                                                ? 1 
+                                                                : ($item->status == 2
+                                                                    ? 2
+                                                                    : ($item->status == 3
+                                                                        ? 3
+                                                                        : ($item->status == 4
+                                                                            ? 4
+                                                                            : 5)));
+                                            $getDTForItem = clone $getDT;
+                                            $resultDT = $getDTForItem->whereRaw("part_onsite = $part_onsite");
+
+                                            $getPN = TiketPartNew::select('notiket', 'sub3.*')
+                                                            ->leftJoin(DB::raw('(' . $resultDT->toSql() . ') sub3'), function ($join) {
+                                                                $join->on('hgt_tiket_part_new.part_detail_id', '=', 'sub3.part_detail_id');
+                                                            })
+                                                            ->whereRaw("notiket = '$item->notiket'")
+                                                            ->groupBy('notiket')
+                                                            ->first();
+
                                             $start_date_range = Carbon::parse($item->entrydate);
                                             $end_date_range = Carbon::parse($item->deadline);
 
                                             $total_days = $start_date_range->diffInDays($end_date_range);
 
-                                            $send = Carbon::parse($item->send);
-                                            $arrive = Carbon::parse($item->arrive);
+                                            $mail_date = Carbon::parse($item->ticketcoming);
+                                            $arrive = Carbon::parse(@$getPN->arrive);
 
-                                            $agingPart = $send->diffInDays($now);
-                                            $agingEn = $arrive->diffInDays($now);
+                                            $agingTicket = $mail_date->diffInDays($now);
+                                            $agingPart = $arrive->diffInDays($now);
 
                                             if ($total_days == 0) {
                                                 $progress_percentage = 100;
@@ -214,6 +249,7 @@
                                             <td>{{ $item->notiket }}</td>
                                             <td>{{ $item->case_id }}</td>
                                             <td>{{ $item->company }}</td>
+                                            <td>{{ $item->sn }}</td>
                                             <td>{{ $item->problem }}</td>
                                             <td>{{ $item->departure }}</td>
                                             <td>{{ $item->deadline }}</td>
@@ -228,15 +264,15 @@
                                                 <td>{{ $item->notiket }}</td>
                                                 <td>{{ $item->case_id }}</td>
                                                 <td>{{ $item->departure }}</td>
-                                                <td>{{ $item->partner }}</td>
                                                 <td>{{ $item->project_name }}</td>
                                                 <td>{{ $item->company }}</td>
                                                 <td>{{ $item->sn }}</td>
                                                 <td>
-                                                    {{ $agingPart }}
+                                                    {{ $agingTicket }}
                                                 </td>
+                                                <td>{{$item->visiting}}</td>
                                                 <td>
-                                                    {{ $agingEn }}
+                                                    {{ $agingPart }}
                                                 </td>
                                                 <td>
                                                     {{ $item->sts_part }}
@@ -362,13 +398,23 @@
                                                     </form>
                                                     @if ($depart == 6 || $role == 1)
                                                         @php
-                                                            $valid_reqs = ReqsEn::where('notiket', $item->notiket)->where('en_id', $nik)->first();
+                                                            $valid_reqs = RefReqs::where('notiket', $item->notiket)->first();
+                                                            if (!empty(@$valid_reqs->get_reqs->en_id)) {
+                                                                if (@$valid_reqs->get_reqs->en_id == $nik) {
+                                                                    $bool = false;
+                                                                } else {
+                                                                    $bool = true;
+                                                                }
+                                                            }else{
+                                                                $bool = true;
+                                                            }
                                                         @endphp
-                                                        @if (empty($valid_reqs))
+                                                        @if ($bool)
                                                             <a href="{{ url("Add/Reqs-Accomodation/$item->notiket") }}"
                                                                 class="btn btn-inverse-info btn-icon btn-sm">
                                                                 <i data-feather="credit-card"></i>
                                                             </a>
+                                                            {{@$valid_reqs->get_reqs->en_id}}
                                                         @else
                                                             <button type="button"
                                                                 class="btn btn-inverse-danger btn-icon btn-sm"

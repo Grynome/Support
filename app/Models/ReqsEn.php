@@ -15,21 +15,8 @@ class ReqsEn extends Model
     public $primaryKey = 'id';
 
     protected $fillable = [
-        'notiket', 'id_dt_reqs', 'id_expenses', 'en_id', 'id_type_trans', 'status', 'reject'
+        'type_reqs', 'id_dt_reqs', 'id_expenses', 'en_id', 'id_type_trans', 'status', 'additional', 'reject'
     ];
     
     public $incrementing = false;
-
-    public function type_trans(){
-        return $this->belongsTo(TypeTransport::class, 'id_type_trans', 'id');
-    }
-
-    public function get_expenses(){
-        return $this->belongsTo(Expenses::class, 'id_expenses', 'id_expenses');
-    }
-
-    public function get_user(){
-        return $this->belongsTo(User::class, 'en_id', 'nik');
-    }
-
 }

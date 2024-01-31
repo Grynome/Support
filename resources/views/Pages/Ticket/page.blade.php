@@ -320,46 +320,44 @@
                                                                     <h4 class="mb-md-0">Add Fields</h4>
                                                                 </div>
                                                                 <div class="d-flex align-items-center flex-wrap text-nowrap">
-                                                                    <button class="btn btn-inverse-primary add-records-part" type="button"><i
+                                                                    <button class="btn btn-inverse-primary add-records-part" type="button"
+                                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                                        title="Add Fields"><i
                                                                             class="btn-icon-append icon-lg" data-feather="plus"></i></button>
                                                                 </div>
                                                             </div>
                                                             <hr>
                                                             <div class="part-records">
+                                                                <div class="d-flex justify-content-between align-items-center flex-wrap mb-3 record-parts-rmv">
+                                                                    <u>
+                                                                        <h4 class="mb-md-0">Form</h4>
+                                                                    </u>
+                                                                </div>
                                                                 <div class="row mb-3">
                                                                     <div class="col-md-4">
                                                                         <label for="date_mail"
                                                                             class="form-label">Status</label>
-                                                                        <select class="js-example-basic-single form-select"
+                                                                        <select class="select2-part form-select"
                                                                             data-width="100%" id="part-status"
-                                                                            name="status_part">
+                                                                            name="status_part[]">
                                                                             <option value="">
                                                                                 - Select Status -
                                                                             </option>
-                                                                            @foreach ($type as $item)
-                                                                                <option value="{{ $item->id }}">
-                                                                                    {{ $item->part_type }}
-                                                                                </option>
-                                                                            @endforeach
                                                                         </select>
                                                                     </div>
                                                                     <div class="col-md-4">
                                                                         <label for="reference" class="form-label">Category
                                                                             Part</label>
-                                                                        <select class="js-example-basic-single form-select"
-                                                                            data-width="100%" name="kat_part"
+                                                                        <select class="select2-part form-select"
+                                                                            data-width="100%" name="kat_part[]"
                                                                             id="kat-part">
                                                                             <option value="">- Choose -</option>
-                                                                            @foreach ($ctgr_part as $item)
-                                                                                <option value="{{ $item->id }}">
-                                                                                    {{ $item->type_name }}</option>
-                                                                            @endforeach
                                                                         </select>
                                                                     </div>
                                                                     <div class="col-md-4">
                                                                         <label for="date_mail" class="form-label">Part
                                                                             Name</label>
-                                                                        <input class="form-control" name="type_unit"
+                                                                        <input class="form-control" name="type_unit[]"
                                                                             type="text" id="part-name-detail"
                                                                             placeholder="Type Unit">
                                                                     </div>
@@ -369,12 +367,12 @@
                                                                         <label for="date_mail" class="form-label">SO
                                                                             Number</label>
                                                                         <input id="reqs-part" class="form-control"
-                                                                            name="so_num" type="text"
+                                                                            name="so_num[]" type="text"
                                                                             placeholder="SO Number">
                                                                     </div>
                                                                     <div class="col-md-3">
                                                                         <label class="form-label">RMA</label>
-                                                                        <input class="form-control" name="rma_num"
+                                                                        <input class="form-control" name="rma_num[]"
                                                                             type="text" id="rma-part"
                                                                             placeholder="Type RMA Number">
                                                                     </div>
@@ -382,14 +380,14 @@
                                                                         <label for="date_mail" class="form-label">Part
                                                                             Number</label>
                                                                         <input id="pn-2" class="form-control"
-                                                                            name="product_number" type="text"
+                                                                            name="product_number[]" type="text"
                                                                             placeholder="Sparepart Number">
                                                                     </div>
                                                                     <div class="col-md-3">
                                                                         <label for="time_mail" class="form-label">CT
                                                                             Number</label>
                                                                         <input id="sn-2" class="form-control"
-                                                                            name="serial_number" type="text"
+                                                                            name="serial_number[]" type="text"
                                                                             placeholder="CT Number">
                                                                     </div>
                                                                 </div>
@@ -1401,5 +1399,68 @@
             document.querySelector('.file').value = '';
             document.querySelector('.file-clear').style.display = 'none';
         }
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Initial Ajax request to fetch data and populate original records
+            $.ajax({
+                url: '{{ route('fetch.select') }}',
+                method: 'GET',
+                success: function (data) {
+                    // Update the options in the original records
+                    updateOptions($('.part-records .select2-part:eq(0)'), data.types, 'part_type');
+                    updateOptions($('.part-records .select2-part:eq(1)'), data.categories, 'type_name');
+
+                    // Use event delegation to handle the 'select2:open' event for dynamically added elements
+                    $(document).on('select2:open', '.select2-part', function() {
+                        setTimeout(function() {
+                            $('.select2-search__field').get(0).focus();
+                        }, 0);
+                    });
+                },
+                error: function (error) {
+                    console.log('Error fetching data:', error);
+                }
+            });
+
+            // Event listener for Add Records button
+            $('.add-records-part').click(function () {
+                // Clone the original records
+                var clonedRecords = $('<div class="part-records">' + $('.part-records').html() +
+                '</div>');;
+
+                clonedRecords.find('.select2-part').each(function () {
+                    $(this).next('.select2-container').remove();
+                });
+                // Append remove button
+                clonedRecords.find('.record-parts-rmv').append(
+                    '<button class="btn btn-outline-danger btn-icon btn-md remove-parts-fields" type="button"><i class="btn-icon-append" data-feather="minus"></i></button>'
+                    );
+                // Append the cloned records to the container
+                $('.part-records-multiple').append(clonedRecords);
+
+                // Initialize Select2 for the new records
+                $('.part-records-multiple .select2-part').select2({
+                    dropdownParent: $(this).parent()
+                });
+
+                feather.replace();
+            });
+
+            // Function to update options in a select element
+            function updateOptions(selectElement, data, columnName) {
+                // Clear existing options
+                selectElement.empty();
+
+                // Add new options
+                selectElement.append('<option value="">- Select -</option>');
+                $.each(data, function (index, item) {
+                    selectElement.append('<option value="' + item.id + '">' + item[columnName] + '</option>');
+                });
+            }
+            $(document).on('click', '.remove-parts-fields', function() {
+                $(this).closest('.part-records').remove();
+            });
+        });
     </script>
 @endpush

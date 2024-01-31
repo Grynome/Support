@@ -49,21 +49,12 @@
         </div>
         <form action="{{ route('store.expenses', $id_dt) }}" method="post" id="fm-str-xps">
             @csrf
-            {{-- {{ empty($get_trx) ? '' : method_field('PATCH') }} --}}
             <div class="row">
                 <div class="col grid-margin grid-margin-xl-0 stretch-card">
                     <div class="card">
                         <div class="card-body">
                             <div class="col-md-12">
                                 <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label class="form-label" for="notiket-expenses">Notiket</label>
-                                        <select class="js-example-basic-single form-select" data-width="100%"
-                                            name="notiket_xps" id="notiket-expenses" disabled>
-                                            <option value="">- Choose -</option>
-                                            <option selected>{{ $data_reqs->notiket }}</option>
-                                        </select>
-                                    </div>
                                     <div class="col">
                                         <label class="form-label" for="desc-expenses">Description</label>
                                         <input id="desc-expenses" class="form-control form-expenses" name="desc_xps"
@@ -102,7 +93,7 @@
                                     <div class="col-md-4 col-offset-8">
                                         <input name="total_xps" id="total-expenses"
                                             class="form-control form-expenses mb-4 mb-md-0" placeholder="Rp0.00"
-                                            data-inputmask="'alias': 'currency', 'prefix':'Rp'" />
+                                            data-inputmask="'alias': 'currency', 'prefix':'Rp'" value="{{$get_total->total_reqs}}" readonly/>
                                     </div>
                                 </div>
                                 <div class="row mb-3">

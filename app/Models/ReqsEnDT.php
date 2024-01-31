@@ -13,7 +13,7 @@ class ReqsEnDT extends Model
     public $primaryKey = 'id';
 
     protected $fillable = [
-        'id_dt_reqs', 'ctgr_reqs', 'nominal', 'attach_rq', 'filename', 'path', 'status'
+        'id_dt_reqs', 'ctgr_reqs', 'nominal', 'actual', 'filename', 'path', 'status'
     ];
     
     public $incrementing = false;

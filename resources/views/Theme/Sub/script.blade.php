@@ -118,5 +118,4 @@
         }
     });
 </script>
-{{-- <script src="{{ asset('assets') }}/js/myscript.js"></script> --}}
 @stack('custom')

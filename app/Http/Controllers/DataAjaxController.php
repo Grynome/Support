@@ -19,6 +19,8 @@ use App\Models\OfficeType;
 use App\Models\ServicePoint;
 use App\Models\CategoryNote;
 use App\Models\CategoryReqs;
+use App\Models\PartType;
+use App\Models\CategoryPart;
 
 class DataAjaxController extends Controller
 {
@@ -166,5 +168,17 @@ class DataAjaxController extends Controller
         $categories = CategoryReqs::all();
 
         return response()->json($categories);
+    }
+
+    public function fetchSelect()
+    {
+        $types = PartType::where('deleted', 0)->orderBy('part_type','asc')->get();
+
+        $categories = CategoryPart::where('deleted', 0)->orderBy('type_name','asc')->get();
+
+        return response()->json([
+            'types' => $types,
+            'categories' => $categories,
+        ]);
     }
 }

@@ -15,6 +15,11 @@ $(function() {
   }
   if ($(".js-example-basic-multiple").length) {
     $(".js-example-basic-multiple").select2();
+    $('.js-example-basic-multiple').on('select2:open', function () {
+        setTimeout(function () {
+            $('.select2-search__field').get(0).focus();
+        }, 0);
+    });
   }
 
 });

@@ -15,6 +15,9 @@ use App\Models\TypeTransport;
 use App\Models\ReqsEn;
 use App\Models\ReqsEnDT;
 use App\Models\Expenses;
+use App\Models\RefReqs;
+use App\Models\Ticket;
+use App\Models\VW_Reqs_En;
 
 class AccomodationController extends Controller
 {
@@ -22,7 +25,7 @@ class AccomodationController extends Controller
     {
         $nik =  auth()->user()->nik;
         $role =  auth()->user()->role;
-        $data['data_reqs'] = ReqsEn::all()->where('id_dt_reqs', $id)->first();
+        
         $data['get_total'] = ReqsEnDT::select(\DB::raw('SUM(nominal) as total_reqs'))
                                 ->where('id_dt_reqs', $id)
                                 ->groupBy('id_dt_reqs')
@@ -36,36 +39,21 @@ class AccomodationController extends Controller
     {
         $nik =  auth()->user()->nik;
         $role =  auth()->user()->role;
-        if ($dsc == "Past") {
-            if ($role == 20) {
-                $data['data_tiket'] = ActivityEngineer::select('hae.notiket', 'ht.case_id', 'hp.project_name', 'ic.name as kota')
-                                    ->from(function ($query) {
-                                        $query->select('notiket')
-                                            ->from('hgt_activity_engineer')
-                                            ->whereNot('en_id', 'HGT-KR002')
-                                            ->groupBy('notiket', 'en_id');
-                                    }, 'hae')
-                                    ->leftJoin('hgt_ticket as ht', 'hae.notiket', '=', 'ht.notiket')
-                                    ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
-                                    ->leftJoin('hgt_project as hp', 'hpi.project_id', '=', 'hp.project_id')
-                                    ->leftJoin('hgt_end_user as heu', 'hpi.end_user_id', '=', 'heu.end_user_id')
-                                    ->leftJoin('indonesia_cities as ic', 'heu.cities', '=', 'ic.id')
+        if ($dsc != "Past") {
+            $data['data_tiket'] = Ticket::select('notiket')
+                                    ->where('status', '<', '10')
+                                    ->where('en_id', $nik)
+                                    ->where('notiket', '!=', $id)
                                     ->get();
-            } else {
-                $data['data_tiket'] = ActivityEngineer::select('hae.notiket', 'ht.case_id', 'hp.project_name', 'ic.name as kota')
+        } else {
+            $data['data_tiket'] = ActivityEngineer::select('hae.notiket')
                                     ->from(function ($query) use ($nik) {
                                         $query->select('notiket')
                                             ->from('hgt_activity_engineer')
                                             ->where('en_id', $nik)
                                             ->groupBy('notiket', 'en_id');
                                     }, 'hae')
-                                    ->leftJoin('hgt_ticket as ht', 'hae.notiket', '=', 'ht.notiket')
-                                    ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
-                                    ->leftJoin('hgt_project as hp', 'hpi.project_id', '=', 'hp.project_id')
-                                    ->leftJoin('hgt_end_user as heu', 'hpi.end_user_id', '=', 'heu.end_user_id')
-                                    ->leftJoin('indonesia_cities as ic', 'heu.cities', '=', 'ic.id')
                                     ->get();
-            }
         }
         $data['ctgrqs'] = CategoryReqs::where('deleted', 0)->get();
         $data['ttns'] = TypeTransport::where('deleted', 0)->get();
@@ -80,21 +68,23 @@ class AccomodationController extends Controller
         $depart =  auth()->user()->depart;
         if ($role == 20 || ($role == 19 && $depart == 6)) {
             if ($role == 19 && $depart == 6) {
-                $data['data_reqs'] = ReqsEn::all()->where('status', 0);
+                $data['data_reqs'] = VW_Reqs_En::where('status', 0)->orWhere('side_sts', 2)->get();
             } else {
-                $data['data_reqs'] = ReqsEn::all();
+                $data['data_reqs'] = VW_Reqs_En::all();
             }
         } else {
             if ($depart == 15) {
                 if ($role == 19) {
-                    $data['data_reqs'] = ReqsEn::leftJoin('hgt_expenses as he', 'hgt_reqs_en.id_expenses', '=', 'he.id_expenses')
+                    $data['data_reqs'] = VW_Reqs_En::leftJoin('hgt_expenses as he', 'vw_reqs_en.id_expenses', '=', 'he.id_expenses')
                         ->where('he.status', '=', 0)
-                        ->select('hgt_reqs_en.*', 'he.status as sts_lead_acc')
+                        ->orWhere('side_sts', 3)
+                        ->select('vw_reqs_en.*', 'he.status as sts_lead_acc')
                         ->get();
                 } else {
-                    $data['data_reqs'] = ReqsEn::leftJoin('hgt_expenses as he', 'hgt_reqs_en.id_expenses', '=', 'he.id_expenses')
-                        ->where('hgt_reqs_en.status', '=', 1)
-                        ->select('hgt_reqs_en.*', 'he.status as sts_lead_acc')
+                    $data['data_reqs'] = VW_Reqs_En::leftJoin('hgt_expenses as he', 'vw_reqs_en.id_expenses', '=', 'he.id_expenses')
+                        ->where('vw_reqs_en.status', '>=', 1)
+                        ->where('vw_reqs_en.status', '<', 3)
+                        ->select('vw_reqs_en.*', 'he.status as sts_lead_acc')
                         ->get();
                     $data['cek_confirm'] = ReqsEnDT::select('id_dt_reqs')
                                         ->groupBy('id_dt_reqs')
@@ -102,7 +92,7 @@ class AccomodationController extends Controller
                                         ->get();
                 }
             } else {
-                $data['data_reqs'] = ReqsEn::where('en_id', $nik)->get();
+                $data['data_reqs'] = VW_Reqs_En::where('en_id', $nik)->where('status', '<', 3)->get();
             }
         }
         
@@ -112,6 +102,20 @@ class AccomodationController extends Controller
     {
         $nik =  auth()->user()->nik;
         $now = Carbon::now()->addHours(7);
+        
+        $fuckingsubquery = DB::table(function ($query) {
+            $query->selectRaw('*')
+                ->from(function ($innerSubquery) {
+                    $innerSubquery->select('notiket', 
+                                DB::raw('max(act_description) AS last_act'),
+                                DB::raw('MAX(visitting) AS last_visit'))
+                        ->from('hgt_activity_engineer')
+                        ->groupBy('notiket', 'visitting')
+                        ->orderBy('visitting', 'DESC');
+                }, 'hl2')
+            ->groupBy('notiket');
+        });
+
         if ( in_array($dsc, ["Add", "Past"]) ) {
             $tahun = $now->format('y');
             $bulan = $now->format('m');
@@ -129,13 +133,8 @@ class AccomodationController extends Controller
                 $int++;
                 $generate_dt_id = $hasil.$int;
             }
-            if ($dsc == "Past") {
-                $notiket = $request->val_id_tiket_reqs;
-            } else {
-                $notiket = $id;
-            }
             $val = [
-                'notiket'       => $notiket,
+                'type_reqs'    => $request->type_reqs,
                 'id_dt_reqs'    => $generate_dt_id,
                 'en_id'         => $nik,
                 'id_type_trans' => $request->val_type_trans
@@ -153,14 +152,48 @@ class AccomodationController extends Controller
         }
         if($get_id) {
             if (in_array($dsc, ["Add", "Past"])) {
-                ReqsEn::create($val);
+                $storeReqs = ReqsEn::create($val);
                 $id_dt_reqs = $generate_dt_id;
+                if ($storeReqs) {
+                    $val_id = ReqsEn::where('id_dt_reqs', $id_dt_reqs)->first();
+                    $get_val_id = $request->input('val_id_tiket_reqs', []);
+                    $url_id = $id == 'Null' ? [] : [$id];
+                    $data_notik = array_merge($url_id, $get_val_id);
+                    foreach ($data_notik as $tiket) {
+                        $get_visit = $fuckingsubquery->where('notiket', $tiket)->first();
+                        
+                        if (empty($get_visit)) {
+                            $visit = 1;
+                        } elseif (!empty($get_visit)) {
+                            $visit = $get_visit->last_visit == 0 
+                                        ? ($get_visit->last_act == 1 || $get_visit->last_act == 9
+                                            ? 1
+                                            : 2) 
+                                        : ($get_visit->last_visit == 1
+                                            ? ($get_visit->last_act == 1 || $get_visit->last_act == 9
+                                                ? 2
+                                                : 3)
+                                            :($get_visit->last_visit == 2
+                                                ? ($get_visit->last_act == 1 || $get_visit->last_act == 9
+                                                    ? 3
+                                                    : 4)
+                                                : ($get_visit->last_act == 1 || $get_visit->last_act == 9
+                                                    ? 4
+                                                    : 5)));
+                        }
+
+                        RefReqs::create([
+                            'id_reqs' => $val_id->id,
+                            'notiket' => $tiket,
+                            'reqs_at' => $visit
+                        ]);
+                    }
+                }
             }else{
                 $id_dt_reqs = $get_id->id_dt_reqs;
                 if ($dsc == "Re") {
                     $get_id->update($val);
-                    $get_dt = ReqsEnDT::where('id_dt_reqs', $id_dt_reqs)->first();
-                    $get_dt->delete();
+                    $get_dt = ReqsEnDT::where('id_dt_reqs', $id_dt_reqs)->delete();
                 }
             }
             foreach ($request->input('val_ctgr') as $index => $category) {
@@ -219,18 +252,22 @@ class AccomodationController extends Controller
     }
     public function destroy_reqs(Request $request, $id){
         $get_id = ReqsEn::where('id', $id)->first();
+        $refreqs = RefReqs::where('id_reqs', $id)->first();
         $get_dt = ReqsEnDT::where('id_dt_reqs', $get_id->id_dt_reqs);
         if($get_id && $get_dt) {
             $data_file = $get_dt->get();
             foreach ($data_file as $value) {
-                $pathFile = public_path("/$value->path");
+                if (!empty($value->path)) {
+                    $pathFile = public_path("$value->path");
 
-                if (file_exists($pathFile)) {
-                    unlink($pathFile);
+                    if (file_exists($pathFile)) {
+                        unlink($pathFile);
+                    }
                 }
                 $value->delete();
             }
             $get_id->delete();
+            $refreqs->delete();
             $get_dt->delete();
 
             Alert::toast('Successfully Delete the Request!', 'success');
@@ -301,7 +338,7 @@ class AccomodationController extends Controller
     }
     public function attach_detail_reqs_en(Request $request){
         $data = $request->all();
-        if (isset($data['attachDT_file'])) {
+        if (isset($data['attachDT_file']) && $data['actual'] !== null) {
             foreach ($data['attachDT_file'] as $id => $val) {
                 $reqsEnDT = ReqsEnDT::find($id);
 
@@ -309,8 +346,21 @@ class AccomodationController extends Controller
                 $fileName = uniqid() . '.' . $val[0]->getClientOriginalExtension();
                 $path = 'uploads/attach_request/'.$fileName;
                 
+                if ($data['actual'][$id][0] == $reqsEnDT->actual) {
+                    $val_actual = $reqsEnDT->actual;
+                } else {
+                    $val_actual = $data['actual'][$id][0];
+                }
+                
+                $cleanedAmount = str_replace(['Rp', ',', '.'], '', $val_actual);
+                $amount = (int) $cleanedAmount;
+
                 if ($reqsEnDT) {
-                   $execute = $reqsEnDT->update(['filename' => $fileName, 'path' => $path]);
+                   $execute = $reqsEnDT->update([
+                        'filename' => $fileName, 
+                        'path' => $path, 
+                        'actual' => $amount
+                    ]);
                     if ($execute) {
                         $val[0]->move(public_path('uploads/attach_request'), $fileName);
                     }
@@ -319,7 +369,7 @@ class AccomodationController extends Controller
             Alert::toast('Successfully Updated Data', 'success');
             return back();
         }else {
-            Alert::toast('Failed Updating', 'error');
+            Alert::toast('One of Row fields must be filled', 'error');
             return back();
         }
     }
@@ -344,6 +394,14 @@ class AccomodationController extends Controller
                 $get_id_expenses = Expenses::orderBy('id_expenses','desc')->take(1)->first();
                 $get_Reqs = ReqsEn::where('id_dt_reqs', $id)->first();
                 $get_Reqs->update(['id_expenses' => $get_id_expenses->id_expenses]);
+                if ($get_Reqs->type_reqs == 1) {
+                    $query_dt = ReqsEnDT::where('id_dt_reqs', $id)->get();
+                    foreach ($query_dt as $dt) {
+                        $convert = str_replace(['Rp', ',', '.'], '', $dt->nominal);
+                        $actual = (int) $convert;
+                        ReqsEnDT::where('id', $dt->id)->update(['actual' => $actual]);
+                    }
+                }
                 Alert::toast("Success on Saving Data", 'success');
             }else{
                 Alert::toast('Reqs En not updated!', 'warning');
@@ -356,13 +414,60 @@ class AccomodationController extends Controller
         }
     }
     public function execute_reqs(Request $request, $id){
-        $value = [
-            'status'    => 2
-        ];
         $query = ReqsEn::where('id', $id)->first();
+        if ($query->type_reqs == 1) {
+            $value = [
+                'status'    => 3
+            ];
+        } else {
+            $value = [
+                'status'    => 2
+            ];
+        }
+        
         if ($query) {
             $query->update($value);
             Alert::toast('Successfully Updated Data', 'success');
+            return back();
+        }else {
+            Alert::toast('Failed Updating', 'error');
+            return back();
+        }
+    }
+    public function finish_reqs(Request $request, $id){
+        $get_data = VW_Reqs_En::where('id', $id)->first();
+        if ($get_data->tln == $get_data->tla) {
+            $value = [
+                'status'    => 3
+            ];
+            $alert = "The Request had been Done!";
+        } else if ($get_data->tln >= $get_data->tla) {
+            $value = [
+                'status'    => 3,
+                'additional'    => 1
+            ];
+            $alert = "Updated Successfully!";
+        } else {
+            $role =  auth()->user()->role;
+            $depart =  auth()->user()->depart;
+
+            if ($get_data->side_sts == 4) {
+                $value = [
+                    'status'    => 3,
+                    'additional'    => 4
+                ];
+                $alert = "The Request had been Done!";
+            }else{
+                list($alert, $adt) = $depart == 6 ? ["Confirmed Approved!", 3] : ($role == 19 ? ["Approved!", 4] : ["Approval Had been Sent", 2]);
+                $value = [
+                    'additional'    => $adt
+                ];
+            }
+        }
+        if ($get_data) {
+            $query = ReqsEn::where('id', $id)->first();
+            $query->update($value);
+            Alert::toast($alert, 'success');
             return back();
         }else {
             Alert::toast('Failed Updating', 'error');

@@ -102,6 +102,7 @@ Route::group(['middleware'=>'auth'], function(){
         Route::get('/location', [DataAjaxController::class, 'fetchLocation'])->name('refresh.location');
         Route::get('/servicePoint', [DataAjaxController::class, 'fetchServicePoint'])->name('refresh.sp');
         Route::get('/categoryNote', [DataAjaxController::class, 'fetchTypeNote'])->name('refresh.cateogry.note');
+        Route::get('/fetch-select', [DataAjaxController::class, 'fetchSelect'])->name('fetch.select');
         // Detil Ticket
         Route::get('Detail/Ticket={id}', [TicketController::class, 'detil'])->where(['id' => '.*']);
             // Add Type Unit and updated to the ticket
@@ -474,6 +475,8 @@ Route::group(['middleware'=>'auth'], function(){
         Route::post('Store/Expenses/Reqs-{id}', [AccomodationController::class, 'store_expenses'])->name('store.expenses');
         // Execute Reqs
         Route::patch('Execute/Reqs-En/{id}', [AccomodationController::class, 'execute_reqs'])->name('execute.reqs');
+        // Finish Reqs
+        Route::patch('Finish/Reqs-En/{id}', [AccomodationController::class, 'finish_reqs'])->name('done.reqs');
     Route::get('/My-Expenses', [AccomodationController::class, 'vw_request_reimburse']);
 
     

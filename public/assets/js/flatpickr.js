@@ -12,7 +12,6 @@ $(function() {
     });
   }
 
-
   // time picker
   if($('#flatpickr-time').length) {
     flatpickr("#flatpickr-time", {
@@ -25,12 +24,13 @@ $(function() {
   }
 
     // Date Time
-    if ($('#flatpickr-date-time').length) {
-        flatpickr("#flatpickr-date-time", {
+    if ($('#flatpickr-dt-ticket').length) {
+        flatpickr("#flatpickr-dt-ticket", {
             wrap: true,
             enableTime: true,
             dateFormat: "Y-m-d H:i",
-            time_24hr: true
+            time_24hr: true,
+            static: true
         });
     }
     if ($('#flatpickr-dtc').length) {
@@ -41,7 +41,7 @@ $(function() {
         });
     }
     if ($('#flatpickr-xps').length) {
-        flatpickr("#flatpickr-dtc", {
+        flatpickr("#flatpickr-xps", {
             enableTime: true,
             dateFormat: "Y-m-d H:i",
             time_24hr: true

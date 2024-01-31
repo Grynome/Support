@@ -91,7 +91,7 @@
                                                 @csrf
                                                 <div class="modal-body">
                                                     <div class="row">
-                                                        <div class="col-md-6 mb-3">
+                                                        <div class="col-md-12 mb-3">
                                                             <label for="Choose Sts" class="border-bottom mb-1"> ~ Status
                                                                 ~</label>
                                                             <select class="js-example-basic-single form-select"

@@ -509,11 +509,12 @@
                         Swal.fire({
                             title: 'Stop to work?',
                             text: 'if will compliting this ticket choose done, or u need a part and on site again choose Need Part',
-                            icon: 'question',
+                            icon: 'warning',
                             showDenyButton: true,
                             showCancelButton: true,
                             confirmButtonText: 'Done',
                             denyButtonText: `Need Part`,
+                            denyButtonColor: '#fbbc06',
                             cancelButtonColor: '#d33',
                         }).then((result) => {
                             if (result.isConfirmed) {

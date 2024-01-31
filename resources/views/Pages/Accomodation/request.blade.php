@@ -2,20 +2,20 @@
     <link rel="stylesheet" href="{{ asset('assets') }}/vendors/dropify/dist/dropify.min.css">
 @endpush
 @php
-    if ($dsc == "Add") {
+    if ($dsc == 'Add') {
         $title = "$dsc Request";
-        $disabled = "";
-    } elseif ($dsc == "Refs") {
+        $disabled = '';
+    } elseif ($dsc == 'Refs') {
         $title = "Request $dsc to $id_dt";
-        $disabled = "disabled";
-    } elseif ($dsc == "Past") {
+        $disabled = 'disabled';
+    } elseif ($dsc == 'Past') {
         $title = "Request $dsc Ticket";
-        $disabled = "";
-    }else {
-        $title = "Re-Create Request";
-        $disabled = "";
+        $disabled = '';
+    } else {
+        $title = 'Re-Create Request';
+        $disabled = '';
     }
-    
+
 @endphp
 @extends('Theme/header')
 @section('getPage')
@@ -36,7 +36,7 @@
                         <div class="d-flex justify-content-between align-items-baseline sv-tc">
                             <h6 class="card-title mb-0">
                                 <span class="input-group-text">
-                                    {{$title}}
+                                    {{ $title }}
                                 </span>
                             </h6>
                             <a class="cta btn-add-rqs-rmbrs" href="javascript:;">
@@ -67,94 +67,58 @@
         <form action="{{ url("$dsc/$id_dt/Reqs-Reimburse/En") }}" method="post" id="fm-add-rqs-rmbrs"
             enctype="multipart/form-data">
             @csrf
+            <div class="row">
+                <div class="col-md-12 grid-margin strech-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                @if ($dsc != 'Re')
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label" for="notiket-request">Notiket</label>
+                                        <select class="js-example-basic-multiple form-select" name="val_id_tiket_reqs[]" id="notiket-request" 
+                                            multiple="multiple" data-width="100%">
+                                            @foreach ($data_tiket as $item)
+                                                <option value="{{$item->notiket}}">{{$item->notiket}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row mb-3">
                 <div class="col-md-3 grid-margin stretch-card" style="height: 100%">
                     <div class="card">
                         <div class="card-body">
                             <div class="row">
-                                @if ($dsc == "Past")
-                                    <div class="col-md-12 mb-3">
-                                        <label class="form-label" for="notiket-request">Notiket</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" id="notiket-request"
-                                                name="val_id_tiket_reqs" placeholder="Choose Notiket" readonly>
-                                            <div class="input-group-button">
-                                                <button class="btn btn-inverse-primary" type="button" data-bs-toggle="modal"
-                                                    data-bs-target="#list-ticket"><i class="btn-icon-append icon-lg"
-                                                        data-feather="search"></i></button>
-                                                <button class="btn btn-inverse-primary clear-val-notiket" type="button"><i
-                                                        class="btn-icon-append icon-lg" data-feather="x"></i></button>
-                                                <div class="modal fade bd-example-modal-lg" id="list-ticket" tabindex="-1"
-                                                    aria-labelledby="List Notiket" aria-hidden="true">
-                                                    <div class="modal-dialog modal-lg">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title">
-                                                                    List Ticket
-                                                                </h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                                    aria-label="btn-close"></button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <div class="table-responsive">
-                                                                    <table id="display" class="table">
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th>No</th>
-                                                                                <th>Notiket</th>
-                                                                                <th>Case ID</th>
-                                                                                <th>Project</th>
-                                                                                <th>Kota Tujuan</th>
-                                                                                <th>Option</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            @php
-                                                                                $noT = 1;
-                                                                            @endphp
-                                                                            @foreach ($data_tiket as $item)
-                                                                                <tr>
-                                                                                    <td>{{ $noT }}</td>
-                                                                                    <td>{{ $item->notiket }}</td>
-                                                                                    <td>{{ $item->case_id }}</td>
-                                                                                    <td>{{ $item->project_name }}</td>
-                                                                                    <td>{{ $item->kota }}</td>
-                                                                                    <td>
-                                                                                        <button type="button"
-                                                                                            class="btn btn-outline-primary btn-icon select-ticket">
-                                                                                            <i data-feather="mouse-pointer"></i>
-                                                                                        </button>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                @php
-                                                                                    $noT++;
-                                                                                @endphp
-                                                                            @endforeach
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary"
-                                                                    data-bs-dismiss="modal">Cancel</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                @endif
                                 <h4 class="card-title">Additional</h4>
                                 <hr>
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Type of Request</label>
+                                    <div class="d-flex justify-content-between">
+                                        <div class="form-check form-check-inline">
+                                            <input type="radio" class="form-check-input" name="type_reqs" value="1" {{$dsc != 'Past' ? 'disabled' : 'checked'}}>
+                                            <label class="form-check-label" for="sidebarLight">
+                                            Reimburse
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input type="radio" class="form-check-input" name="type_reqs" value="2" {{$dsc != 'Past' ? 'checked' : 'disabled'}}>
+                                            <label class="form-check-label" for="sidebarDark">
+                                            Estimation
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="col-md-12">
                                     <label class="form-label" for="type-of-trans">Type of Transportation</label>
                                     <select class="js-example-basic-single form-select" name="val_type_trans"
-                                        id="type-of-trans" data-width="100%" {{$disabled}}>
+                                        id="type-of-trans" data-width="100%" {{ $disabled }}>
                                         <option value="">- Choose -</option>
                                         @foreach ($ttns as $t)
-                                            <option value="{{ $t->id }}" 
+                                            <option value="{{ $t->id }}"
                                                 {{ $t->id == @$top->id_type_trans ? 'selected' : '' }}>
                                                 {{ $t->description }}
                                             </option>
@@ -251,13 +215,24 @@
             var notiketRequest = $('#notiket-request').val();
             var typeOfTrans = $('#type-of-trans').val();
 
+            if (dsc == "Past") {
+                if (notiketRequest === null || notiketRequest.length === 0) {
+                    // Display SweetAlert error message
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        text: 'Please fill notiket fields.',
+                    });
+                    return false; // Validation failed
+                }
+            }
             // Validate required fields
-            if (notiketRequest === "" || typeOfTrans === "") {
+            if (typeOfTrans === "") {
                 // Display SweetAlert error message
                 Swal.fire({
                     icon: 'error',
                     title: 'Validation Error',
-                    text: 'Please fill in all required fields.',
+                    text: 'Please select type of transport fields.',
                 });
                 return false; // Validation failed
             }
@@ -308,18 +283,6 @@
             return allValid; // Return the result of all validations
         }
 
-        // Script Select
-        $('.select-ticket').click(function() {
-            let notiket = $(this).closest('tr').find('td:eq(1)').text().trim();
-            $('#notiket-request').val(notiket);
-            $('#list-ticket').modal('hide');
-        });
-
-        // Script Clear Input Select
-        $('.clear-val-notiket').click(function() {
-            $('#notiket-request').val('');
-        });
-
         // script Select Updated
         $(document).ready(function() {
             // Initialize Select2 for the original select element
@@ -365,14 +328,28 @@
                 // Remove existing Select2 instances and input masks in the new fields
                 newFields.find('.category-select').each(function() {
                     $(this).next('.select2-container').remove();
-                    $(this).removeAttr('data-select2-id');
                 });
 
                 // Fetch categories and update the options for the new select element
                 fetchCategories(function(categories) {
                     // Update options for the new select element
                     var selectElement = newFields.find('.category-select');
-                    updateCategories(selectElement, categories);
+                    var selectedCategories = [];
+
+                    // Iterate over existing records and collect selected categories
+                    $('.reimburse-records .category-select').each(function() {
+                        var selectedCategory = $(this).val();
+                        if (selectedCategory) {
+                            selectedCategories.push(selectedCategory);
+                        }
+                    });
+
+                    // Filter out selected categories from the options
+                    var filteredCategories = categories.filter(function(category) {
+                        return !selectedCategories.includes(category.id.toString());
+                    });
+
+                    updateCategories(selectElement, filteredCategories);
 
                     // Initialize input masks for the new fields
                     newFields.find('.nominal-request').inputmask({
@@ -433,7 +410,6 @@
 
                 $(this).closest('.reimburse-records').remove();
             });
-
             initializeInputMasks();
         });
     </script>

@@ -72,12 +72,10 @@
                                             Inquiry
                                         @else
                                             All Open
-                                            @if ($not_closed_ticket != 10)
-                                                <span
-                                                    class="position-absolute top-10 start-30 translate-middle-y badge rounded-pill bg-danger">
-                                                    {{ $not_closed_ticket }}
-                                                </span>
-                                            @endif
+                                            <span
+                                                class="position-absolute top-10 start-30 translate-middle-y badge rounded-pill bg-danger">
+                                                {{ $not_closed_ticket }}
+                                            </span>
                                         @endif
                                     </a>
                                 </li>

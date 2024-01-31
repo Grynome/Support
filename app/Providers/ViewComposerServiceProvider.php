@@ -41,7 +41,7 @@ class ViewComposerServiceProvider extends ServiceProvider
         });
         View::composer('Theme.Sub.sidebar', function ($view) {
             $data['not_verif'] = User::where('verify', 0)->count();
-            $data['not_closed_ticket'] = VW_Ticket::where('status', '!=', 10)->count();
+            $data['not_closed_ticket'] = VW_Ticket::where('status', '<', 10)->count();
             $view->with($data);
         });
     }

@@ -1,4 +1,5 @@
 @push('css-plugin')
+<link rel="stylesheet" href="{{ asset('assets') }}/vendors/mdi/css/materialdesignicons.min.css">
 @endpush
 @php
     $role = auth()->user()->role;
@@ -391,7 +392,7 @@
                                                                                 @csrf
                                                                                 {{ method_field('patch') }}
                                                                                 <div class="row">
-                                                                                    <div class="col-md-6">
+                                                                                    <div class="col-md-6 mb-3">
                                                                                         <p class="form-label fw-bolder">
                                                                                             Type Ticket :
                                                                                         </p>
@@ -413,7 +414,7 @@
                                                                                             @endforeach
                                                                                         </select>
                                                                                     </div>
-                                                                                    <div class="col-md-6">
+                                                                                    <div class="col-md-6 mb-3">
                                                                                         <p class="form-label fw-bolder">
                                                                                             Case ID :
                                                                                         </p>
@@ -443,6 +444,27 @@
                                                                                                 </option>
                                                                                             @endforeach
                                                                                         </select>
+                                                                                    </div>
+                                                                                    <div class="col-md-6">
+                                                                                        <p class="form-label fw-bolder">
+                                                                                            Incoming Email :
+                                                                                        </p>
+                                                                                        <div class="input-group flatpickr"
+                                                                                            id="flatpickr-dt-ticket">
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                class="form-control"
+                                                                                                placeholder="Select date"
+                                                                                                name="ie_dt"
+                                                                                                id="dt-sch-en"
+                                                                                                value="{{ $detail->first()->ticketcoming }}"
+                                                                                                data-input
+                                                                                                required>
+                                                                                            <span
+                                                                                                class="input-group-text input-group-addon"
+                                                                                                data-toggle><i
+                                                                                                    data-feather="calendar"></i></span>
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </form>
@@ -1701,7 +1723,7 @@
                                                                                                                 $time = substr("$sch", 11);
                                                                                                             @endphp
                                                                                                             <div class="input-group flatpickr"
-                                                                                                                id="flatpickr-date-time">
+                                                                                                                id="flatpickr-dt-ticket">
                                                                                                                 <input
                                                                                                                     type="text"
                                                                                                                     class="form-control"
@@ -2507,11 +2529,14 @@
                                                 $no = 1;
                                             @endphp
                                             @foreach ($log_detil as $item)
+                                                @php
+                                                    $profile = @$item->get_user->profile;
+                                                @endphp
                                                 <tr>
                                                     <td>{{ $no }}</td>
                                                     <td>{{ @$item->typeNote->ktgr_name }}
                                                     <td>{!! $item->note !!}</td>
-                                                    <td>{{ @$item->get_user->full_name }}
+                                                    <td><img class="rounded-circle profile-user" src="{{asset("$profile")}}" alt="profile"> <br>{{ @$item->get_user->full_name }}
                                                     </td>
                                                     <td>{{ $item->created_at }}</td>
                                                     <td>
@@ -2702,11 +2727,12 @@
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <div class="mb-3">
-                                                                    <label for="input-desc-note"
-                                                                        class="form-label fw-bolder">Description
-                                                                        : </label>
-                                                                    <textarea class="form-control txt-note" rows="3" id="input-desc-note" placeholder="Type Note"
-                                                                        name="log_note"></textarea>
+                                                                    <div id="ntGroup">
+                                                                        <label for="input-desc-note" class="form-label fw-bolder">Description:</label>
+                                                                        <textarea class="form-control txt-note" rows="3" id="input-desc-note" 
+                                                                        placeholder="Click the 'Record' button and speak" name="log_note"></textarea>
+                                                                        <button id="recordButton"><i class="mdi mdi-microphone-outline"></i></button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-3">
@@ -3524,4 +3550,49 @@
             </script>
         @endif
     @endif
+    
+    <script>
+        const textarea = document.getElementById('input-desc-note');
+        const recordButton = document.getElementById('recordButton');
+        let recognition;
+
+        // Check if SpeechRecognition is available
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+
+            // Set language to Indonesian (id-ID)
+            recognition.lang = 'id-ID';
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                textarea.value += transcript + ' ';
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error', event.error);
+            };
+
+            recognition.onend = () => {
+                console.log('Speech recognition ended');
+                // Change the button style when recording ends
+                recordButton.classList.remove('recording');
+            };
+
+            // Toggle recording when the button is clicked
+            recordButton.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent form submission
+                if (recognition && recognition.recognizing) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                    // Change the button style when recording starts
+                    recordButton.classList.add('recording');
+                }
+            });
+
+        } else {
+            console.error('Speech recognition not supported in this browser');
+        }
+    </script>
 @endpush

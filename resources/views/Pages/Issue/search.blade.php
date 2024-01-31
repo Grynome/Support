@@ -14,11 +14,10 @@
             <div class="col-md-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Search by Notiket</h4>
+                        <h4 class="card-title">Search Ticket by Notiket & Case ID</h4>
                         <div class="search-wrapper">
                             <div class="input-holder">
-                                <input type="number" name="valNotiket" class="search-input" placeholder="Type to search"
-                                    maxlength="9" min="0" />
+                                <input type="text" name="valNotiket" class="search-input" placeholder="Type to search"/>
                                 <button class="search-icon" onclick="searchToggle(this, event);"><span></span></button>
                             </div>
                             <span class="close" onclick="searchToggle(this, event);"></span>
@@ -31,15 +30,6 @@
 @endsection
 @push('custom')
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var searchInput = document.querySelector(".search-input");
-            searchInput.addEventListener("input", function() {
-                if (searchInput.value.length > 9) {
-                    searchInput.value = searchInput.value.slice(0, 9);
-                }
-            });
-        });
-
         function searchToggle(obj, evt) {
             var container = $(obj).closest('.search-wrapper');
             if (!container.hasClass('active')) {
