@@ -860,7 +860,6 @@
                                                         </div>
                                                     @endif
                                                 </div>
-                                            @endif
                                             {{-- MODAL Engineer --}}
                                             <div class="modal fade bd-example-modal-lg" id="find-engineer" tabindex="-1"
                                                 aria-labelledby="projectModal" aria-hidden="true">
@@ -1170,6 +1169,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="aside-body">
@@ -2515,6 +2515,8 @@
                                                 <th>
                                                     Activity</th>
                                                 <th>
+                                                    Pending</th>
+                                                <th>
                                                     Note</th>
                                                 <th>
                                                     User</th>
@@ -2534,9 +2536,17 @@
                                                 @endphp
                                                 <tr>
                                                     <td>{{ $no }}</td>
-                                                    <td>{{ @$item->typeNote->ktgr_name }}
+                                                    <td>{{ @$item->typeNote->ktgr_name }}</td>
+                                                    <td>
+                                                        {{ @$item->typePending->ktgr_pending }}
+                                                    </td>
                                                     <td>{!! $item->note !!}</td>
-                                                    <td><img class="rounded-circle profile-user" src="{{asset("$profile")}}" alt="profile"> <br>{{ @$item->get_user->full_name }}
+                                                    <td>
+                                                        @if ($depart == 4)
+                                                            <img class="rounded-circle profile-user" src="{{asset("$profile")}}" alt="profile">
+                                                            <br>
+                                                        @endif
+                                                        {{ @$item->get_user->full_name }}
                                                     </td>
                                                     <td>{{ $item->created_at }}</td>
                                                     <td>
