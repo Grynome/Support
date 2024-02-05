@@ -14154,3 +14154,15 @@
        background-color: #e74c3c;
        /* Change the color as needed */
    }
+   
+.q-content {
+    display: none;
+}
+
+.rotate-icon {
+    transition: transform 0.3s ease;
+}
+
+.q-wrapper.active .rotate-icon {
+    transform: rotate(180deg);
+}

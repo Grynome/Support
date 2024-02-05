@@ -15,7 +15,11 @@
         $title = 'Re-Create Request';
         $disabled = '';
     }
-
+    if ($dsc == 'Add') {
+        $att_input = 'disabled';
+    }else{
+        $att_input = '';
+    }
 @endphp
 @extends('Theme/header')
 @section('getPage')
@@ -161,7 +165,7 @@
                                         <label class="form-label" for="attach-reqs">Attach Receipt</label>
                                         <div class="d-flex justify-content-between align-items-baseline att-rmv">
                                             <input type="file" class="file" id="attach-reqs" name="attach_file[]"
-                                                accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps" />
+                                                accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps" {{$att_input}}/>
                                         </div>
                                     </div>
                                 </div>

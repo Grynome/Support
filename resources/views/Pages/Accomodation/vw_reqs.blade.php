@@ -99,8 +99,7 @@
                                             @php
                                                 $dtReqs = ReqsEnDT::where('id_dt_reqs', $item->id_dt_reqs)->get();
                                                 $list_of_ticket = RefReqs::where('id_reqs', $item->id)->get();
-                                                $cek_confirm = ReqsEnDT::select('id_dt_reqs')
-                                                                ->where('id_dt_reqs', $item->id_dt_reqs)
+                                                $cek_confirm = ReqsEnDT::where('id_dt_reqs', $item->id_dt_reqs)
                                                                 ->groupBy('id_dt_reqs')
                                                                 ->havingRaw('SUM(CASE WHEN `status` = 1 THEN 0 ELSE 1 END) = 0')
                                                                 ->first();

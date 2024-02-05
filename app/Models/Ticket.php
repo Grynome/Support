@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Source;
+use App\Models\Project;
+use App\Models\SLA;
 
 class Ticket extends Model
 {
@@ -17,12 +20,12 @@ class Ticket extends Model
 
     public $incrementing = false;
     public function get_source(){
-        return $this->belongsTo('\App\Models\Source', 'sumber_id', 'id');
+        return $this->belongsTo(Source::class, 'sumber_id', 'id');
     }
     public function get_project(){
-        return $this->belongsTo('\App\Models\Project', 'project_id', 'project_id');
+        return $this->belongsTo(Project::class, 'project_id', 'project_id');
     }
     public function get_sla(){
-        return $this->belongsTo('\App\Models\SLA', 'sla', 'id');
+        return $this->belongsTo(SLA::class, 'sla', 'id');
     }
 }

@@ -1,3 +1,6 @@
+@php
+    use Carbon\Carbon;
+@endphp
 @extends('Theme/header')
 @section('getPage')
     @include('sweetalert::alert')
@@ -94,13 +97,13 @@
                                         <th>No</th>
                                         <th>Notiket</th>
                                         <th>Case ID</th>
-                                        <th>Location</th>
                                         <th>Service Point</th>
                                         <th>Kota User</th>
                                         <th>Project</th>
-                                        <th>Email Coming</th>
-                                        <th>Entry Date</th>
                                         <th>Pending Status</th>
+                                        <th>Catatan</th>
+                                        <th>Onsite</th>
+                                        <th>Aging Ticket</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -109,19 +112,22 @@
                                     @endphp
                                     @foreach ($report as $item)
                                         @php
+                                            $now = Carbon::now()->addHours(7);
                                             $notiket = $item->notiket;
+                                            $mail_date = Carbon::parse($item->ticketcoming);
+                                            $agingTicket = $mail_date->diffInDays($now);
                                         @endphp
                                         <tr>
                                             <td>{{ $no }}</td>
                                             <td>{{ $notiket }}</td>
                                             <td>{{ $item->case_id }}</td>
-                                            <td>{{ $item->severity_name }}</td>
                                             <td>{{ $item->service_name }}</td>
                                             <td>{{ $item->kota }}</td>
                                             <td>{{ $item->project_name }}</td>
-                                            <td>{{ $item->ticketcoming }}</td>
-                                            <td>{{ $item->entrydate }}</td>
                                             <td>{{ $item->root_cause }}</td>
+                                            <td>{{ $item->note }}</td>
+                                            <td>{{ $item->total_onsite }}</td>
+                                            <td>{{ $agingTicket }}</td>
                                         </tr>
                                         @php
                                             $no++;

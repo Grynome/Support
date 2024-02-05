@@ -29,8 +29,7 @@ $(function() {
             wrap: true,
             enableTime: true,
             dateFormat: "Y-m-d H:i",
-            time_24hr: true,
-            static: true
+            time_24hr: true
         });
     }
     if ($('#flatpickr-dtc').length) {

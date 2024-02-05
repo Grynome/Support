@@ -570,17 +570,14 @@ class TicketController extends Controller
                 $data['log_awb'] = VW_LogLogistik::all()->where('notiket',$id);
                 $data['done_awb'] = VW_Tiket_Part::all()->where('notiket',$id)->whereNotNull('awb_num');
             }
-            // elseif($depart == 6){
-            //     $data['reimburseEn'] = DB::table(function ($query) use($id) {
-            //                         $query->selectRaw('hre.*, IFNULL(har.qty_attach, 0) as qty_attach')
-            //                             ->from('hgt_reimburse_en as hre')
-            //                             ->leftJoin(DB::raw('(SELECT fk_id, COUNT(id) AS qty_attach FROM hgt_attach_reimburse GROUP BY fk_id) AS har'), 'hre.fk_id', '=', 'har.fk_id')
-            //                             ->where('notiket', $id);
-            //                         })->get();
-            // }
             $data['getStsP'] = StsPending::all()->where('deleted', 0);
+
+            $cek_part = VW_Tiket_Part::selectRaw('MAX(CASE WHEN arrive IS NULL THEN 1 ELSE null END) AS cpt')
+                            ->where('notiket', $id)
+                            ->groupBy('notiket')
+                            ->first();
         }
-        return view('Pages.Ticket.detil')->with($data)->with('id', $id);
+        return view('Pages.Ticket.detil')->with($data)->with('id', $id)->with('cek_part', $cek_part);
     }
     public function add_note_at_detil(Request $request, $notiket){
         $nik =  auth()->user()->nik;

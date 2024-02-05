@@ -1676,85 +1676,57 @@
                                                                                 :
                                                                             </div>
                                                                             <div class="col-8">
-                                                                                @if (empty(@$detail->first()->departure))
-                                                                                    No Schedule
-                                                                                @else
-                                                                                    {{ @$detail->first()->departure }}
-                                                                                @endif
-                                                                                &nbsp;
-                                                                                @if ($depart == 4)
-                                                                                    @if (@$detail->first()->status != 10)
-                                                                                        <a href="#updt-sch"
-                                                                                            data-bs-toggle="modal">
-                                                                                            ( <i class="icon-lg"
-                                                                                                data-feather="calendar"></i>
-                                                                                            )
-                                                                                        </a>
-                                                                                        <div class="modal fade"
-                                                                                            id="updt-sch" tabindex="-1"
-                                                                                            aria-labelledby="sourceModalLabel"
-                                                                                            aria-hidden="true">
-                                                                                            <div class="modal-dialog">
-                                                                                                <div class="modal-content">
-                                                                                                    <div
-                                                                                                        class="modal-header">
-                                                                                                        <h5 class="modal-title"
-                                                                                                            id="sourceModalLabel">
-                                                                                                            Update Schedule
-                                                                                                            Engineer
-                                                                                                        </h5>
-                                                                                                        <button
-                                                                                                            type="button"
-                                                                                                            class="btn-close"
-                                                                                                            data-bs-dismiss="modal"
-                                                                                                            aria-label="btn-close"></button>
-                                                                                                    </div>
-                                                                                                    <div
-                                                                                                        class="modal-body">
-                                                                                                        <form
-                                                                                                            action="{{ url("Update-Ticket/Schedule/$id") }}"
-                                                                                                            method="post"
-                                                                                                            id="form-updt-sch-en">
-                                                                                                            @csrf
-                                                                                                            {{ method_field('patch') }}
-                                                                                                            @php
-                                                                                                                $sch = @$detail->first()->departure;
-                                                                                                                $date = substr("$sch", 0, 10);
-                                                                                                                $time = substr("$sch", 11);
-                                                                                                            @endphp
-                                                                                                            <div class="input-group flatpickr"
-                                                                                                                id="flatpickr-dt-ticket">
-                                                                                                                <input
-                                                                                                                    type="text"
-                                                                                                                    class="form-control"
-                                                                                                                    placeholder="Select date"
-                                                                                                                    name="sch_time_sch"
-                                                                                                                    id="dt-sch-en"
-                                                                                                                    value="{{ $sch }}"
-                                                                                                                    data-input
-                                                                                                                    required>
-                                                                                                                <span
-                                                                                                                    class="input-group-text input-group-addon"
-                                                                                                                    data-toggle><i
-                                                                                                                        data-feather="calendar"></i></span>
-                                                                                                            </div>
-                                                                                                        </form>
-                                                                                                    </div>
-                                                                                                    <div
-                                                                                                        class="modal-footer">
-                                                                                                        <button
-                                                                                                            type="button"
-                                                                                                            class="btn btn-secondary"
-                                                                                                            data-bs-dismiss="modal">Back</button>
-                                                                                                        <button
-                                                                                                            type="button"
-                                                                                                            class="btn btn-primary save-updt-sch-en">Save</button>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
+                                                                                <div class="q-a">
+                                                                                    <div class="q-wrapper">
+                                                                                        <div class="d-flex justify-content-between align-items-center" style="cursor: pointer">
+                                                                                            <p>
+                                                                                            @if (empty(@$detail->first()->departure))
+                                                                                                No Schedule
+                                                                                            @else
+                                                                                                {{ @$detail->first()->departure }}
+                                                                                            @endif
+                                                                                            </p>
+                                                                                            <svg class="rotate-icon" width="10" height="7" xmlns="http://www.w3.org/2000/svg">
+                                                                                                <path d="M1 .799l4 4 4-4" stroke="#6571ff" stroke-width="3" fill="none" fill-rule="evenodd"/>
+                                                                                            </svg>
                                                                                         </div>
-                                                                                    @endif
-                                                                                @endif
+                                                                                    </div>
+                                                                                    <div class="q-content mb-2 mt-1">
+                                                                                        <div class="d-flex justify-content-between align-items-center">
+                                                                                            <form
+                                                                                                action="{{ url("Update-Ticket/Schedule/$id") }}"
+                                                                                                method="post"
+                                                                                                id="form-updt-sch-en">
+                                                                                                @csrf
+                                                                                                {{ method_field('patch') }}
+                                                                                                @php
+                                                                                                    $sch = @$detail->first()->departure;
+                                                                                                    $date = substr("$sch", 0, 10);
+                                                                                                    $time = substr("$sch", 11);
+                                                                                                @endphp
+                                                                                                <div class="input-group flatpickr"
+                                                                                                    id="flatpickr-dt-ticket">
+                                                                                                    <input
+                                                                                                        type="text"
+                                                                                                        class="form-control"
+                                                                                                        placeholder="Select date"
+                                                                                                        name="sch_time_sch"
+                                                                                                        id="dt-sch-en"
+                                                                                                        value="{{ $sch }}"
+                                                                                                        data-input
+                                                                                                        required>
+                                                                                                    <span
+                                                                                                        class="input-group-text input-group-addon"
+                                                                                                        data-toggle><i
+                                                                                                            data-feather="calendar"></i></span>
+                                                                                                </div>
+                                                                                            </form>
+                                                                                            <button
+                                                                                            type="button"
+                                                                                            class="btn btn-primary save-updt-sch-en">Save</button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -2631,9 +2603,9 @@
                                                                                                                     </label>
                                                                                                                 </div>
                                                                                                                 <select
-                                                                                                                    id="choose-type-note"
                                                                                                                     class="js-example-basic-single form-select"
                                                                                                                     data-width="100%"
+                                                                                                                    id="choose-type-note"
                                                                                                                     name="edt_type_note">
                                                                                                                     <option
                                                                                                                         value="">
@@ -2796,6 +2768,14 @@
     <script src="{{ asset('assets') }}/js/chat.js"></script>
 @endpush
 @push('custom')
+<script>
+    $(document).ready(function () {
+        $('.q-wrapper').click(function () {
+            $(this).toggleClass('active');
+            $(this).next('.q-content').slideToggle();
+        });
+    });
+</script>
     <script>
         for (let i = 0; i < 50; i++) {
             $('.download-file-ticket-attach' + i + '').on('click', function() {
@@ -3277,24 +3257,35 @@
                 });
                 return false;
             });
+            var cek_pt = '{{ $cek_part->cpt }}';
             $('.send-to-engineer').on('click', function() {
-
-                Swal.fire({
-                    title: "Tickets Ready?",
-                    text: "Ticket will be sent to engineer!",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#34a853',
-                    confirmButtonText: 'Yes',
-                    cancelButtonColor: '#d33',
-                    cancelButtonText: "No"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        jQuery('#form-send-ticket-to-engineer').submit();
-                    }
-                });
+                if (cek_pt == 1) {
+                    Swal.fire({
+                        title: "Part Not Ready!!",
+                        text: "Update your part status (\|/)!!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Tickets Ready?",
+                        text: "Ticket will be sent to engineer!",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#34a853',
+                        confirmButtonText: 'Yes',
+                        cancelButtonColor: '#d33',
+                        cancelButtonText: "No"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            jQuery('#form-send-ticket-to-engineer').submit();
+                        }
+                    });
+                }
                 return false;
             });
+            
             for (let i = 0; i < 50; i++) {
                 $('.btn-update-journey' + i + '').on('click', function() {
                     $('#part-detail').modal('hide');

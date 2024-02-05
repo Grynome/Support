@@ -826,8 +826,8 @@ class ReportCOntroller extends Controller
             $get_tat = !empty($item->entrydate) && !empty($item->work_stop) ? $tatst->diffInDays($tatnd) : null;
             $get_deliv = !empty($item->entrydate) && !empty($item->arrive) ? $tatst->diffInDays($delivend) : null;
             $get_fe = !empty($item->arrive) && !empty($item->work_stop) ? $delivend->diffInDays($tatnd) : null;
-            $weekN = $carbonDate->weekOfMonth;
-            $wCloseDate = $cbCloseDate->weekOfMonth;
+            $weekN = 'Week '.$carbonDate->weekOfMonth;
+            $wCloseDate = 'Week '.$cbCloseDate->weekOfMonth;
             if ($item->status < 10) {
                 $sts = 'Open';
             } else {
@@ -840,9 +840,9 @@ class ReportCOntroller extends Controller
                     $item->type_ticket,
                     $item->sla_name,
                     $item->schedule,
-                    $item->ticketcoming,
+                    $carbonDate,
                     $carbonDate->format('Y'),
-                    $carbonDate->format('m'),
+                    $carbonDate->format('F'),
                     $weekN,
                     $carbonDate->format('d'),
                     $item->project_name,
@@ -867,9 +867,9 @@ class ReportCOntroller extends Controller
                     $item->gow,
                     $item->work_start,
                     $item->work_stop,
-                    $item->closedate,
+                    $cbCloseDate,
                     $cbCloseDate->format('Y'),
-                    $cbCloseDate->format('m'),
+                    $cbCloseDate->format('F'),
                     $wCloseDate,
                     $cbCloseDate->format('d'),
                     $item->issue_partner,
