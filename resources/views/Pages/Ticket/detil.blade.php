@@ -30,8 +30,7 @@
     <div class="page-content">
         <nav class="page-breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
-                <li class="breadcrumb-item" aria-current="page">Manage Ticket</li>
+                <li class="breadcrumb-item"><a href="{{ url('helpdesk/manage=Ticket') }}">Manage Ticket</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Detil</li>
             </ol>
         </nav>
@@ -307,7 +306,7 @@
                                                                         @csrf
                                                                         {{ method_field('patch') }}
                                                                     </form>
-                                                                    @if (($detail->first()->type_ticket == 'Inventory' || $detail->first()->type_ticket == 'Delivery') && $role == 16)
+                                                                    @if (in_array($detail->first()->type_ticket, ['Inventory', 'Delivery', 'Deploy']) && $role == 16)
                                                                         <a class="dropdown-item d-flex align-items-center close-ticket-dt"
                                                                             href="javascript:;"><i data-feather="x-square"
                                                                                 class="icon-sm me-2"></i>
@@ -2446,7 +2445,7 @@
                 </div>
             </div>
         </div>
-        @if ($depart == 4 || $role == 20 || $role == 15 || $role == 19)
+        @if ($depart == 4 || $role == 20 || $role == 15 || $role == 19 || $depart == 3)
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
@@ -2460,19 +2459,11 @@
                                             </div>
                                         </div>
                                         @if ($detail->first()->status != 10 && $depart == 4)
-                                            <div class="dropdown">
-                                                <a type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                                    aria-haspopup="true" aria-expanded="false">
-                                                    <i class="icon-xl text-muted pb-3px" data-feather="settings"></i>
-                                                </a>
-                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                    <a class="dropdown-item d-flex align-items-center" href="#add-note"
-                                                        data-bs-toggle="modal"><i data-feather="plus"
-                                                            class="icon-sm me-2"></i>
-                                                        <span class="">Add Note</span>
-                                                    </a>
-                                                </div>
-                                            </div>
+                                            <button type="button" class="btn btn-outline-github btn-icon-text" data-bs-toggle="modal"
+                                                data-bs-target="#add-note">
+                                                <i class="btn-icon-prepend" data-feather="plus"></i>
+                                                Add Note
+                                            </button>
                                         @endif
                                     </div>
                                 </div>
@@ -3257,12 +3248,12 @@
                 });
                 return false;
             });
-            var cek_pt = '{{ $cek_part->cpt }}';
+            var cek_pt = '{{ @$cek_part->cpt }}';
             $('.send-to-engineer').on('click', function() {
                 if (cek_pt == 1) {
                     Swal.fire({
                         title: "Part Not Ready!!",
-                        text: "Update your part status (\|/)!!",
+                        text: "Update your part status!!",
                         icon: "warning",
                         confirmButtonColor: '#d33',
                         confirmButtonText: 'OK'

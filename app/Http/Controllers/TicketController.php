@@ -112,7 +112,9 @@ class TicketController extends Controller
             $data['ticket'] = Ticketing::where('status', 10)->where('total_return', '>', 0)->where('status_awb', 0)
                                 ->whereIn('project_id', ['PRJ-020-HGT', 'PRJ-021-HGT'])->get();
         } else if ($depart == 10){
-            $data['ticket'] = Ticketing::where('status', 10)->where('status_docs', 0)->get();
+            $now = Carbon::now()->endOfDay();
+            $oneMonthAgo = $now->copy()->startOfDay()->subMonth(1);
+            $data['ticket'] = Ticketing::where('status', 10)->where('status_docs', 0)->whereBetween('closedate', [$oneMonthAgo, $now])->get();
         }
                     
         return view('Pages.Ticket.manage')->with($data)
@@ -1220,12 +1222,12 @@ class TicketController extends Controller
             $data_en = User::all()->where('nik',$request->nik_engineer)->first();
             $logging = [
                 'notiket'    => $key,
-                'note'    => 'Change Engineer to'.' '.@$data_en->full_name,
+                'note'    => 'Change L2 to'.' '.@$data_en->full_name,
                 'user'     => $nik,
                 'created_at'     => $dateTime
             ];
             LogTiket::insert($logging);
-            Alert::toast('Engineer successfully changed!', 'success');
+            Alert::toast('L2 successfully changed!', 'success');
             return back();
         }
         else {

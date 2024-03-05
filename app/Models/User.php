@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Role;
+use App\Models\Dept;
 
 class User extends Authenticatable
 {
@@ -61,10 +63,10 @@ class User extends Authenticatable
     ];
     protected $guarded = [];
     public function roles(){
-        return $this->belongsTo('\App\Models\Role', 'role', 'id');
+        return $this->belongsTo(Role::class, 'role', 'id');
     }
     public function dept(){
-        return $this->belongsTo('\App\Models\Dept', 'depart', 'id');
+        return $this->belongsTo(Dept::class, 'depart', 'id');
     }
 
 }

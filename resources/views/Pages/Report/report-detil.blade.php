@@ -25,12 +25,12 @@
                                     <table class="table partData">
                                         <thead>
                                             <tr>
-                                                <th>unit_name</th>
-                                                <th>so_num</th>
-                                                <th>awb_num</th>
-                                                <th>rma</th>
-                                                <th>sn</th>
-                                                <th>pn</th>
+                                                <th>Unit Name</th>
+                                                <th>So Num</th>
+                                                <th>Awb Num</th>
+                                                <th>RMA</th>
+                                                <th>SN</th>
+                                                <th>PN</th>
                                                 <th>Type</th>
                                             </tr>
                                         </thead>
@@ -59,10 +59,11 @@
                                     <table class="table noteData">
                                         <thead>
                                             <tr>
-                                                <th>ktgr_name</th>
-                                                <th>note</th>
-                                                <th>full_name</th>
-                                                <th>created_at</th>
+                                                <th>Aktivitas</th>
+                                                <th>Pending</th>
+                                                <th>Note</th>
+                                                <th>Helpdesk</th>
+                                                <th>Created At</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -91,15 +92,22 @@
                     populateTable('.partData', data.query_part, ['unit_name', 'so_num', 'awb_num',
                         'rma', 'sn', 'pn', 'part_type'
                     ]);
-                    populateTable('.noteData', data.query_note, ['ktgr_name', 'note', 'full_name',
+                    populateTable('.noteData', data.query_note, ['ktgr_name', 'ktgr_pending', 'note',
+                        'full_name',
                         'created_at'
                     ]);
                     // Initialize DataTable for each table
                     $('.partData').DataTable({
-                        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+                        "lengthMenu": [
+                            [10, 25, 50, -1],
+                            [10, 25, 50, "All"]
+                        ]
                     });
                     $('.noteData').DataTable({
-                        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+                        "lengthMenu": [
+                            [10, 25, 50, -1],
+                            [10, 25, 50, "All"]
+                        ]
                     });
                 },
                 error: function(xhr, status, error) {

@@ -1,4 +1,5 @@
 @php
+    $nik = auth()->user()->nik;
     $role = auth()->user()->role;
     $depart = auth()->user()->depart;
     $timeFrameWeek = 'Week';
@@ -54,8 +55,8 @@
                 <li class="nav-item nav-category">Ticketing</li>
                 @if ($depart != 15)
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#ticket" role="button" aria-expanded="false"
-                            aria-controls="ticket">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ticket" role="button"
+                            aria-expanded="false" aria-controls="ticket">
                             <i class="link-icon" data-feather="edit"></i>
                             <span class="position-relative">
                                 <span class="link-title">Manage Ticket</span>
@@ -115,18 +116,24 @@
                     </li>
                 @endif
                 @if (in_array($depart, [6, 15]) || $role == 20)
+                    @php
+                        $temp = 'null';
+                    @endphp
                     <li class="nav-item">
-                        <a href="{{ url('/My-Expenses') }}" class="nav-link" role="button" aria-expanded="false"
-                            aria-controls="general-pages">
+                        <a href="{{ url("My-Expenses/id=$temp") }}" class="nav-link" role="button"
+                            aria-expanded="false" aria-controls="general-pages">
                             <i class="link-icon" data-feather="credit-card"></i>
                             <span class="link-title">
-                                {{ $dsc_menu = ($role == 19 || $depart == 15) ? "Request" : "My Expenses" }}
+                                {{ $dsc_menu = $role == 19 || $depart == 15 ? 'Request' : 'My Expenses' }}
                             </span>
                         </a>
                     </li>
                 @endif
             @endif
-            @if (in_array($depart, [4, 5, 3, 10, 15]) || in_array($role, [20, 15]) || ($depart == 6 && $role == 19))
+            @if (in_array($depart, [4, 5, 3, 10, 15]) ||
+                    in_array($role, [20, 15]) ||
+                    ($depart == 6 && $role == 19) ||
+                    in_array($nik, ['HGT-KR138', 'HGT-KR112']))
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#reports" role="button" aria-expanded="false"
                         aria-controls="report">
@@ -140,9 +147,10 @@
                                 <a href="{{ url('Report/data=Ticket') }}" class="nav-link">Data Report Ticket</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ url('Compare/report=Ticket') }}" class="nav-link">Compare Report Ticket</a>
+                                <a href="{{ url('Compare/report=Ticket') }}" class="nav-link">Compare Report
+                                    Ticket</a>
                             </li>
-                            @if (($role == 16 && $depart == 4) || in_array($role, [20, 15]))
+                            @if ($role == 16 && $depart == 4)
                                 <li class="nav-item">
                                     <a href="{{ url('Report/data=Each-Week') }}" class="nav-link">Weekly
                                         Ticket</a>
@@ -151,9 +159,13 @@
                                     <a href="{{ url('Report/data=Each-Month') }}" class="nav-link">Monthly
                                         Ticket</a>
                                 </li>
+                            @elseif ($depart == 15 || $role == 20)
+                                <li class="nav-item">
+                                    <a href="{{ url('/Report-Expenses') }}" class="nav-link">Data Expenses</a>
+                                </li>
                             @endif
-                            @if (in_array($role, [20, 15, 19]) || ($role == 16 && (in_array($depart, [3, 5, 6, 13, 10]))))
-                                @if (!in_array($depart, [3, 6, 10]))
+                            @if (in_array($role, [20, 15, 19]) || ($role == 16 && in_array($depart, [3, 5, 6, 13, 10])))
+                                @if (!in_array($depart, [3, 6, 13, 10]))
                                     <li class="nav-item">
                                         <a href="{{ url('Report/Chart/Monthly-Ticket') }}" class="nav-link">Chart
                                             Report</a>
@@ -183,24 +195,30 @@
                                             Ticket</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ url("Report/Helpdesk=Each-$timeFrameWeek") }}" class="nav-link">Act Weekly Helpdesk</a>
+                                        <a href="{{ url("Report/Helpdesk=Each-$timeFrameWeek") }}"
+                                            class="nav-link">Act Weekly Helpdesk</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ url("Report/Helpdesk=Each-$timeFrameMonth") }}" class="nav-link">Act Monthly Helpdesk</a>
+                                        <a href="{{ url("Report/Helpdesk=Each-$timeFrameMonth") }}"
+                                            class="nav-link">Act Monthly Helpdesk</a>
                                     </li>
                                     @if ($depart != 5)
                                         <li class="nav-item">
-                                            <a href="{{ url("Report/SP=Each-$timeFrameWeek") }}" class="nav-link">Weekly SP</a>
+                                            <a href="{{ url("Report/SP=Each-$timeFrameWeek") }}"
+                                                class="nav-link">Weekly SP</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="{{ url("Report/SP=Each-$timeFrameMonth") }}" class="nav-link">Monthly SP</a>
+                                            <a href="{{ url("Report/SP=Each-$timeFrameMonth") }}"
+                                                class="nav-link">Monthly SP</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="{{ url("Report/AE=Each-$timeFrameWeek") }}" class="nav-link">Act Weekly
+                                            <a href="{{ url("Report/AE=Each-$timeFrameWeek") }}" class="nav-link">Act
+                                                Weekly
                                                 En</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="{{ url("Report/AE=Each-$timeFrameMonth") }}" class="nav-link">Act Monthly
+                                            <a href="{{ url("Report/AE=Each-$timeFrameMonth") }}"
+                                                class="nav-link">Act Monthly
                                                 En</a>
                                         </li>
                                     @endif
@@ -217,26 +235,32 @@
                                     @elseif ($depart == 6 || $depart == 13)
                                         @if ($role == 19)
                                             <li class="nav-item">
-                                                <a href="{{ url('Report/data=KPI-User') }}" class="nav-link">Timestamps
+                                                <a href="{{ url('Report/data=KPI-User') }}"
+                                                    class="nav-link">Timestamps
                                                     Engineer</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a href="{{ url('Report/KPI/data=L2-en') }}" class="nav-link">Timestamps
+                                                <a href="{{ url('Report/KPI/data=L2-en') }}"
+                                                    class="nav-link">Timestamps
                                                     L2</a>
                                             </li>
                                         @endif
                                         <li class="nav-item">
-                                            <a href="{{ url("Report/SP=Each-$timeFrameWeek") }}" class="nav-link">Weekly SP</a>
+                                            <a href="{{ url("Report/SP=Each-$timeFrameWeek") }}"
+                                                class="nav-link">Weekly SP</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="{{ url("Report/SP=Each-$timeFrameMonth") }}" class="nav-link">Monthly SP</a>
+                                            <a href="{{ url("Report/SP=Each-$timeFrameMonth") }}"
+                                                class="nav-link">Monthly SP</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="{{ url("Report/AE=Each-$timeFrameWeek") }}" class="nav-link">Act Weekly
+                                            <a href="{{ url("Report/AE=Each-$timeFrameWeek") }}" class="nav-link">Act
+                                                Weekly
                                                 En</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="{{ url("Report/AE=Each-$timeFrameMonth") }}" class="nav-link">Act Monthly
+                                            <a href="{{ url("Report/AE=Each-$timeFrameMonth") }}"
+                                                class="nav-link">Act Monthly
                                                 En</a>
                                         </li>
                                     @endif
@@ -305,8 +329,7 @@
                                     <a href="{{ url('Master/data=Type-Part') }}" class="nav-link">Part Type</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ url('Master/data=Category-Unit') }}"
-                                        class="nav-link">Category</a>
+                                    <a href="{{ url('Master/data=Category-Unit') }}" class="nav-link">Category</a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="{{ url('Master/data=Merk-Unit') }}" class="nav-link">Merk</a>
@@ -337,10 +360,12 @@
                                         Note</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ url('Master/data=Stats-Pending') }}" class="nav-link">Status Pending</a>
+                                    <a href="{{ url('Master/data=Stats-Pending') }}" class="nav-link">Status
+                                        Pending</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ url('Master/data=Type-Act/PIC') }}" class="nav-link">Type Activity</a>
+                                    <a href="{{ url('Master/data=Type-Act/PIC') }}" class="nav-link">Type
+                                        Activity</a>
                                 </li>
                             @endif
                             @if ($depart == 5)
@@ -353,13 +378,15 @@
                             @endif
                             @if ($depart == 15 || in_array($role, [20, 15]))
                                 <li class="nav-item">
-                                    <a href="{{ url('Master/data=Ctgr-Expenses') }}" class="nav-link">Category Expenses</a>
+                                    <a href="{{ url('Master/data=Ctgr-Expenses') }}" class="nav-link">Category
+                                        Expenses</a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="{{ url('Master/data=Ctgr-Reqs') }}" class="nav-link">Category Reqs</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ url('Master/Data=TypeOfTransportation') }}" class="nav-link">Type of Transportation</a>
+                                    <a href="{{ url('Master/Data=TypeOfTransportation') }}" class="nav-link">Type of
+                                        Transportation</a>
                                 </li>
                             @endif
                         </ul>
@@ -419,8 +446,8 @@
             @if (in_array($role, [20, 15]))
                 <li class="nav-item nav-category">Previous System</li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link" role="button"
-                        aria-expanded="false" aria-controls="general-pages">
+                    <a href="#" class="nav-link" role="button" aria-expanded="false"
+                        aria-controls="general-pages">
                         <i class="link-icon" data-feather="table"></i>
                         <span class="position-relative">
                             <span class="link-title">Ticket</span>
@@ -466,15 +493,12 @@
             @endif
             <li class="nav-item nav-category">Docs</li>
             <li class="nav-item">
-                <form method="POST"
-                    action="{{ url("/Docs-download") }}"
-                    style="display: none;"
-                    id="fdd-sistem">
+                <form method="POST" action="{{ url('/Docs-download') }}" style="display: none;" id="fdd-sistem">
                     @csrf
                 </form>
                 <a href="javascript:;" class="nav-link a-fdd-sistem">
-                <i class="link-icon" data-feather="hash"></i>
-                <span class="link-title">Documentation</span>
+                    <i class="link-icon" data-feather="hash"></i>
+                    <span class="link-title">Documentation</span>
                 </a>
             </li>
         </ul>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ReqsEn;
+use App\Models\ProjectInfo;
 
 class RefReqs extends Model
 {
@@ -18,7 +19,7 @@ class RefReqs extends Model
     
     public $incrementing = false;
 
-    public function get_reqs(){
-        return $this->belongsTo(ReqsEn::class, 'id_reqs', 'id');
+    public function gpi(){
+        return $this->belongsTo(ProjectInfo::class, 'notiket', 'notiket');
     }
 }

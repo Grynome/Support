@@ -129,17 +129,9 @@
                                     @endphp
                                     @if (!empty($validate_act_ticket_onsite))
                                         @php
-                                            $h5 = ($status_ticket->status == 2) ? 'Second' : (
-                                                    ($status_ticket->status == 3) ? 'Third' : (
-                                                        ($status_ticket->status == 4) ? 'Fourth' : 'Fifth'
-                                                    )
-                                                );
+                                            $h5 = $status_ticket->status == 2 ? 'Second' : ($status_ticket->status == 3 ? 'Third' : ($status_ticket->status == 4 ? 'Fourth' : 'Fifth'));
 
-                                            $p = ($status_ticket->status == 2) ? '2nd' : (
-                                                    ($status_ticket->status == 3) ? '3rd' : (
-                                                        ($status_ticket->status == 4) ? '4th' : '5th'
-                                                    )
-                                                );
+                                            $p = $status_ticket->status == 2 ? '2nd' : ($status_ticket->status == 3 ? '3rd' : ($status_ticket->status == 4 ? '4th' : '5th'));
                                         @endphp
                                         <h5 class="text-center"><span
                                                 class="badge border border-warning text-dark">{{ $h5 }}
@@ -168,19 +160,19 @@
                                         <input type="hidden" name="check_en_part" id="check-part-needornot">
                                         <input type="hidden" name="repair_way" id="repair_way">
                                         <input type="hidden" name="note_reqs_part" id="note-reqs-part">
-                                        <input type="hidden" id="latitude" name="latitude">
-                                        <input type="hidden" id="longitude" name="longitude">
+                                        {{-- <input type="hidden" id="latitude" name="latitude">
+                                        <input type="hidden" id="longitude" name="longitude"> --}}
                                     </form>
                                     <input type="hidden" id="status" data-status="{{ $status_ticket->status }}">
                                     @php
                                         if ($status_ticket->status == 1 || ($status_ticket->status == 2 && @$sts_timeline1st->status_activity == 1)) {
                                             $getacdsc = $sts_timeline1st->act_description;
-                                        }else {
+                                        } else {
                                             if (@$sts_timeline2nd->status_activity == 0 && ($status_ticket->status == 3 || ($status_ticket->status == 4 && @$sts_timeline3rd->status_activity == 1))) {
                                                 $getacdsc = @$sts_timeline3rd->act_description;
-                                            } else if (@$sts_timeline3rd->status_activity == 0  && ($status_ticket->status == 4 || ($status_ticket->status == 5 && @$sts_timeline4th->status_activity == 1))) {
+                                            } elseif (@$sts_timeline3rd->status_activity == 0 && ($status_ticket->status == 4 || ($status_ticket->status == 5 && @$sts_timeline4th->status_activity == 1))) {
                                                 $getacdsc = @$sts_timeline4th->act_description;
-                                            } else if (@$sts_timeline4th->status_activity == 0  && $status_ticket->status == 5) {
+                                            } elseif (@$sts_timeline4th->status_activity == 0 && $status_ticket->status == 5) {
                                                 $getacdsc = @$sts_timeline5th->act_description;
                                             } else {
                                                 $getacdsc = @$sts_timeline2nd->act_description;
@@ -230,7 +222,13 @@
                                                 @php
                                                     $noTabs++;
                                                 @endphp
-                                                @if ($status_ticket->status == $val || ($onsite->total_row != 1 && $onsite->total_row != 2 && $onsite->total_row != 3 && $onsite->total_row != 4 && $onsite->total_row != 5))
+                                                @if (
+                                                    $status_ticket->status == $val ||
+                                                        ($onsite->total_row != 1 &&
+                                                            $onsite->total_row != 2 &&
+                                                            $onsite->total_row != 3 &&
+                                                            $onsite->total_row != 4 &&
+                                                            $onsite->total_row != 5))
                                                     @php
                                                         break;
                                                     @endphp
@@ -239,7 +237,7 @@
                                         </ul>
                                         <div class="tab-content mt-3">
                                             @php
-                                                $val_btn = [1,2,3,4,5,6];
+                                                $val_btn = [1, 2, 3, 4, 5, 6];
                                             @endphp
                                             @foreach ($tabs as $val)
                                                 @php
@@ -270,8 +268,9 @@
                                                         $end_site = $end_site5th;
                                                     }
                                                 @endphp
-                                                <div class="tab-pane fade show {{ $cls }}" id="timeline-{{$noPane}}"
-                                                    role="tabpanel" aria-labelledby="chats-tab">
+                                                <div class="tab-pane fade show {{ $cls }}"
+                                                    id="timeline-{{ $noPane }}" role="tabpanel"
+                                                    aria-labelledby="chats-tab">
                                                     <div id="content">
                                                         <ul class="timeline">
                                                             @php
@@ -281,17 +280,17 @@
                                                                 <li class="event" data-date="{{ $item->act_time }}">
                                                                     <h3 class="title">{{ $item->sts_ticket }}
                                                                         @if ($depart == 4)
-                                                                            <button type="button"
-                                                                                class="btn btn-inverse-success btn-icon btn-xs get-loc-{{$noPane}}"
+                                                                            {{-- <button type="button"
+                                                                                class="btn btn-inverse-success btn-icon btn-xs get-loc-{{ $noPane }}"
                                                                                 data-latitudest="{{ $item->latitude }}"
                                                                                 data-longitudest="{{ $item->longitude }}"
                                                                                 data-bs-toggle="modal"
-                                                                                data-bs-target="#maps{{$noPane}}">
+                                                                                data-bs-target="#maps{{ $noPane }}">
                                                                                 <i class="btn-icon-append"
                                                                                     data-feather="map"></i>
                                                                             </button>
                                                                             <div class="modal fade modal-lg"
-                                                                                id="maps{{$noPane}}" tabindex="-1"
+                                                                                id="maps{{ $noPane }}" tabindex="-1"
                                                                                 aria-labelledby="sourceModalLabel"
                                                                                 aria-hidden="true">
                                                                                 <div class="modal-dialog">
@@ -307,7 +306,9 @@
                                                                                                 aria-label="btn-close"></button>
                                                                                         </div>
                                                                                         <div class="modal-body">
-                                                                                            <div id="map{{$noPane}}"></div>
+                                                                                            <div
+                                                                                                id="map{{ $noPane }}">
+                                                                                            </div>
                                                                                         </div>
                                                                                         <div class="modal-footer">
                                                                                             <button type="button"
@@ -316,23 +317,16 @@
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
-                                                                            </div>
+                                                                            </div> --}}
                                                                         @elseif ($depart == 6 || $role == 1)
                                                                             @foreach ($val_btn as $btn)
                                                                                 @php
-                                                                                    $txt_btn = ($item->act_description == 1) ? "Pergi" : 
-                                                                                                (($item->act_description == 2) ? "Arrive" : 
-                                                                                                    (($item->act_description == 3) ? "Work Start" : 
-                                                                                                        (($item->act_description == 4) ? "Work Stop" : 
-                                                                                                            (($item->act_description == 5) ? "Leave Site" : "Travel Stop")
-                                                                                                        )
-                                                                                                    )
-                                                                                                );
+                                                                                    $txt_btn = $item->act_description == 1 ? 'Pergi' : ($item->act_description == 2 ? 'Arrive' : ($item->act_description == 3 ? 'Work Start' : ($item->act_description == 4 ? 'Work Stop' : ($item->act_description == 5 ? 'Leave Site' : 'Travel Stop'))));
                                                                                 @endphp
                                                                                 @if (in_array($item->act_description, $val_btn) && $item->status_activity == 1)
                                                                                     <button type="button"
                                                                                         class="btn btn-inverse-primary btn-icon-text btn-xs activity-engineer">
-                                                                                        {{$txt_btn}}
+                                                                                        {{ $txt_btn }}
                                                                                         <i class="btn-icon-append"
                                                                                             data-feather="clock"></i>
                                                                                     </button>
@@ -344,17 +338,17 @@
                                                                         @endif
                                                                     </h3>
                                                                     <p class="mb-3">{{ $item->keterangan }}</p>
-                                                                    @if ($item->act_description != 1)
+                                                                    {{-- @if ($item->act_description != 1)
                                                                         @if (empty($item->en_attach_id))
                                                                             @if ($depart == 6 || $role == 1)
-                                                                                @if ((in_array($item->status, $tabs)) && !empty($end_site))
+                                                                                @if (in_array($item->status, $tabs) && !empty($end_site))
                                                                                     <form
                                                                                         action="{{ url('Add-Attachment/Engineer') }}"
                                                                                         method="post"
                                                                                         enctype="multipart/form-data">
                                                                                         @csrf
                                                                                         <div
-                                                                                            id="file-inputs-{{$val}}{{ $no }}">
+                                                                                            id="file-inputs-{{ $val }}{{ $no }}">
                                                                                             @if ($item->act_description == 5)
                                                                                                 <input type="file"
                                                                                                     class="file"
@@ -425,7 +419,7 @@
                                                                                 </button>
                                                                             </a>
                                                                         @endif
-                                                                    @endif
+                                                                    @endif --}}
                                                                 </li>
                                                                 @php
                                                                     $no++;
@@ -437,7 +431,13 @@
                                                 @php
                                                     $noPane++;
                                                 @endphp
-                                                @if ($status_ticket->status == $val || ($onsite->total_row != 1 && $onsite->total_row != 2  && $onsite->total_row != 3 && $onsite->total_row != 4 && $onsite->total_row != 5))
+                                                @if (
+                                                    $status_ticket->status == $val ||
+                                                        ($onsite->total_row != 1 &&
+                                                            $onsite->total_row != 2 &&
+                                                            $onsite->total_row != 3 &&
+                                                            $onsite->total_row != 4 &&
+                                                            $onsite->total_row != 5))
                                                     @php
                                                         break;
                                                     @endphp
@@ -461,27 +461,32 @@
                 let status = document.getElementById('status').dataset.status;
                 let act_desc = document.getElementById('acdsc').dataset.acdsc;
 
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    var lat = position.coords.latitude;
-                    var lng = position.coords.longitude;
-                    document.getElementById('latitude').value = lat;
-                    document.getElementById('longitude').value = lng;
-                }, function(error) {
-                    console.log("Error occurred. Error code: " + error.code);
-                });
-                if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && (act_desc == 1 || act_desc.trim().length == 0))) {
+                // navigator.geolocation.getCurrentPosition(function(position) {
+                //     var lat = position.coords.latitude;
+                //     var lng = position.coords.longitude;
+                //     document.getElementById('latitude').value = lat;
+                //     document.getElementById('longitude').value = lng;
+                // }, function(error) {
+                //     console.log("Error occurred. Error code: " + error.code);
+                // });
+
+                if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && (act_desc == 1 ||
+                        act_desc.trim().length == 0))) {
                     var title = "Pergi Sekarang?";
                     var confirmbtn = "Gas";
-                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc == 2)) {
+                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc ==
+                    2)) {
                     var title = "Arrived?";
                     var confirmbtn = "Yes";
-                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc == 3)) {
+                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc ==
+                    3)) {
                     var title = "Start to Work?";
                     var confirmbtn = "Yes";
-                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc == 4)) {
+                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc ==
+                    4)) {
                     if (status == 5) {
                         Swal.fire({
-                            title: 'Submit your Repair Way!',   
+                            title: 'Submit your Repair Way!',
                             text: 'this ticket will be Solve after submit repair way',
                             icon: 'info',
                             input: 'text',
@@ -508,12 +513,12 @@
                     } else {
                         Swal.fire({
                             title: 'Stop to work?',
-                            text: 'if will compliting this ticket choose done, or u need a part and on site again choose Need Part',
+                            text: 'if will compliting this ticket choose End Case, or u need a part and on site again choose Re-Visit',
                             icon: 'warning',
                             showDenyButton: true,
                             showCancelButton: true,
-                            confirmButtonText: 'Done',
-                            denyButtonText: `Need Part`,
+                            confirmButtonText: 'End Case',
+                            denyButtonText: `Re-Visit`,
                             denyButtonColor: '#fbbc06',
                             cancelButtonColor: '#d33',
                         }).then((result) => {
@@ -565,10 +570,12 @@
                             }
                         })
                     }
-                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc == 5)) {
+                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc ==
+                    5)) {
                     var title = "Leave Site?";
                     var confirmbtn = "Yes";
-                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc == 6)) {
+                } else if (((status == 1 || status == 2 || status == 3 || status == 4 || status == 5) && act_desc ==
+                    6)) {
                     var title = "Travel Stop?";
                     var confirmbtn = "Yes";
                 }
@@ -590,11 +597,11 @@
                 }
             });
         </script>
-        <script>
+        {{-- <script>
             for (let i = 0; i < 6; i++) {
                 for (let j = 0; j < 7; j++) {
-                    $('#add-file-button-' + i + j +'').on('click', function() {
-                        const fileInputs = document.getElementById('file-inputs-' + i + j +'');
+                    $('#add-file-button-' + i + j + '').on('click', function() {
+                        const fileInputs = document.getElementById('file-inputs-' + i + j + '');
                         const fileInput = document.createElement('input');
                         fileInput.type = 'file';
                         fileInput.name = 'files[]';
@@ -604,49 +611,49 @@
                     });
                 }
             }
-        </script>
+        </script> --}}
     @else
         <script>
-            for (let i = 0; i < 50; i++) {
-                $(document).ready(function() {
-                    $('.get-loc-'+ i'').on('click', function() {
-                        var latitudest = $(this).data('latitudest');
-                        var longitudest = $(this).data('longitudest');
-                        if (!isNaN(latitudest) && !isNaN(longitudest)) {
-                            console.log(latitudest, longitudest);
-                            initMap(latitudest, longitudest, "map"+ i"");
-                        }
-                    });
-                });
-            }
+            // for (let i = 0; i < 50; i++) {
+            //     $(document).ready(function() {
+            //         $('.get-loc-' + i '').on('click', function() {
+            //             var latitudest = $(this).data('latitudest');
+            //             var longitudest = $(this).data('longitudest');
+            //             if (!isNaN(latitudest) && !isNaN(longitudest)) {
+            //                 console.log(latitudest, longitudest);
+            //                 initMap(latitudest, longitudest, "map" + i "");
+            //             }
+            //         });
+            //     });
+            // }
 
-            function initMap(latitude, longitude, elementId) {
-                let myLatLng = {
-                    lat: parseFloat(latitude),
-                    lng: parseFloat(longitude)
-                };
-                const map = new google.maps.Map(document.getElementById(elementId), {
-                    zoom: 18,
-                    center: myLatLng,
-                });
+            // function initMap(latitude, longitude, elementId) {
+            //     let myLatLng = {
+            //         lat: parseFloat(latitude),
+            //         lng: parseFloat(longitude)
+            //     };
+            //     const map = new google.maps.Map(document.getElementById(elementId), {
+            //         zoom: 18,
+            //         center: myLatLng,
+            //     });
 
-                marker = new google.maps.Marker({
-                    map,
-                    animation: google.maps.Animation.DROP,
-                    position: myLatLng,
-                });
-                marker.addListener("click", toggleBounce);
-            }
+            //     marker = new google.maps.Marker({
+            //         map,
+            //         animation: google.maps.Animation.DROP,
+            //         position: myLatLng,
+            //     });
+            //     marker.addListener("click", toggleBounce);
+            // }
 
-            function toggleBounce() {
-                if (marker.getAnimation() !== null) {
-                    marker.setAnimation(null);
-                } else {
-                    marker.setAnimation(google.maps.Animation.BOUNCE);
-                }
-            }
+            // function toggleBounce() {
+            //     if (marker.getAnimation() !== null) {
+            //         marker.setAnimation(null);
+            //     } else {
+            //         marker.setAnimation(google.maps.Animation.BOUNCE);
+            //     }
+            // }
 
-            window.initMap = initMap;
+            // window.initMap = initMap;
         </script>
 
         <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAP_KEY') }}&callback=initMap">

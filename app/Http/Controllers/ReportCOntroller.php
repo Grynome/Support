@@ -36,6 +36,9 @@ use App\Models\VW_Ticket_Split;
 use App\Models\TCCompare;
 use App\Models\VW_Act_Report_L2;
 use App\Models\VW_Activity_L2Engineer;
+use App\Models\RefReqs;
+use App\Models\ReqsEn;
+use App\Models\VW_Expenses;
 
 class ReportCOntroller extends Controller
 {
@@ -64,8 +67,11 @@ class ReportCOntroller extends Controller
                 if ($request->stats_report == 1) {
                     $data['report'] = VW_FinalReport::where('status', '!=', 10)
                                         ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
-                } else {
+                } else if ($request->stats_report == 2) {
                     $data['report'] = VW_FinalReport::where('status', 10)
+                    ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                } else{
+                    $data['report'] = VW_FinalReport::where('status', 11)
                     ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
                 }
             } elseif ((!empty($request->prt_id) || !empty($request->sort_prj_report)) && empty($request->stats_report) && empty($request->sort_sp_report)) {
@@ -92,7 +98,7 @@ class ReportCOntroller extends Controller
                                             ->where('project_id', $request->sort_prj_report)
                                             ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
                     }
-                } else {
+                } else if ($request->stats_report == 2) {
                     if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
                         $data['report'] = VW_FinalReport::where('status', 10)
                                             ->where('partner_id', $request->prt_id)
@@ -103,14 +109,29 @@ class ReportCOntroller extends Controller
                                             ->where('project_id', $request->sort_prj_report)
                                             ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
                     }
+                } else {
+                    if (!empty($request->prt_id) && empty($request->sort_prj_report)) {
+                        $data['report'] = VW_FinalReport::where('status', 11)
+                                            ->where('partner_id', $request->prt_id)
+                                            ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                    } else {
+                        $data['report'] = VW_FinalReport::where('status', 11)
+                                            ->where('partner_id', $request->prt_id)
+                                            ->where('project_id', $request->sort_prj_report)
+                                            ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                    }
                 }
             } elseif (!empty($request->stats_report) && (empty($request->prt_id) && empty($request->sort_prj_report)) && !empty($request->sort_sp_report)) {
                 if ($request->stats_report == 1) {
                     $data['report'] = VW_FinalReport::where('status', '!=', 10)
                                         ->where('service_id', $request->sort_sp_report)
                                         ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
-                } else {
+                } else if ($request->stats_report == 2) {
                     $data['report'] = VW_FinalReport::where('status', 10)
+                                        ->where('service_id', $request->sort_sp_report)
+                                        ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                } else {
+                    $data['report'] = VW_FinalReport::where('status', 11)
                                         ->where('service_id', $request->sort_sp_report)
                                         ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
                 }
@@ -132,8 +153,14 @@ class ReportCOntroller extends Controller
                                         ->where('project_id', $request->sort_prj_report)
                                         ->where('service_id', $request->sort_sp_report)
                                         ->whereBetween('ticketcoming', [$eventTgl1, $eventTgl2])->get();
-                } else {
+                } else if ($request->stats_report == 2) {
                     $data['report'] = VW_FinalReport::where('status', 10)
+                                        ->where('partner_id', $request->prt_id)
+                                        ->where('project_id', $request->sort_prj_report)
+                                        ->where('service_id', $request->sort_sp_report)
+                                        ->whereBetween('closedate', [$eventTgl1, $eventTgl2])->get();
+                } else {
+                    $data['report'] = VW_FinalReport::where('status', 11)
                                         ->where('partner_id', $request->prt_id)
                                         ->where('project_id', $request->sort_prj_report)
                                         ->where('service_id', $request->sort_sp_report)
@@ -318,6 +345,9 @@ class ReportCOntroller extends Controller
                 } else if ($ex_sts == 2) {
                     $data_ticket = VW_FinalReport::whereRaw('status = 10')
                     ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
+                } else if ($ex_sts == 3) {
+                    $data_ticket = VW_FinalReport::whereRaw('status = 11')
+                    ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 } else {
                     $data_ticket = VW_FinalReport::whereRaw("schedule BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 }
@@ -356,6 +386,17 @@ class ReportCOntroller extends Controller
                                             ->whereRaw("project_id = '$ex_prj'")
                                             ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                     }
+                } else if ($ex_sts == 3) {
+                    if (!empty($ex_prt) && empty($ex_prj)) {
+                        $data_ticket = VW_FinalReport::whereRaw('status = 11')
+                                            ->whereRaw("partner_id = '$ex_prt'")
+                                            ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
+                    } else {
+                        $data_ticket = VW_FinalReport::whereRaw('status = 11')
+                                            ->whereRaw("partner_id = '$ex_prt'")
+                                            ->whereRaw("project_id = '$ex_prj'")
+                                            ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
+                    }
                 } else {
                     if (!empty($ex_prt) && empty($ex_prj)) {
                         $data_ticket = VW_FinalReport::whereRaw("partner_id = '$ex_prt'")
@@ -373,6 +414,10 @@ class ReportCOntroller extends Controller
                                         ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 } else if ($ex_sts == 2) {
                     $data_ticket = VW_FinalReport::whereRaw('status = 10')
+                                        ->whereRaw("service_id = '$ex_sp'")
+                                        ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
+                } else if ($ex_sts == 2) {
+                    $data_ticket = VW_FinalReport::whereRaw('status = 11')
                                         ->whereRaw("service_id = '$ex_sp'")
                                         ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 } else {
@@ -399,6 +444,12 @@ class ReportCOntroller extends Controller
                                         ->whereRaw("ticketcoming BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
                 } else if ($ex_sts == 2) {
                     $data_ticket = VW_FinalReport::whereRaw('status = 10')
+                                        ->whereRaw("partner_id = '$ex_prt'")
+                                        ->whereRaw("project_id = '$ex_prj'")
+                                        ->whereRaw("service_id = '$ex_sp'")
+                                        ->whereRaw("closedate BETWEEN '$extanggal1' AND '$extanggal2'")->toSql();
+                } else if ($ex_sts == 3) {
+                    $data_ticket = VW_FinalReport::whereRaw('status = 11')
                                         ->whereRaw("partner_id = '$ex_prt'")
                                         ->whereRaw("project_id = '$ex_prj'")
                                         ->whereRaw("service_id = '$ex_sp'")
@@ -503,6 +554,7 @@ class ReportCOntroller extends Controller
             'Send',
             'Arrive',
             'Go',
+            'On Location',
             'Work Start',
             'Work Stop',
             'Leave Site',
@@ -571,6 +623,7 @@ class ReportCOntroller extends Controller
                     $item->send,
                     $item->arrive,
                     $item->gow,
+                    $item->on_location,
                     $item->work_start,
                     $item->work_stop,
                     $item->leave_site,
@@ -738,6 +791,7 @@ class ReportCOntroller extends Controller
             'Solution',
             'SP',
             'User City',
+            'Province',
             'Company',
             'Location',
             'Status',
@@ -747,17 +801,14 @@ class ReportCOntroller extends Controller
             'Send',
             'Arrive',
             'Go',
+            'On Location',
             'Work Start',
             'Work Stop',
             'Close Date',
             'Year Close',
             'Month Close',
             'Week Close',
-            'Day Close',
-            'Issue Partner',
-            'Issue Deliv',
-            'Issue User',
-            'Issue En'
+            'Day Close'
         ];
         $sheet->fromArray([$headers], NULL, 'A1');
 
@@ -856,6 +907,7 @@ class ReportCOntroller extends Controller
                     $item->solution,
                     $item->service_name,
                     $item->lok_kab,
+                    $item->lok_provinces,
                     $item->company,
                     $item->severity_name,
                     $sts,
@@ -865,17 +917,14 @@ class ReportCOntroller extends Controller
                     $item->send,
                     $item->arrive,
                     $item->gow,
+                    $item->on_location,
                     $item->work_start,
                     $item->work_stop,
                     $cbCloseDate,
                     $cbCloseDate->format('Y'),
                     $cbCloseDate->format('F'),
                     $wCloseDate,
-                    $cbCloseDate->format('d'),
-                    $item->issue_partner,
-                    $item->issue_deliv,
-                    $item->issue_user,
-                    $item->issue_en
+                    $cbCloseDate->format('d')
                 ];
                 $sheet->fromArray([$data], NULL, "A$row");
             $row++;
@@ -2397,6 +2446,29 @@ class ReportCOntroller extends Controller
                                         ->whereRaw("YEAR(ticketcoming) = $sort_year")
                                         ->groupBy("hpi.project_id");
                                 })->toSql();
+
+            $compare_ccl = DB::table(function ($query) use($sort_year) {
+                                    $query->selectRaw("hpi.project_id AS ct_prj,
+                                            SUM(CASE WHEN MONTH(ticketcoming) = 1 then 1 ELSE 0 END) AS ccl_jan,
+                                            SUM(CASE WHEN MONTH(ticketcoming) = 2 then 1 ELSE 0 END) AS ccl_feb,
+                                            SUM(CASE WHEN MONTH(ticketcoming) = 3 then 1 ELSE 0 END) AS ccl_march,
+                                            SUM(CASE WHEN MONTH(ticketcoming) = 4 then 1 ELSE 0 END) AS ccl_april,
+                                            SUM(CASE WHEN MONTH(ticketcoming) = 5 then 1 ELSE 0 END) AS ccl_may,
+                                            SUM(CASE WHEN MONTH(ticketcoming) = 6 then 1 ELSE 0 END) AS ccl_june,
+                                            SUM(CASE WHEN MONTH(ticketcoming) = 7 then 1 ELSE 0 END) AS ccl_july,
+                                            SUM(CASE WHEN MONTH(ticketcoming) = 8 then 1 ELSE 0 END) AS ccl_aug,
+                                            SUM(CASE WHEN MONTH(ticketcoming) = 9 then 1 ELSE 0 END) AS ccl_sept,
+                                            SUM(CASE WHEN MONTH(ticketcoming) = 10 then 1 ELSE 0 END) AS ccl_october,
+                                            SUM(CASE WHEN MONTH(ticketcoming) = 11 then 1 ELSE 0 END) AS ccl_nov,
+                                            SUM(CASE WHEN MONTH(ticketcoming) = 12 then 1 ELSE 0 END) AS ccl_december")
+                                        ->from('hgt_ticket as ht')
+                                        ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
+                                        ->leftJoin('hgt_project as hp', 'hpi.project_id', '=', 'hp.project_id')
+                                        ->leftJoin('hgt_partner as prt', 'hp.partner_id', '=', 'prt.partner_id')
+                                        ->whereRaw("ht.status = 11")
+                                        ->whereRaw("YEAR(ticketcoming) = $sort_year")
+                                        ->groupBy("hpi.project_id");
+                                })->toSql();
                                 
             $coalesceColumns = [];
 
@@ -2404,12 +2476,14 @@ class ReportCOntroller extends Controller
                 $coalesceColumns[] = "COALESCE(cr_$month, 0) as total$monthNumber";
                 $coalesceColumns[] = "COALESCE(pn_$month, 0) as pending$monthNumber";
                 $coalesceColumns[] = "COALESCE(cl_$month, 0) as close$monthNumber";
+                $coalesceColumns[] = "COALESCE(ccl_$month, 0) as cancel$monthNumber";
             }
             $coalesceExpression = implode(', ', $coalesceColumns);
 
             $data['compare'] = DB::table(DB::raw("({$compare_tt}) AS ctt"))
                 ->leftJoin(DB::raw("({$compare_pt}) AS cpt"), 'ctt.project_id', '=', 'cpt.pt_prj')
                 ->leftJoin(DB::raw("({$compare_ct}) AS cct"), 'ctt.project_id', '=', 'cct.ct_prj')
+                ->leftJoin(DB::raw("({$compare_ccl}) AS ccl"), 'ctt.project_id', '=', 'ccl.ct_prj')
                 ->select(
                     'ctt.partner',
                     'ctt.project_name',
@@ -2456,6 +2530,16 @@ class ReportCOntroller extends Controller
 
                 $data['total_close'] = Ticket::whereRaw("YEAR(ticketcoming) = $sort_year")
                                         ->where("status", 10)
+                                        ->count();
+                $htclSubquery = DB::table('hgt_ticket')
+                            ->selectRaw("DATE_FORMAT(ticketcoming, '%M') AS mn_cancel, COUNT(tiket_id) AS mn_cancelcount")
+                            ->whereRaw("YEAR(ticketcoming) = $sort_year")
+                            ->whereRaw("status = 11")
+                            ->groupBy("mn_cancel")
+                            ->toSql();
+
+                $data['total_cancel'] = Ticket::whereRaw("YEAR(ticketcoming) = $sort_year")
+                                        ->where("status", 11)
                                         ->count();
             } else {
                 $htSubquery = DB::table(function ($query) use($sort_year, $request) {
@@ -2512,12 +2596,32 @@ class ReportCOntroller extends Controller
                                             ->whereRaw("YEAR(ticketcoming) = $sort_year")
                                             ->where("status", 10);
                                         })->count();
+                                        
+                $htclSubquery = DB::table(function ($query) use($sort_year, $request) {
+                                    $query->selectRaw("DATE_FORMAT(ticketcoming, '%M') AS mn_cancel, COUNT(tiket_id) AS mn_cancelcount")
+                                        ->from('hgt_ticket as ht')
+                                        ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
+                                        ->whereRaw("project_id = '$request->chosen_prj_em'")
+                                        ->whereRaw("YEAR(ticketcoming) = $sort_year")
+                                        ->whereRaw("status = 11")
+                                        ->groupBy("mn_cancel");
+                                })->toSql();
+
+                $data['total_cancel'] = DB::table(function ($query) use($sort_year, $request) {
+                                            $query->select('tiket_id')
+                                            ->from('hgt_ticket as ht')
+                                            ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
+                                            ->whereRaw("project_id = '$request->chosen_prj_em'")
+                                            ->whereRaw("YEAR(ticketcoming) = $sort_year")
+                                            ->where("status", 11);
+                                        })->count();
             }
 
             $data['eachMonth'] = DB::table(DB::raw("({$htSubquery}) AS ht"))
                                 ->leftJoin(DB::raw("({$tpdSubquery}) AS tpd"), 'ht.month_name', '=', 'tpd.mn_pending')
                                 ->leftJoin(DB::raw("({$htcSubquery}) AS htc"), 'ht.month_name', '=', 'htc.mn_close')
-                                ->select('ht.*', 'tpd.mb_pending_count AS pending', 'htc.mn_closecount AS close_sum')
+                                ->leftJoin(DB::raw("({$htclSubquery}) AS htcl"), 'ht.month_name', '=', 'htcl.mn_cancel')
+                                ->select('ht.*', 'tpd.mb_pending_count AS pending', 'htc.mn_closecount AS close_sum', 'htcl.mn_cancelcount AS cancel_sum')
                                 ->get();
         }
         $years = [];
@@ -5464,28 +5568,28 @@ class ReportCOntroller extends Controller
                 if ($timeframe != 'Week 5') {
                     $data['each_created'] = DB::table(function ($query) use($year, $month, $num1, $num2) {
                                                 $query->selectRaw('nik, full_name,
-                                                        COUNT(notiket) AS total_tiket')
-                                                    ->from(function ($subquery) use ($year, $month, $num1, $num2) {
-                                                        $subquery->select('vch.notiket', 'nik', 'full_name', 'ht.created_at')
-                                                            ->from(function ($innerSubquery) {
-                                                                $innerSubquery->select('t1.notiket', 't1.nik', 't1.full_name', 't1.note')
-                                                                    ->from('vw_hgt_act_helpdesk as t1')
-                                                                    ->join(DB::raw('(
-                                                                        SELECT notiket, MIN(created_at) AS note_terlama
-                                                                        FROM vw_hgt_act_helpdesk
-                                                                        GROUP BY notiket
-                                                                    ) t2'), function ($join) {
-                                                                        $join->on('t1.notiket', '=', 't2.notiket')
-                                                                            ->on('t1.created_at', '=', 't2.note_terlama');
-                                                                    });
-                                                            }, 'vch')
-                                                        ->leftJoin('hgt_ticket as ht', 'vch.notiket', '=', 'ht.notiket')
-                                                        ->whereRaw("YEAR(created_at) = $year")
-                                                        ->whereRaw("MONTH(created_at) = $month")
-                                                        ->whereRaw("DAY(created_at) BETWEEN $num1 AND $num2")
-                                                        ->groupBy('notiket');
-                                                    })
-                                                    ->groupBy('nik');
+                                                    COUNT(notiket) AS total_tiket')
+                                                ->from(function ($subquery) use ($year, $month, $num1, $num2) {
+                                                    $subquery->select('vch.notiket', 'nik', 'full_name', 'ht.created_at')
+                                                        ->from(function ($innerSubquery) {
+                                                            $innerSubquery->select('t1.notiket', 't1.nik', 't1.full_name', 't1.note')
+                                                                ->from('vw_hgt_act_helpdesk as t1')
+                                                                ->join(DB::raw('(
+                                                                    SELECT notiket, MIN(created_at) AS note_terlama
+                                                                    FROM vw_hgt_act_helpdesk
+                                                                    GROUP BY notiket
+                                                                ) t2'), function ($join) {
+                                                                    $join->on('t1.notiket', '=', 't2.notiket')
+                                                                        ->on('t1.created_at', '=', 't2.note_terlama');
+                                                                });
+                                                        }, 'vch')
+                                                    ->leftJoin('hgt_ticket as ht', 'vch.notiket', '=', 'ht.notiket')
+                                                    ->whereRaw("YEAR(created_at) = $year")
+                                                    ->whereRaw("MONTH(created_at) = $month")
+                                                    ->whereRaw("DAY(created_at) BETWEEN $num1 AND $num2")
+                                                    ->groupBy('notiket');
+                                                })
+                                                ->groupBy('nik');
                                             })->get();
                     $data['each_handled'] = DB::table(function ($query) use ($year, $month, $num1, $num2) {
                                                 $query->select('*')
@@ -5971,25 +6075,25 @@ class ReportCOntroller extends Controller
     }
         // export excel pending ticket
         public function export_pdTC(Request $request)
-        {       
+        {
             if (empty($request->pdtcFlter)) {
                 $data_pending = VRTP::all();
             } else {
                 $data_pending = VRTP::where('project_id', $request->pdtcFlter)->get();
             }
-            $notikets = $data_pending->pluck('notiket')->unique()->toArray();
-            $query_parts = VW_Tiket_Part::whereIn('notiket', $notikets)
-                ->where('sts_type', 0)
-                ->orderBy('send', 'DESC')
-                ->orderBy('arrive', 'DESC')
-                ->get()
-                ->keyBy('notiket');
+            // $notikets = $data_pending->pluck('notiket')->unique()->toArray();
+            // $query_parts = VW_Tiket_Part::whereIn('notiket', $notikets)
+            //     ->where('sts_type', 0)
+            //     ->orderBy('send', 'DESC')
+            //     ->orderBy('arrive', 'DESC')
+            //     ->get()
+            //     ->keyBy('notiket');
 
-            $query_areas = VW_Act_Report_EN::whereIn('notiket', $notikets)
-                ->where('status', '<', 10)
-                ->orderBy('visitting', 'DESC')
-                ->get()
-                ->keyBy('notiket');
+            // $query_areas = VW_Act_Report_EN::whereIn('notiket', $notikets)
+            //     ->where('status', '<', 10)
+            //     ->orderBy('visitting', 'DESC')
+            //     ->get()
+            //     ->keyBy('notiket');
                 
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
@@ -6023,9 +6127,8 @@ class ReportCOntroller extends Controller
             $no = 1;
             $row = 2;
             foreach ($data_pending as $item) {
-                $query_part = $query_parts->get($item->notiket);
-                $query_are = $query_areas->get($item->notiket);
-
+                // $query_part = $query_parts->get($item->notiket);
+                // $query_are = $query_areas->get($item->notiket);
                     $data = [
                         $no,
                         $item->notiket,
@@ -6038,14 +6141,14 @@ class ReportCOntroller extends Controller
                         $item->entrydate,
                         $item->root_cause,
                         $item->note,
-                        @$query_part->so_num,
-                        @$query_part->send,
-                        @$query_part->eta,
-                        @$query_part->arrive,
-                        @$query_are->OnSite,
-                        @$query_are->gow,
-                        @$query_are->work_start,
-                        @$query_are->work_stop,
+                        $item->so_num,
+                        $item->send,
+                        $item->eta,
+                        $item->arrive,
+                        $item->total_onsite,
+                        $item->gow,
+                        $item->work_start,
+                        $item->work_stop,
                         $item->last_update
                     ];
 
@@ -6674,6 +6777,202 @@ class ReportCOntroller extends Controller
             $no++;
         }
         $filename = "Report Detail Ticket.xlsx";
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'. $filename .'"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit();
+    }
+
+    public function getViewReportExpenses(Request $request,)
+    {
+        $now = Carbon::now()->endOfDay();
+        $oneMonthAgo = $now->copy()->startOfDay()->subMonth(1);
+
+        $dxtanggal1 = Carbon::parse($request->dx_st)->startOfDay()->format('Y-m-d H:i:s');
+        $dxtanggal2 = Carbon::parse($request->dx_nd)->endOfDay()->format('Y-m-d H:i:s');
+        
+        if (!empty($request->st_dx) && !empty($request->nd_dx)) {
+            $data['sortDX1'] = $dxtanggal1;
+            $data['sortDX2'] = $dxtanggal2;
+        } else {
+            $data['sortDX1'] = $oneMonthAgo;
+            $data['sortDX2'] = $now;
+        }
+
+        $data['categories'] = DB::table('hgt_reqs_en_dt as hred')
+                            ->leftJoin('hgt_category_reqs as hcr', 'hred.ctgr_reqs', '=', 'hcr.id')
+                            ->groupBy('ctgr_reqs')
+                            ->pluck('hcr.description', 'hred.ctgr_reqs');
+        $query = ReqsEn::leftJoin('hgt_reqs_en_dt as hred', 'hgt_reqs_en.id_dt_reqs', '=', 'hred.id_dt_reqs')
+                ->leftJoin('hgt_type_of_transport as htot', 'hgt_reqs_en.id_type_trans', '=', 'htot.id')
+                ->leftJoin('hgt_expenses as he', 'hgt_reqs_en.id_expenses', '=', 'he.id_expenses')
+                ->leftJoin('hgt_category_expenses as hce', 'he.category', '=', 'hce.id')
+                ->leftJoin('hgt_users as hu', 'hgt_reqs_en.en_id', '=', 'hu.nik')
+                ->leftJoin('hgt_service_point as hp', 'hu.service_point', '=', 'hp.service_id')
+                ->leftJoin('indonesia_cities as ic', 'hp.kota_id', '=', 'ic.id')
+                ->groupBy('hgt_reqs_en.id_dt_reqs')
+                ->selectRaw('
+                    hgt_reqs_en.id,
+                    he.expenses_date as reqs_date,
+                    he.description as desc_exp,
+                    hce.description as ctgr_exp,
+                    hu.full_name as engineer,
+                    ic.name as Kota,
+                    type_reqs,
+                    case
+                        when type_reqs = 1 then "Reimburse"
+                        ELSE "Estimation"
+                    END AS desc_reqs,
+                    htot.description as type_trans,
+                    hgt_reqs_en.id_dt_reqs, 
+                    SUM(nominal) AS tln, 
+                    SUM(actual) AS tla,
+                    he.paid_by,
+                    he.note'
+                )->where('hgt_reqs_en.status', 3);
+
+        foreach ($data['categories'] as $id => $description) {
+            $escapedDescription = str_replace(' ', '_', $description);
+            $query->selectRaw("max(CASE WHEN ctgr_reqs = $id THEN nominal ELSE 0 END) AS `$escapedDescription`");
+        }
+        $rawQuery = $query->get();
+        $idsRN = $rawQuery->pluck('id')->toArray();
+
+        $data['refTC'] = RefReqs::whereIn('id_reqs', $idsRN)->get()
+        ->groupBy('id_reqs');
+        
+        $data['dt_reqs'] = $rawQuery;
+
+        return view('Pages.Report.report-expenses')->with($data);
+    }
+
+    public function export_expenses(Request $request)
+    {
+        $getReqs = DB::table('hgt_reqs_en_dt as hred')
+                            ->leftJoin('hgt_category_reqs as hcr', 'hred.ctgr_reqs', '=', 'hcr.id')
+                            ->groupBy('ctgr_reqs')
+                            ->pluck('hcr.description', 'hred.ctgr_reqs');
+
+        $rawQ = ReqsEn::leftJoin('hgt_reqs_en_dt as hred', 'hgt_reqs_en.id_dt_reqs', '=', 'hred.id_dt_reqs')
+                ->leftJoin('hgt_type_of_transport as htot', 'hgt_reqs_en.id_type_trans', '=', 'htot.id')
+                ->leftJoin('hgt_expenses as he', 'hgt_reqs_en.id_expenses', '=', 'he.id_expenses')
+                ->leftJoin('hgt_category_expenses as hce', 'he.category', '=', 'hce.id')
+                ->leftJoin('hgt_users as hu', 'hgt_reqs_en.en_id', '=', 'hu.nik')
+                ->leftJoin('hgt_service_point as hp', 'hu.service_point', '=', 'hp.service_id')
+                ->leftJoin('indonesia_cities as ic', 'hp.kota_id', '=', 'ic.id')
+                ->groupBy('hgt_reqs_en.id_dt_reqs')
+                ->selectRaw('
+                    hgt_reqs_en.id,
+                    he.expenses_date as reqs_date,
+                    he.description as desc_exp,
+                    hce.description as ctgr_exp,
+                    hu.full_name as engineer,
+                    ic.name as kota,
+                    type_reqs,
+                    case
+                        when type_reqs = 1 then "Reimburse"
+                        ELSE "Estimation"
+                    END AS desc_reqs,
+                    htot.description as type_trans,
+                    hgt_reqs_en.id_dt_reqs, 
+                    SUM(nominal) AS tln, 
+                    SUM(actual) AS tla,
+                    he.paid_by,
+                    he.note'
+                )->where('hgt_reqs_en.status', 3);
+
+        foreach ($getReqs as $id => $description) {
+            $escapedDescription = str_replace(' ', '_', $description);
+            $rawQ->selectRaw("max(CASE WHEN ctgr_reqs = $id THEN nominal ELSE 0 END) AS `$escapedDescription`");
+        }
+
+        $resultQ = $rawQ->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Sheet 1');
+        $hr1 = [
+            'No',
+            'Ref Notiket',
+            'Reqs At',
+            'Expenses',
+            'Request Date',
+            'Description',
+            'Engineer',
+            'Type Request',
+            'Type Transport',
+            'Kota',
+            'Requested'
+        ];
+        $hr2 = [
+            'Actually',
+            'Rq<>Act',
+            'Paid By',
+            'Status',
+            'Note'
+        ];
+
+        $hrReqs = [];
+        foreach ($getReqs as $id => $description) {
+            $hrReqs[] = $description;
+        }
+
+        $headers = array_merge($hr1, $hrReqs, $hr2);
+
+        $sheet->fromArray([$headers], NULL, 'A1');
+
+        $no = 1;
+        $row = 2;
+        foreach ($resultQ as $item) {
+            $rowspan_refs = $item->refsTicket->count();
+            $rowspan = max($rowspan_refs, 1);
+            
+            $tln = $item->tln;
+            $tla = $item->tla;
+            $kembali = $tln - $tla;
+            $refsQ = $item->refsTicket;
+            
+            $reqs_date = Carbon::parse($item->reqs_date)->format('Y-m-d');
+
+            for ($i = 0; $i < $rowspan; $i++) {
+                for ($a = 3; $a < 22; $a++) {
+                    $col = $a < 22 ? chr(65 + $a) : chr(65 + floor($a / 22) - 1) . chr(65 + ($a % 22));
+                    $sheet->mergeCells("$col$row:$col" . ($row + $rowspan - 1));
+                }
+                $sheet->mergeCells("A$row:A" . ($row + $rowspan - 1));
+                $data = [
+                    $no,
+                    $refsQ->isEmpty() ? '' : ($refsQ->has($i) ? $refsQ[$i]->notiket : ''),
+                    $refsQ->isEmpty() ? '' : ($refsQ->has($i) ? $refsQ[$i]->reqs_at : ''),
+                    $item->ctgr_exp,
+                    $reqs_date,
+                    $item->desc_exp,
+                    $item->engineer,
+                    $item->desc_reqs,
+                    $item->type_trans,
+                    $item->kota,
+                    'Rp ' . number_format($tln, 0, ',', '.'),
+                ];
+
+                foreach ($getReqs as $id => $description) {
+                    $escapedDescription = str_replace(' ', '_', $description);
+                    $data[] = 'Rp ' . number_format($item->$escapedDescription, 0, ',', '.');
+                }
+
+                $data[] = 'Rp ' . number_format($tla, 0, ',', '.');
+                $data[] = 'Rp ' . number_format($kembali, 0, ',', '.');
+                $data[] = $item->paid_by == 1 ? 'Employee (to reimburse)' : 'Company';
+                $data[] = "Confirmed" . ' ' . $tln == $tla ? '(Pas)' : ($tln > $tla ? '(Refund)' : '(Sending)');
+                $data[] = $item->note;
+                $sheet->fromArray([$data], NULL, "A$row");
+                $row++;
+            }
+            $no++;
+        }
+        $filename = "Report Expenses.xlsx";
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'. $filename .'"');
         header('Cache-Control: max-age=0');

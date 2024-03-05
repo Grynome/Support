@@ -1189,7 +1189,7 @@
             }
             // end form
             if ($('#type-ticket').val() === "" || $('.dt-incoming-tc').val() === "" ||
-                $('#id-source').val() === "" || $('#id-sla').val() === "" || !checked_rqs_part_sts ||
+                $('#id-source').val() === "" || !checked_rqs_part_sts ||
                 getProjectValue() === "") {
                 if ($('#type-ticket').val() === "") {
                     Swal.fire({
@@ -1208,13 +1208,6 @@
                 } else if ($('#id-source').val() === "") {
                     Swal.fire({
                         title: "Choose source ticket from!",
-                        icon: "warning",
-                        confirmButtonColor: '#d33',
-                        confirmButtonText: 'OK',
-                    });
-                } else if ($('#id-sla').val() === "") {
-                    Swal.fire({
-                        title: "Select SLA for the ticket!",
                         icon: "warning",
                         confirmButtonColor: '#d33',
                         confirmButtonText: 'OK',

@@ -3,13 +3,60 @@
     use App\Models\RefReqs;
 @endphp
 @push('css-plugin')
+    <link rel="stylesheet" href="{{ asset('assets') }}/vendors/mdi/css/materialdesignicons.min.css">
 @endpush
 @extends('Theme/header')
 @section('getPage')
     @include('sweetalert::alert')
     <div class="page-content">
-        <div class="row">
-            <div class="col-md-12 grid-margin stretch-card">
+        <nav class="page-breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Report</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Expenses</li>
+            </ol>
+        </nav>
+        <div class="row grid-margin">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center flex-wrap text-nowrap">
+                                <h4 class="mb-3 mt-3 me-2 mb-md-0">Data Report Expenses</h4>
+                                <form action="{{ url('export-data/Report=Expenses') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-inverse-info btn-icon" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="Download Report">
+                                        <i class="btn-icon-prepend" data-feather="download-cloud"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="d-flex align-items-center flex-wrap text-nowrap">
+                                <div class="input-group flatpickr wd-200 me-2 mb-md-0" id="flatpickr-date">
+                                    <span class="input-group-text input-group-addon bg-transparent border-secondary"
+                                        data-toggle><i data-feather="calendar" class="text-secondary"></i></span>
+                                    <input type="text" class="form-control bg-transparent border-secondary"
+                                        placeholder="First Date" name="st_dx" value="{{ $sortDX1 }}" data-input>
+                                </div>
+                                <h6 class="me-2">s/d</h6>
+                                <div class="input-group flatpickr wd-200 me-2 mb-md-0" id="flatpickr-date">
+                                    <span class="input-group-text input-group-addon bg-transparent border-secondary"
+                                        data-toggle><i data-feather="calendar" class="text-secondary"></i></span>
+                                    <input type="text" class="form-control bg-transparent border-secondary"
+                                        placeholder="Second Date" name="nd_dx" value="{{ $sortDX2 }}" data-input>
+                                </div>
+                                <h4 class="me-2">|</h4>
+                                <button type="button" class="btn btn-outline-secondary btn-icon-text">
+                                    <i class="btn-icon-prepend" data-feather="search"></i>
+                                    Sort
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row grid-margin">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -18,7 +65,6 @@
                                     <tr>
                                         <th></th>
                                         <th>No</th>
-                                        <th>ID Reqs</th>
                                         <th>Expenses</th>
                                         <th>Request Date</th>
                                         <th>Description</th>
@@ -46,7 +92,7 @@
                                     @endphp
                                     @foreach ($dt_reqs as $item)
                                         @php
-                                            $getRef = $refTC->get($item->test);
+                                            $getRef = $refTC->get($item->id);
                                             $tln = $item->tln;
                                             $tla = $item->tla;
                                             $kembali = $tln - $tla;
@@ -126,7 +172,6 @@
                                                 </div>
                                             </td>
                                             <td>{{ $no }}</td>
-                                            <td>{{ $item->id_dt_reqs }}</td>
                                             <td>{{ $item->ctgr_exp }}</td>
                                             <td>{{ $reqs_date }}</td>
                                             <td>{{ $item->desc_exp }}</td>
@@ -167,7 +212,7 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="10">Total</td>
+                                        <td colspan="9">Total</td>
                                         <td>{{ 'Rp ' . number_format($tN, 0, ',', '.') }}</td>
                                         <td colspan="{{ $categories->count() }}"></td>
                                         <td>{{ 'Rp ' . number_format($tA, 0, ',', '.') }}</td>

@@ -360,6 +360,10 @@ Route::group(['middleware'=>'auth'], function(){
         Route::post('Report/Ticket/Admin/sorting', [ReportCOntroller::class, 'report_tc_adm'])->name('sort.tc.report');
             // Export Excel
             Route::post('export-ticket/Report=Ticket/Admin', [ReportCOntroller::class, 'export_dt_ticket']);
+        // Report Expenses Acc
+        Route::get('/Report-Expenses', [ReportCOntroller::class, 'getViewReportExpenses']);
+            // Export Excel
+            Route::post('export-data/Report=Expenses', [ReportCOntroller::class, 'export_expenses']);
         // Part Type
         Route::get('Master/data=Type-Part', [PartController::class, 'type_part']);
             // CRUD
@@ -475,9 +479,17 @@ Route::group(['middleware'=>'auth'], function(){
         Route::post('Store/Expenses/Reqs-{id}', [AccomodationController::class, 'store_expenses'])->name('store.expenses');
         // Execute Reqs
         Route::patch('Execute/Reqs-En/{id}', [AccomodationController::class, 'execute_reqs'])->name('execute.reqs');
+        // Add Note
+        Route::patch('add-note/{id}/LE', [AccomodationController::class, 'add_note_le'])->name('add.note.le');
         // Finish Reqs
         Route::patch('Finish/Reqs-En/{id}', [AccomodationController::class, 'finish_reqs'])->name('done.reqs');
-    Route::get('/My-Expenses', [AccomodationController::class, 'vw_request_reimburse']);
+    Route::get('My-Expenses/id={id}', [AccomodationController::class, 'vw_request_reimburse']);
+        // Filter
+        Route::post('My-Expenses/sorting', [AccomodationController::class, 'vw_request_reimburse'])->name('sorting.request');
+        // Get Excel Reimburse
+        Route::post('Excel/Data-Reimburse', [AccomodationController::class, 'get_reqs_excel'])->name('excel.reimburse');
+    Route::get('/getReqsDone', [AccomodationController::class, 'done_reqs'])->name('fetch.reqs.done');
+    Route::get('Print-Out/{id}-{sub}', [AccomodationController::class, 'inv_ex']);
 
     
     // Search Issue

@@ -302,9 +302,13 @@
                 } else if ((status == 2 || status == 3) && (!pending || pending !== null)) {
                     if (!pending) {
                         if (status == 2) {
+                            statusSpanDash.addClass('bg-warning').text('Pending : 1st(Engineer Need Part)');
+                        } else if (status == 3) {
                             statusSpanDash.addClass('bg-warning').text('Pending : 2nd(Engineer Need Part)');
-                        } else {
+                        } else if (status == 4) {
                             statusSpanDash.addClass('bg-warning').text('Pending : 3rd(Engineer Need Part)');
+                        } else if (status == 5) {
+                            statusSpanDash.addClass('bg-warning').text('Pending : 4th(Engineer Need Part)');
                         }
                         act_timeDash.text(act_timepending);
                     } else if (pending !== null) {

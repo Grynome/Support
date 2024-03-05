@@ -2,6 +2,10 @@
     <link rel="stylesheet" href="{{ asset('assets') }}/vendors/dropify/dist/dropify.min.css">
 @endpush
 @php
+    use App\Models\RefReqs;
+
+    $nik = auth()->user()->nik;
+
     if ($dsc == 'Add') {
         $title = "$dsc Request";
         $disabled = '';
@@ -17,9 +21,33 @@
     }
     if ($dsc == 'Add') {
         $att_input = 'disabled';
-    }else{
+    } else {
         $att_input = '';
     }
+
+    $fuckingsubquery = DB::table(function ($query) {
+        $query
+            ->selectRaw('*')
+            ->from(function ($innerSubquery) {
+                $innerSubquery->select('notiket', DB::raw('max(act_description) AS last_act'), DB::raw('MAX(visitting) AS last_visit'))->from('hgt_activity_engineer')->groupBy('notiket', 'visitting')->orderBy('visitting', 'DESC');
+            }, 'hl2')
+            ->groupBy('notiket');
+    });
+
+    $get_visit = $fuckingsubquery->where('notiket', $id_dt)->first();
+
+    if (empty($get_visit)) {
+        $visit = 1;
+    } elseif (!empty($get_visit)) {
+        $visit = $get_visit->last_visit == 0 ? (in_array($get_visit->last_act, array_merge(range(1, 7), [9])) ? 1 : 2) : ($get_visit->last_visit == 1 ? (in_array($get_visit->last_act, array_merge(range(1, 7), [9])) ? 2 : 3) : ($get_visit->last_visit == 2 ? (in_array($get_visit->last_act, array_merge(range(1, 7), [9])) ? 3 : 4) : (in_array($get_visit->last_act, array_merge(range(1, 7), [9])) ? 4 : 5)));
+    }
+
+    $cekDoubleReqs = RefReqs::leftJoin('hgt_reqs_en as hre', 'hgt_ref_reqs.id_reqs', '=', 'hre.id')
+        ->where('notiket', "$id_dt")
+        ->Where('reqs_at', $visit)
+        ->where('en_id', "$nik")
+        ->select('hre.id', 'hre.id_dt_reqs', 'notiket', 'reqs_at', 'hre.en_id')
+        ->get();
 @endphp
 @extends('Theme/header')
 @section('getPage')
@@ -79,10 +107,10 @@
                                 @if ($dsc != 'Re')
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label" for="notiket-request">Notiket</label>
-                                        <select class="js-example-basic-multiple form-select" name="val_id_tiket_reqs[]" id="notiket-request" 
-                                            multiple="multiple" data-width="100%">
+                                        <select class="js-example-basic-multiple form-select" name="val_id_tiket_reqs[]"
+                                            id="notiket-request" multiple="multiple" data-width="100%">
                                             @foreach ($data_tiket as $item)
-                                                <option value="{{$item->notiket}}">{{$item->notiket}}</option>
+                                                <option value="{{ $item->notiket }}">{{ $item->notiket }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -103,15 +131,17 @@
                                     <label class="form-label">Type of Request</label>
                                     <div class="d-flex justify-content-between">
                                         <div class="form-check form-check-inline">
-                                            <input type="radio" class="form-check-input" name="type_reqs" value="1" {{$dsc != 'Past' ? 'disabled' : 'checked'}}>
+                                            <input type="radio" class="form-check-input" name="type_reqs" value="1"
+                                                {{ $dsc != 'Past' ? 'disabled' : 'checked' }}>
                                             <label class="form-check-label" for="sidebarLight">
-                                            Reimburse
+                                                Reimburse
                                             </label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input type="radio" class="form-check-input" name="type_reqs" value="2" {{$dsc != 'Past' ? 'checked' : 'disabled'}}>
+                                            <input type="radio" class="form-check-input" name="type_reqs" value="2"
+                                                {{ $dsc != 'Past' ? 'checked' : 'disabled' }}>
                                             <label class="form-check-label" for="sidebarDark">
-                                            Estimation
+                                                Estimation
                                             </label>
                                         </div>
                                     </div>
@@ -165,7 +195,8 @@
                                         <label class="form-label" for="attach-reqs">Attach Receipt</label>
                                         <div class="d-flex justify-content-between align-items-baseline att-rmv">
                                             <input type="file" class="file" id="attach-reqs" name="attach_file[]"
-                                                accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps" {{$att_input}}/>
+                                                accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps"
+                                                {{ $att_input }} />
                                         </div>
                                     </div>
                                 </div>
@@ -192,25 +223,33 @@
     <script>
         var dsc = "{{ $dsc }}";
         $('.btn-add-rqs-rmbrs').on('click', function(event) {
-            // Prevent the default form submission behavior
             event.preventDefault();
-
-            // Validate fields before submitting the form
+            var cdr = {!! json_encode($cekDoubleReqs) !!};
             if (validateForm()) {
-                Swal.fire({
-                    title: 'Send?',
-                    text: 'It will forwarded to your Leader to confirm!',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#34a853',
-                    confirmButtonText: 'yes',
-                    cancelButtonColor: '#d33',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        jQuery("#fm-add-rqs-rmbrs").submit();
-                    }
-                });
+                if (cdr.length === 0) {
+                    Swal.fire({
+                        title: 'Send?',
+                        text: 'It will forwarded to your Leader to confirm!',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#34a853',
+                        confirmButtonText: 'yes',
+                        cancelButtonColor: '#d33',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            jQuery("#fm-add-rqs-rmbrs").submit();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: "U already have a Request!!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK'
+                    });
+                }
+                return false;
             }
         });
 

@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use App\Models\ActivityEngineer;
 use App\Models\CategoryExpenses;
 use App\Models\TCCompare;
@@ -18,6 +22,7 @@ use App\Models\Expenses;
 use App\Models\RefReqs;
 use App\Models\Ticket;
 use App\Models\VW_Reqs_En;
+use App\Models\User;
 
 class AccomodationController extends Controller
 {
@@ -61,42 +66,285 @@ class AccomodationController extends Controller
         
         return view('Pages.Accomodation.request')->with($data)->with('id_dt', $id)->with('dsc', $dsc);
     }
-    public function vw_request_reimburse()
+    public function vw_request_reimburse(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
         $role =  auth()->user()->role;
         $depart =  auth()->user()->depart;
+
+        $typeReqs = $request->type_reqs;
+        $enReqs = $request->en_reqs;
         if ($role == 20 || ($role == 19 && $depart == 6)) {
             if ($role == 19 && $depart == 6) {
-                $data['data_reqs'] = VW_Reqs_En::where('status', 0)->orWhere('side_sts', 2)->get();
+                $data['data_reqs'] = VW_Reqs_En::where(function($query) {
+                                            $query->where('type_reqs', '=', 2)
+                                                ->where('status', 0);
+                                        })
+                                        ->orWhere(function($query) {
+                                            $query->where('side_sts', '=', 2)
+                                                ->where('status', '<', 3);
+                                        })
+                                        ->get();
             } else {
                 $data['data_reqs'] = VW_Reqs_En::all();
             }
         } else {
             if ($depart == 15) {
-                if ($role == 19) {
-                    $data['data_reqs'] = VW_Reqs_En::leftJoin('hgt_expenses as he', 'vw_reqs_en.id_expenses', '=', 'he.id_expenses')
-                        ->where('he.status', '=', 0)
-                        ->orWhere('side_sts', 3)
-                        ->select('vw_reqs_en.*', 'he.status as sts_lead_acc')
-                        ->get();
-                } else {
-                    $data['data_reqs'] = VW_Reqs_En::leftJoin('hgt_expenses as he', 'vw_reqs_en.id_expenses', '=', 'he.id_expenses')
-                        ->where('vw_reqs_en.status', '>=', 1)
-                        ->where('vw_reqs_en.status', '<', 3)
-                        ->select('vw_reqs_en.*', 'he.status as sts_lead_acc')
-                        ->get();
-                    $data['cek_confirm'] = ReqsEnDT::select('id_dt_reqs')
-                                        ->groupBy('id_dt_reqs')
-                                        ->havingRaw('SUM(CASE WHEN `status` = 1 THEN 0 ELSE 1 END) = 0')
+                if (empty($enReqs) && empty($typeReqs)) {
+                    $data['data_reqs'] = VW_Reqs_En::where(function($case1) {
+                                            $case1->where('type_reqs', 2)
+                                                ->where('status', '>=', 1)
+                                                ->where('status', '<', 3);
+                                        })
+                                        ->orWhere(function($case2) {
+                                            $case2->where('type_reqs', 1)
+                                                ->where('status', 0);
+                                        })
                                         ->get();
+                } else {
+                    if (!empty($enReqs) && empty($typeReqs)) {
+                        $data['data_reqs'] = VW_Reqs_En::where(function($case1) {
+                                                $case1->where('type_reqs', 2)
+                                                    ->where('status', '>=', 1)
+                                                    ->where('status', '<', 3);
+                                            })
+                                            ->orWhere(function($case2) {
+                                                $case2->where('type_reqs', 1)
+                                                    ->where('status', 0);
+                                            })
+                                            ->where('en_id', $enReqs)
+                                            ->get();
+                    } else if (empty($enReqs) && !empty($typeReqs)) {
+                        $data['data_reqs'] = VW_Reqs_En::where('type_reqs', $typeReqs)
+                                ->when($typeReqs == 2, function ($est) {
+                                    $est->where(function ($case1) {
+                                        $case1->where('status', '>=', 1)
+                                            ->where('status', '<', 3);
+                                    });
+                                })
+                                ->when($typeReqs == 1, function ($reims) {
+                                    $reims->where(function ($case2) {
+                                        $case2->where('status', 0);
+                                    });
+                                })
+                                ->get();
+                    } else {
+                        $data['data_reqs'] = VW_Reqs_En::where('type_reqs', $typeReqs)
+                                            ->where('en_id', $enReqs)
+                                            ->when($typeReqs == 2, function ($est) {
+                                                $est->where(function ($case1) {
+                                                    $case1->where('status', '>=', 1)
+                                                        ->where('status', '<', 3);
+                                                });
+                                            })
+                                            ->when($typeReqs == 1, function ($reims) {
+                                                $reims->where(function ($case2) {
+                                                    $case2->where('status', 0);
+                                                });
+                                            })
+                                            ->get();
+                    }
                 }
+                $data['cek_confirm'] = ReqsEnDT::select('id_dt_reqs')
+                                    ->groupBy('id_dt_reqs')
+                                    ->havingRaw('SUM(CASE WHEN `status` = 1 THEN 0 ELSE 1 END) = 0')
+                                    ->get();
             } else {
                 $data['data_reqs'] = VW_Reqs_En::where('en_id', $nik)->where('status', '<', 3)->get();
             }
         }
+        $data['engineer'] = VW_Reqs_en::select('en_id', 'full_name')
+                            ->groupBy('en_id')->get();
+        return view('Pages.Accomodation.vw_reqs')->with($data)->with('enReqs', $enReqs)->with('typeReqs', $typeReqs);
+    }
+    public function get_reqs_excel(Request $request){
+        $enReqs = $request->en_xcl;
+
+        $getReqs = DB::table('hgt_reqs_en_dt as hred')
+                            ->leftJoin('hgt_category_reqs as hcr', 'hred.ctgr_reqs', '=', 'hcr.id')
+                            ->groupBy('ctgr_reqs')
+                            ->pluck('hcr.description', 'hred.ctgr_reqs');
+
+        $rawQ = ReqsEn::leftJoin('hgt_reqs_en_dt as hred', 'hgt_reqs_en.id_dt_reqs', '=', 'hred.id_dt_reqs')
+                ->leftJoin('hgt_type_of_transport as htot', 'hgt_reqs_en.id_type_trans', '=', 'htot.id')
+                ->leftJoin('hgt_expenses as he', 'hgt_reqs_en.id_expenses', '=', 'he.id_expenses')
+                ->leftJoin('hgt_category_expenses as hce', 'he.category', '=', 'hce.id')
+                ->leftJoin('hgt_users as hu', 'hgt_reqs_en.en_id', '=', 'hu.nik')
+                ->leftJoin('hgt_service_point as hp', 'hu.service_point', '=', 'hp.service_id')
+                ->leftJoin('indonesia_cities as ic', 'hp.kota_id', '=', 'ic.id')
+                ->groupBy('hgt_reqs_en.id_dt_reqs')
+                ->selectRaw('
+                    hgt_reqs_en.id,
+                    he.expenses_date as reqs_date,
+                    he.description as desc_exp,
+                    hce.description as ctgr_exp,
+                    hu.full_name as engineer,
+                    ic.name as kota,
+                    type_reqs,
+                    case
+                        when type_reqs = 1 then "Reimburse"
+                        ELSE "Estimation"
+                    END AS desc_reqs,
+                    htot.description as type_trans,
+                    hgt_reqs_en.id_dt_reqs, 
+                    SUM(nominal) AS tln, 
+                    SUM(actual) AS tla,
+                    he.paid_by,
+                    he.note'
+                )->where('type_reqs', 1)
+                ->where('hgt_reqs_en.status', 0)
+                ->where('en_id', $enReqs);
+
+        foreach ($getReqs as $id => $description) {
+            $escapedDescription = str_replace(' ', '_', $description);
+            $rawQ->selectRaw("max(CASE WHEN ctgr_reqs = $id THEN nominal ELSE 0 END) AS `$escapedDescription`");
+        }
+
+        $resultQ = $rawQ->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Sheet 1');
+        $hr1 = [
+            'Tanggal',
+            'Tujuan',
+            'No Tiket',
+            'Transport',
+            'KM',
+            'Liter',
+            'Total Claim'
+        ];
+        $hr2 = [
+            'Total'
+        ];
+
+        $hrReqs = [];
+        foreach ($getReqs as $id => $description) {
+            $hrReqs[] = $description;
+        }
+
+        $headers = array_merge($hr1, $hrReqs, $hr2);
+        $getUser = User::select('full_name', 'depart')
+                    ->where('nik', $enReqs)
+                    ->first();
+        $sheet->setCellValue('A1', 'FORM CLAIM OPERASIONAL');
+        $sheet->mergeCells('A1:J1');
+
+        // Set values in A3, B3, E3, F4, and A4
+        $sheet->setCellValue('A3', 'Name');
+        $sheet->setCellValue('B3', $getUser->full_name);
+        $sheet->setCellValue('E3', 'Jabatan');
+        $sheet->setCellValue('F3', @$getUser->dept->department);
+        $sheet->setCellValue('A4', 'NIK');
+
+        $sheet->fromArray([$headers], NULL, 'A5');
+        $row = 6;
+        $grand_total = 0;
+        foreach ($resultQ as $item) {
+            $total_reqs = 0;
+            $rowspan_refs = $item->refsTicket->count();
+            $rowspan = max($rowspan_refs, 1);
+            
+            $tln = $item->tln;
+            $tla = $item->tla;
+            $kembali = $tln - $tla;
+            $refsQ = $item->refsTicket;
+            
+            $reqs_date = Carbon::parse($item->reqs_date)->format('Y-m-d');
+
+            for ($i = 0; $i < $rowspan; $i++) {
+                for ($a = 3; $a < 22; $a++) {
+                    $col = $a < 22 ? chr(65 + $a) : chr(65 + floor($a / 22) - 1) . chr(65 + ($a % 22));
+                    $sheet->mergeCells("$col$row:$col" . ($row + $rowspan - 1));
+                }
+                $sheet->mergeCells("A$row:A" . ($row + $rowspan - 1));
+                $data = [
+                    $reqs_date,
+                    $refsQ->isEmpty() ? '' : ($refsQ->has($i) ? $refsQ[$i]->gpi->go_end_user->end_user_name : ''),
+                    $refsQ->isEmpty() ? '' : ($refsQ->has($i) ? $refsQ[$i]->notiket : ''),
+                    $item->type_trans,
+                    "",
+                    "",
+                    'Rp ' . number_format($tln, 0, ',', '.')
+                ];
+                foreach ($getReqs as $id => $description) {
+                    $escapedDescription = str_replace(' ', '_', $description);
+                    $data[] = 'Rp ' . number_format($item->$escapedDescription, 0, ',', '.');
+                    $total_reqs += $item->$escapedDescription;
+                }
+
+                $data[] = 'Rp ' . number_format($total_reqs, 0, ',', '.');
+                $grand_total += $total_reqs;
+                $sheet->fromArray([$data], NULL, "A$row");
+                $row++;
+            }
+        }
+        $gtCol = chr(65 + count($getReqs) + 4);
+        $NlCol = chr(65 + count($getReqs) + 5);
+        $mergeColGT = $gtCol.$row;
+        $mergeColNl = $NlCol.$row;
+        $colC = $row + 1;
+        $colP = $row + 2;
+        $sheet->setCellValue("$mergeColGT", "Grand Total");
+        $sheet->setCellValue("$mergeColNl", 'Rp ' . number_format($grand_total, 0, ',', '.'));
+        $sheet->setCellValue("A$colC", "Catatan");
+
+        $points = [
+            '1. Bahan bakar yang di claim adalah Pertalite',
+            '2. Tanggal Claim wajib di isi',
+            '3. Claim BBM wajib isi Kilometer kendaraan saat di isi BBM  dan jumlah liter BBM',
+            '4. Tujuan dan No ticket wajib di isi',
+            '5. BBM yang di claim adalah, BBM yang dikeluarkan dari kantor ke Customer',
+            '6. Claim dilakukan di minggu ke I dan Minggu Ke III',
+            '7. Claim BBM tanpa km kendaraan, no ticket dan tujuan tidak akan di proses',
+        ];
+        $sheet->mergeCells("E$colP:F$colP");
+        $sheet->mergeCells("E" . ($colP + 4) . ":F" . ($colP + 4));
+        $sheet->mergeCells("E" . ($colP + 5) . ":F" . ($colP + 5));
         
-        return view('Pages.Accomodation.vw_reqs')->with($data);
+        $sheet->setCellValue("E$colP", 'Penyusun,');
+        $sheet->setCellValue("E". ($colP + 4), $getUser->full_name);
+        $sheet->setCellValue("E". ($colP + 5), @$getUser->dept->department);
+
+        $sheet->mergeCells("G$colP:H$colP");
+        $sheet->mergeCells("G" . ($colP + 4) . ":H" . ($colP + 4));
+
+        $sheet->setCellValue("G$colP", 'Mengetahui,');
+        $sheet->setCellValue("G". ($colP + 4), "(                                             )");
+
+        $sheet->mergeCells("I$colP:J$colP");
+        $sheet->mergeCells("I" . ($colP + 4) . ":J" . ($colP + 4));
+
+        $sheet->setCellValue("I$colP", 'Menyetujui,');
+        $sheet->setCellValue("I". ($colP + 4), "(                                             )");
+        
+
+        foreach ($points as $point) {
+            $sheet->setCellValue("A$colP", $point);
+            $colP++;
+        }
+
+        $filename = "Form Claim Operational.xlsx";
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'. $filename .'"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit();
+    }
+    public function done_reqs()
+    {
+        $nik =  auth()->user()->nik;
+        $role =  auth()->user()->role;
+        $depart =  auth()->user()->depart;
+        if ($depart == 6) {
+            $data['query_done_reqs'] = VW_Reqs_En::where('en_id', $nik)->where('status', 3)->get();
+        } else {
+            $data['query_done_reqs'] = VW_Reqs_En::where('status', 3)->get();
+        }
+        
+        return response()->json($data);
     }
     public function add_req_reimburse_en(Request $request, $dsc, $id)
     {
@@ -165,21 +413,21 @@ class AccomodationController extends Controller
                         if (empty($get_visit)) {
                             $visit = 1;
                         } elseif (!empty($get_visit)) {
-                            $visit = $get_visit->last_visit == 0 
-                                        ? ($get_visit->last_act == 1 || $get_visit->last_act == 9
-                                            ? 1
-                                            : 2) 
-                                        : ($get_visit->last_visit == 1
-                                            ? ($get_visit->last_act == 1 || $get_visit->last_act == 9
-                                                ? 2
-                                                : 3)
-                                            :($get_visit->last_visit == 2
-                                                ? ($get_visit->last_act == 1 || $get_visit->last_act == 9
-                                                    ? 3
-                                                    : 4)
-                                                : ($get_visit->last_act == 1 || $get_visit->last_act == 9
-                                                    ? 4
-                                                    : 5)));
+                            $visit = $get_visit->last_visit == 0
+                                ? (in_array($get_visit->last_act, array_merge(range(1, 7), [9]))
+                                    ? 1 
+                                    : 2) 
+                                : ($get_visit->last_visit == 1 
+                                    ? (in_array($get_visit->last_act, array_merge(range(1, 7), [9]))
+                                        ? 2 
+                                        : 3) 
+                                    : ($get_visit->last_visit == 2 
+                                        ? (in_array($get_visit->last_act, array_merge(range(1, 7), [9]))
+                                            ? 3 
+                                            : 4) 
+                                        : (in_array($get_visit->last_act, array_merge(range(1, 7), [9]))
+                                            ? 4 
+                                            : 5)));
                         }
 
                         RefReqs::create([
@@ -221,12 +469,19 @@ class AccomodationController extends Controller
                 ]);
                 if (!empty($request->file('attach_file')[$index])) {
                     if ($execute) {
-                        $files->move(public_path('uploads/attach_request'), $fileName);
+                        $files->move(base_path("../public_html/attach_request"), $fileName);
                     }
                 }
             }
+            
+            $url = url("My-Expenses/id=$id_dt_reqs");
+            $get_hp = User::select('phone')->where('id', 27)->first();
+            $message = urlencode("There's New Request.\nClick link to open the page : ($url)");
+            $phone = substr("$get_hp->phone",1);
+            $link = "https://wa.me/+62{$phone}?text={$message}";
             Alert::toast('Successfully Add Request!', 'success');
-            return redirect('/My-Expenses');
+            session()->flash('new_reqs', $link);
+            return redirect('My-Expenses/id=null');
         }
         else {
             Alert::toast('Error When Saving Data!', 'error');
@@ -236,7 +491,7 @@ class AccomodationController extends Controller
     public function destroy_dt_en(Request $request, $id){
         $get_dt = ReqsEnDT::where('id', $id)->first();
         if($get_dt) {
-            $pathFile = public_path("$get_dt->path");
+            $pathFile = base_path("../public_html/$get_dt->path");
 
             if (file_exists($pathFile)) {
                 unlink($pathFile);
@@ -258,7 +513,7 @@ class AccomodationController extends Controller
             $data_file = $get_dt->get();
             foreach ($data_file as $value) {
                 if (!empty($value->path)) {
-                    $pathFile = public_path("$value->path");
+                    $pathFile = base_path("../public_html/$value->path");
 
                     if (file_exists($pathFile)) {
                         unlink($pathFile);
@@ -290,14 +545,24 @@ class AccomodationController extends Controller
         ];
         $query = ReqsEn::where('id', $id)->first();
         if ($query) {
-            if ($depart == 6 && $role == 19) {
-                $query->update($value);
-            }else{
-                $get_expenses = Expenses::where('id_expenses', $query->id_expenses)->first();
-                $get_expenses->update($value);
-            }
+            $query->update($value);
+
+            $url = url("My-Expenses/id=$query->id_dt_reqs");
+            $getU1 = User::select('phone')->where('id', 177)->first();
+            $getU2 = User::select('phone')->where('id', 179)->first();
+            $message = urlencode("There's New Request.\nClick link to open the page : ($url)");
+
+            $phone1 = substr("$getU1->phone",1);
+            $phone2 = substr("$getU2->phone",1);
+
+            $link1 = "https://wa.me/+62{$phone1}?text={$message}";
+            $link2 = "https://wa.me/+62{$phone2}?text={$message}";
+            
+
             Alert::toast('Successfully Updated Data', 'success');
-            return back();
+            session()->flash('confirm1', $link1);
+            session()->flash('confirm2', $link2);
+            return redirect()->back();
         }else {
             Alert::toast('Failed Updating', 'error');
             return back();
@@ -320,18 +585,36 @@ class AccomodationController extends Controller
     }
     public function check_detail_reqs_en(Request $request){
         $data = $request->all();
-        if (isset($data['confirmed'])) {
-            foreach ($data['confirmed'] as $id => $statuses) {
+        $confirmedData = $data['confirmed'] ?? [];
+        $nominalData = $data['nominal'] ?? [];
+        
+        $commonIds = array_unique(array_merge(array_keys($confirmedData), array_keys($nominalData)));
+
+        if (!empty($commonIds)) {
+            foreach ($commonIds as $id) {
                 $reqsEnDT = ReqsEnDT::find($id);
 
                 if ($reqsEnDT) {
-                    $status = $statuses[0];
-                    $reqsEnDT->update(['status' => $status]);
+                    if (isset($confirmedData[$id][0])) {
+                        $status = $confirmedData[$id][0];
+                        $reqsEnDT->update(['status' => $status]);
+                    }
+
+                    if (isset($nominalData[$id][0])) {
+                        $nominal = $nominalData[$id][0];
+
+                        if ($nominal != $reqsEnDT->nominal) {
+                            $cleanedAmount = str_replace(['Rp', ',', '.'], '', $nominal);
+                            $amount = (int) $cleanedAmount;
+                            $reqsEnDT->update(['nominal' => $amount]);
+                        }
+                    }
                 }
             }
-            Alert::toast('Successfully Updated Data', 'success');
+
+            Alert::toast("Successfully Updated Data", 'success');
             return back();
-        }else {
+        } else {
             Alert::toast('Failed Updating', 'error');
             return back();
         }
@@ -362,7 +645,7 @@ class AccomodationController extends Controller
                         'actual' => $amount
                     ]);
                     if ($execute) {
-                        $val[0]->move(public_path('uploads/attach_request'), $fileName);
+                        $val[0]->move(base_path("../public_html/attach_request"), $fileName);
                     }
                 }
             }
@@ -385,7 +668,8 @@ class AccomodationController extends Controller
             'expenses_date' => $request->date_xps,
             'total' => $amount,
             'paid_by' => $request->paid_by_xps,
-            'note' => $request->note_xps
+            'note' => $request->note_xps,
+            'status' => 1
         ];
         
         if($values) {
@@ -406,7 +690,7 @@ class AccomodationController extends Controller
             }else{
                 Alert::toast('Reqs En not updated!', 'warning');
             }
-            return redirect('/My-Expenses');
+            return redirect('My-Expenses/id=null');
         }
         else {
             Alert::toast('Failed saving', 'error');
@@ -437,40 +721,52 @@ class AccomodationController extends Controller
     public function finish_reqs(Request $request, $id){
         $get_data = VW_Reqs_En::where('id', $id)->first();
         if ($get_data->tln == $get_data->tla) {
-            $value = [
-                'status'    => 3
-            ];
-            $alert = "The Request had been Done!";
         } else if ($get_data->tln >= $get_data->tla) {
             $value = [
                 'status'    => 3,
                 'additional'    => 1
             ];
-            $alert = "Updated Successfully!";
+        } else if ($get_data->tln <= $get_data->tla) {
+            $value = [
+                'status'    => 3,
+                'additional'    => 2
+            ];
         } else {
-            $role =  auth()->user()->role;
-            $depart =  auth()->user()->depart;
-
-            if ($get_data->side_sts == 4) {
-                $value = [
-                    'status'    => 3,
-                    'additional'    => 4
-                ];
-                $alert = "The Request had been Done!";
-            }else{
-                list($alert, $adt) = $depart == 6 ? ["Confirmed Approved!", 3] : ($role == 19 ? ["Approved!", 4] : ["Approval Had been Sent", 2]);
-                $value = [
-                    'additional'    => $adt
-                ];
-            }
+            $value = [
+                'status'    => 3
+            ];
         }
         if ($get_data) {
             $query = ReqsEn::where('id', $id)->first();
             $query->update($value);
-            Alert::toast($alert, 'success');
+            Alert::toast("The Request had been Done!", 'success');
             return back();
         }else {
             Alert::toast('Failed Updating', 'error');
+            return back();
+        }
+    }
+    public function inv_ex($id, $sub){
+        $data['reqs'] = VW_Reqs_En::where('id', $id)->first();
+        $data['getDT'] = ReqsEnDT::where('id_dt_reqs', $sub)->get();
+        return view('Pages.Accomodation.inv.vw_inv')->with($data);
+    }
+    public function add_note_le(Request $request, $id){
+        $val_note = $request->note_less;
+
+        $value = [
+            'note'    => $val_note
+        ];
+        
+        $getReqs = ReqsEn::where('id', $id)->first();
+
+        if($getReqs) {
+            $getReqs->update($value);
+            Alert::toast("Success on Saving Data", 'success');
+            return back();
+        }
+        else {
+            Alert::toast('Failed saving', 'error');
             return back();
         }
     }

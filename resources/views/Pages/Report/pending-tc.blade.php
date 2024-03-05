@@ -7,7 +7,7 @@
     <div class="page-content">
         <nav class="page-breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{url('/')}}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Report - Pending Ticket</li>
             </ol>
         </nav>
@@ -20,15 +20,15 @@
                                 <h4 class="card-title">Pending Ticket</h4>
                                 <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
                                     <div class="btn-group me-2" role="group" aria-label="First group">
-                                        <button type="button" class="btn btn-inverse-primary btn-icon-text" data-bs-toggle="modal"
-                                            data-bs-target="#filter-report-ticket">
+                                        <button type="button" class="btn btn-inverse-primary btn-icon-text"
+                                            data-bs-toggle="modal" data-bs-target="#filter-report-ticket">
                                             <i class="btn-icon-prepend" data-feather="search"></i>
                                             Search
                                         </button>
                                         &nbsp;
-                                        <form action="{{url("export/Pending-Ticket/Report")}}" method="POST">
+                                        <form action="{{ url('export/Pending-Ticket/Report') }}" method="POST">
                                             @csrf
-                                            <input type="hidden" value="{{$pdTC_prj}}" name="pdtcFlter">
+                                            <input type="hidden" value="{{ $pdTC_prj }}" name="pdtcFlter">
                                             <button type="submit" class="btn btn-inverse-info btn-icon-text">
                                                 <i class="btn-icon-prepend" data-feather="download"></i>
                                                 Download
@@ -89,7 +89,7 @@
                                 <h4 class="card-title">Data Report</h4>
                             </div>
                         </div>
-                        
+
                         <div class="table-responsive">
                             <table id="display" class="table">
                                 <thead>
@@ -102,6 +102,7 @@
                                         <th>Project</th>
                                         <th>Pending Status</th>
                                         <th>Catatan</th>
+                                        <th>Part Arrive</th>
                                         <th>Onsite</th>
                                         <th>Aging Ticket</th>
                                     </tr>
@@ -120,12 +121,14 @@
                                         <tr>
                                             <td>{{ $no }}</td>
                                             <td>{{ $notiket }}</td>
-                                            <td>{{ $item->case_id }}</td>
+                                            <td><a href="{{ url("Detail/Ticket=$notiket") }}"
+                                                    target="_blank">{{ $item->case_id }}</a></td>
                                             <td>{{ $item->service_name }}</td>
                                             <td>{{ $item->kota }}</td>
                                             <td>{{ $item->project_name }}</td>
                                             <td>{{ $item->root_cause }}</td>
                                             <td>{{ $item->note }}</td>
+                                            <td>{{ $item->arrive }}</td>
                                             <td>{{ $item->total_onsite }}</td>
                                             <td>{{ $agingTicket }}</td>
                                         </tr>

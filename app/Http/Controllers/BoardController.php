@@ -90,6 +90,20 @@ class BoardController extends Controller
             ->groupBy('act_description')
             ->orderBy('act_time', 'desc')
             ->first();
+        $act_descript4th = VW_Activity_Engineer::select('act_time', 'act_description', 'status_activity')
+            ->where('notiket', $ticket->notiket)
+            ->where('sts_timeline', 3)
+            ->whereNotIn('act_description', [8, 9])
+            ->groupBy('act_description')
+            ->orderBy('act_time', 'desc')
+            ->first();
+        $act_descript5th = VW_Activity_Engineer::select('act_time', 'act_description', 'status_activity')
+            ->where('notiket', $ticket->notiket)
+            ->where('sts_timeline', 4)
+            ->whereNotIn('act_description', [8, 9])
+            ->groupBy('act_description')
+            ->orderBy('act_time', 'desc')
+            ->first();
         $pending = ActivityEngineer::select('act_time','updated_at')
             ->where('notiket', $ticket->notiket)
             ->where('act_description', 8)
@@ -105,6 +119,12 @@ class BoardController extends Controller
         $act_descriptionrdVal = $act_descriptrd ? $act_descriptrd->act_description : null;
         $status_activityrdVal = $act_descriptrd ? $act_descriptrd->status_activity : null;
         $act_timerdVal = $act_descriptrd ? date('H:i', strtotime($act_descriptrd->act_time)) : null;
+        $act_description4thVal = $act_descript4th ? $act_descript4th->act_description : null;
+        $status_activity4thVal = $act_descript4th ? $act_descript4th->status_activity : null;
+        $act_time4thVal = $act_descript4th ? date('H:i', strtotime($act_descript4th->act_time)) : null;
+        $act_description5thVal = $act_descript5th ? $act_descript5th->act_description : null;
+        $status_activity5thVal = $act_descript5th ? $act_descript5th->status_activity : null;
+        $act_time5thVal = $act_descript5th ? date('H:i', strtotime($act_descript5th->act_time)) : null;
         $pendingsts = $pending ? $pending->updated_at : null;
         $pendingactTime = $pending ? date('H:i', strtotime($pending->act_time)) : null;
         return response()->json([
@@ -118,6 +138,9 @@ class BoardController extends Controller
             'act_descriptionrd' => $act_descriptionrdVal,
             'status_activityrd' => $status_activityrdVal,
             'act_timerd' => $act_timerdVal,
+            'act_description4th' => $act_description4thVal,
+            'status_activity4th' => $status_activity4thVal,
+            'act_time4th' => $act_time4thVal,
             'pending' => $pendingsts,
             'act_timepending' => $pendingactTime,
             'solve' => $solveValue

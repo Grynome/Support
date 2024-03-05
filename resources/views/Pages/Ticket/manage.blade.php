@@ -3,7 +3,6 @@
 @php
     use App\Models\VW_Tiket_Part;
     use App\Models\ActivityL2En;
-    use App\Models\RefReqs;
     use App\Models\TiketPartDetail;
     use App\Models\TiketPartNew;
     use Carbon\Carbon;
@@ -176,43 +175,33 @@
                                     @php
                                         $num = 1;
                                         $now = Carbon::now()->addHours(7);
-                                        $date = Carbon::now()
-                                            ->addHours(7)
-                                            ->format('Y-m-d');
-                                    $getDT = TiketPartDetail::select('sub1.part_detail_id', 'sub1.send', 'sub1.arrive', 'sub1.part_onsite')
-                                                ->from(function ($query) {
-                                                    $query->select(DB::raw('MAX(sub2.id) AS id'))
-                                                        ->from(function ($subquery) {
-                                                            $subquery->select('htpd.*')
-                                                                ->from('hgt_tiket_part_detail as htpd')
-                                                                ->leftJoin('hgt_sts_type_part as hstp', 'htpd.type_part', '=', 'hstp.id')
-                                                                ->whereRaw('hstp.status = 0');
-                                                        }, 'sub2')
-                                                        ->groupBy('part_detail_id', 'part_onsite');
-                                                }, 'aa')
-                                                ->leftJoin('hgt_tiket_part_detail as sub1', 'aa.id', '=', 'sub1.id');
+                                        $date = Carbon::now()->addHours(7)->format('Y-m-d');
+                                        $getDT = TiketPartDetail::select('sub1.part_detail_id', 'sub1.send', 'sub1.arrive', 'sub1.part_onsite')
+                                            ->from(function ($query) {
+                                                $query
+                                                    ->select(DB::raw('MAX(sub2.id) AS id'))
+                                                    ->from(function ($subquery) {
+                                                        $subquery->select('htpd.*')
+                                                        ->from('hgt_tiket_part_detail as htpd')
+                                                        ->leftJoin('hgt_sts_type_part as hstp', 'htpd.type_part', '=', 'hstp.id')->whereRaw('hstp.status = 0');
+                                                    }, 'sub2')
+                                                    ->groupBy('part_detail_id', 'part_onsite');
+                                            }, 'aa')
+                                            ->leftJoin('hgt_tiket_part_detail as sub1', 'aa.id', '=', 'sub1.id');
                                     @endphp
                                     @foreach ($ticket as $item)
                                         @php
-                                            $part_onsite = in_array($item->status, [0, 1, 9])
-                                                                ? 1 
-                                                                : ($item->status == 2
-                                                                    ? 2
-                                                                    : ($item->status == 3
-                                                                        ? 3
-                                                                        : ($item->status == 4
-                                                                            ? 4
-                                                                            : 5)));
+                                            $part_onsite = in_array($item->status, [0, 1, 9]) ? 1 : ($item->status == 2 ? 2 : ($item->status == 3 ? 3 : ($item->status == 4 ? 4 : 5)));
                                             $getDTForItem = clone $getDT;
                                             $resultDT = $getDTForItem->whereRaw("part_onsite = $part_onsite");
 
                                             $getPN = TiketPartNew::select('notiket', 'sub3.*')
-                                                            ->leftJoin(DB::raw('(' . $resultDT->toSql() . ') sub3'), function ($join) {
-                                                                $join->on('hgt_tiket_part_new.part_detail_id', '=', 'sub3.part_detail_id');
-                                                            })
-                                                            ->whereRaw("notiket = '$item->notiket'")
-                                                            ->groupBy('notiket')
-                                                            ->first();
+                                                ->leftJoin(DB::raw('(' . $resultDT->toSql() . ') sub3'), function ($join) {
+                                                    $join->on('hgt_tiket_part_new.part_detail_id', '=', 'sub3.part_detail_id');
+                                                })
+                                                ->whereRaw("notiket = '$item->notiket'")
+                                                ->groupBy('notiket')
+                                                ->first();
 
                                             $start_date_range = Carbon::parse($item->entrydate);
                                             $end_date_range = Carbon::parse($item->deadline);
@@ -270,7 +259,7 @@
                                                 <td>
                                                     {{ $agingTicket }}
                                                 </td>
-                                                <td>{{$item->visiting}}</td>
+                                                <td>{{ $item->visiting }}</td>
                                                 <td>
                                                     {{ $agingPart }}
                                                 </td>
@@ -397,35 +386,15 @@
                                                             name="longitude">
                                                     </form>
                                                     @if ($depart == 6 || $role == 1)
-                                                        @php
-                                                            $valid_reqs = RefReqs::where('notiket', $item->notiket)->first();
-                                                            if (!empty(@$valid_reqs->get_reqs->en_id)) {
-                                                                if (@$valid_reqs->get_reqs->en_id == $nik) {
-                                                                    $bool = false;
-                                                                } else {
-                                                                    $bool = true;
-                                                                }
-                                                            }else{
-                                                                $bool = true;
-                                                            }
-                                                        @endphp
-                                                        @if ($bool)
                                                             <a href="{{ url("Add/Reqs-Accomodation/$item->notiket") }}"
                                                                 class="btn btn-inverse-info btn-icon btn-sm">
                                                                 <i data-feather="credit-card"></i>
                                                             </a>
-                                                            {{@$valid_reqs->get_reqs->en_id}}
-                                                        @else
-                                                            <button type="button"
-                                                                class="btn btn-inverse-danger btn-icon btn-sm"
-                                                                data-bs-toggle="popover" title="This Ticket already have a Request!"
-                                                                data-bs-content="create a new one? <a href='{{ url("Add/Reqs-Accomodation/$item->notiket") }}'>ADD </a> or Want to visit it? <a href='{{ url('/My-Expenses') }}'>Visit!"><i
-                                                                    data-feather="credit-card"></i></button>
-                                                        @endif
                                                         &nbsp;
                                                         @if ($item->status == 9)
                                                             <button type="button"
-                                                                class="btn btn-inverse-info btn-icon btn-sm updt-en-ticket{{ $num }}">
+                                                                class="btn btn-inverse-info btn-icon btn-sm updt-en-ticket"
+                                                                data-fm-updt-id="{{ $num }}">
                                                                 <i data-feather="edit"></i>
                                                             </button>
                                                             &nbsp;
@@ -446,7 +415,8 @@
                                                         @if ($date == Carbon::parse($item->departure)->format('Y-m-d'))
                                                             @if (empty($vald_act_l2) && ($item->status > 0 && $item->status < 9))
                                                                 <button type="button"
-                                                                    class="btn btn-inverse-info btn-icon btn-sm updt-en-ticket{{ $num }}">
+                                                                    class="btn btn-inverse-info btn-icon btn-sm updt-en-ticket"
+                                                                    data-fm-updt-id="{{ $num }}">
                                                                     <i data-feather="edit"></i>
                                                                 </button>
                                                                 &nbsp;
@@ -465,7 +435,8 @@
                                                         @if (!empty($item->solve_en))
                                                             @if ($item->status < 10 && $item->act_desc == 7)
                                                                 <button type="button"
-                                                                    class="btn btn-inverse-secondary btn-icon btn-sm updt-en-ticket{{ $num }}">
+                                                                    class="btn btn-inverse-secondary btn-icon btn-sm updt-en-ticket"
+                                                                    data-fm-updt-id="{{ $num }}">
                                                                     <i data-feather="check"></i>
                                                                 </button>
                                                                 &nbsp;
@@ -479,13 +450,20 @@
                                                                 {{ method_field('delete') }}
                                                             </form>
                                                             <button type="button"
-                                                                class="btn btn-inverse-danger btn-icon btn-sm btn-remove-ticket{{ $num }}">
+                                                                class="btn btn-inverse-danger btn-icon btn-sm btn-remove-ticket"
+                                                                data-fm-dstr-id="{{ $num }}">
                                                                 <i data-feather="trash-2"></i>
                                                             </button>
                                                             &nbsp;
                                                         @endif
                                                         @if (in_array($item->status, array_slice($ar_sts, 1)))
                                                             @if ($item->reqsCek == 1)
+                                                                @php
+                                                                    $cek_part = VW_Tiket_Part::selectRaw('MAX(CASE WHEN arrive IS NULL THEN 1 ELSE null END) AS cpt')
+                                                                        ->where('notiket', $item->notiket)
+                                                                        ->groupBy('notiket')
+                                                                        ->first();
+                                                                @endphp
                                                                 <form
                                                                     action="{{ url("Fulfilled/Part-Reqs/$item->notiket") }}"
                                                                     id="form-part-ready-foren{{ $num }}"
@@ -494,7 +472,9 @@
                                                                     {{ method_field('patch') }}
                                                                 </form>
                                                                 <button type="button"
-                                                                    class="btn btn-inverse-primary btn-icon btn-sm btn-part-ready-ornot{{ $num }}">
+                                                                    class="btn btn-inverse-primary btn-icon btn-sm btn-part-ready-ornot"
+                                                                    data-fm-ornot-id="{{ $num }}"
+                                                                    data-part-cek="{{ @$cek_part->cpt }}">
                                                                     <i data-feather="check"></i>
                                                                 </button>
                                                                 &nbsp;
@@ -525,7 +505,7 @@
                                                             &nbsp;
                                                         @endif
                                                     @endif
-                                                    <a href="{{ url("Detail/Ticket=$item->notiket") }}">
+                                                    <a href="{{ url("Detail/Ticket=$item->notiket") }}" target="_blank">
                                                         <button type="button"
                                                             class="btn btn-inverse-success btn-icon btn-sm ">
                                                             <i data-feather="search"></i>
@@ -563,16 +543,20 @@
             } else {
                 var title = "Receive Ticket??";
             }
-            for (let i = 0; i < 1000; i++) {
-                $('.updt-en-ticket' + i).on('click', function() {
-                    navigator.geolocation.getCurrentPosition(function(position) {
-                        var lat = position.coords.latitude;
-                        var lng = position.coords.longitude;
-                        document.getElementById('latitude' + i).value = lat;
-                        document.getElementById('longitude' + i).value = lng;
-                    }, function(error) {
-                        console.log("Error occurred. Error code: " + error.code);
-                    });
+
+            $('.updt-en-ticket').each(function(index) {
+                $(this).on('click', function() {
+                    var updtID = $(this).data('fm-updt-id');
+                    var fmUpdtTc = $('#updt-en-ticket' + updtID);
+
+                    // navigator.geolocation.getCurrentPosition(function(position) {
+                    //     var lat = position.coords.latitude;
+                    //     var lng = position.coords.longitude;
+                    //     document.getElementById('latitude' + i).value = lat;
+                    //     document.getElementById('longitude' + i).value = lng;
+                    // }, function(error) {
+                    //     console.log("Error occurred. Error code: " + error.code);
+                    // });
 
                     Swal.fire({
                         title: title,
@@ -584,17 +568,20 @@
                         cancelButtonText: 'Cancel'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            jQuery('#updt-en-ticket' + i).submit();
+                            fmUpdtTc.submit();
                         }
                     });
+
                 });
-            }
+            });
         </script>
     @elseif ($depart == 4 || $role == 20 || $role == 15)
         <script>
-            for (let i = 0; i < 1000; i++) {
-                $('.updt-en-ticket' + i + '').on('click', function() {
-                    var getLink = $(this).attr('href');
+            $('.updt-en-ticket').each(function(index) {
+                $(this).on('click', function() {
+                    var updtID = $(this).data('fm-updt-id');
+                    var fmUpdtTc = $('#updt-en-ticket' + updtID);
+
                     Swal.fire({
                         title: 'Close Ticket?',
                         text: 'Ticket will be closed!',
@@ -606,33 +593,50 @@
                         cancelButtonText: 'Cancel'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = getLink;
-                            jQuery('#updt-en-ticket' + i + '').submit();
+                            fmUpdtTc.submit();
                         }
                     });
                     return false;
                 });
-                $('.btn-part-ready-ornot' + i + '').on('click', function() {
-                    var getLink = $(this).attr('href');
-                    Swal.fire({
-                        title: 'Part Its ready?',
-                        text: 'please check the part list again, is it the part requested by the engineer!',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#34a853',
-                        confirmButtonText: 'Complete',
-                        cancelButtonColor: '#d33',
-                        cancelButtonText: 'Cancel'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = getLink;
-                            jQuery('#form-part-ready-foren' + i + '').submit();
-                        }
-                    });
-                    return false;
-                });
+            });
+            $('.btn-part-ready-ornot').each(function(index) {
+                $(this).on('click', function() {
+                    var getOrnot = $(this).data('fm-ornot-id');
+                    var fmOrNot = $('#form-part-ready-foren' + getOrnot);
+                    var cekPart = $(this).data('part-cek');
 
-                $('.btn-remove-ticket' + i + '').on('click', function() {
+                    if (cekPart == 1) {
+                        Swal.fire({
+                            title: "Part Not Ready!!",
+                            text: "Update your part status!!",
+                            icon: "warning",
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Send to Engineer?',
+                            text: 'the re-visit will be continue by engineer!',
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonColor: '#34a853',
+                            confirmButtonText: 'Complete',
+                            cancelButtonColor: '#d33',
+                            cancelButtonText: 'Cancel'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                fmOrNot.submit();
+                            }
+                        });
+                    }
+                    return false;
+                });
+            });
+            $('.btn-remove-ticket').each(function(index) {
+                $(this).on('click', function() {
+                    var getDstr = $(this).data('fm-dstr-id');
+                    var fmDstr = $('#form-remove-ticket' + getDstr);
+
                     Swal.fire({
                         title: 'Are u sure delete this Ticket?',
                         text: 'Ticket will be deleted permanently!!',
@@ -644,13 +648,12 @@
                         cancelButtonText: 'Cancel'
                     }).then((result) => {
                         if (result.isConfirmed) {
-
-                            jQuery('#form-remove-ticket' + i + '').submit();
+                            fmDstr.submit();
                         }
                     });
                     return false;
                 });
-            }
+            });
         </script>
         <script>
             function getProjectSrt(url, prt_id, project) {

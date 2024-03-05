@@ -104,6 +104,9 @@
                                                                 <option value="2" {{ $sts == 2 ? 'selected' : '' }}>
                                                                     Closed
                                                                 </option>
+                                                                <option value="3" {{ $sts == 3 ? 'selected' : '' }}>
+                                                                    Cancel
+                                                                </option>
                                                             </select>
                                                         </div>
                                                         <div class="col-md-6 border-end-lg mb-3">

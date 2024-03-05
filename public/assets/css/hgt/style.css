@@ -2231,6 +2231,11 @@
        border-top: 2px solid #e9ecef;
    }
 
+   .head-group-inv {
+       border-top: 2px solid #000000;
+       border-bottom: 2px solid #000000;
+   }
+
    .caption-top {
        caption-side: top;
    }
