@@ -6,7 +6,7 @@
     <meta name="author" content="NobleUI">
     <meta name="keywords"
         content="nobleui, bootstrap, bootstrap 5, bootstrap5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Apps HGT Services Indonesia</title>
     <!-- End fonts -->
     <!-- core:css -->
@@ -14,6 +14,7 @@
     <!-- endinject -->
     <!-- Plugin css for this page -->
     @stack('css-plugin')
+    <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <!-- Sweetalert -->

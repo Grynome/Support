@@ -12,4 +12,8 @@ class VW_Reqs_En extends Model
     public function get_expenses(){
         return $this->belongsTo(Expenses::class, 'id_expenses', 'id_expenses');
     }
+    public function refsTicket()
+    {
+        return $this->belongsTo(RefReqs::class, 'id', 'id_reqs');
+    }
 }

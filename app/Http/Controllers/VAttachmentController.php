@@ -94,6 +94,7 @@ class VAttachmentController extends Controller
 
         return response()->download($path);
     }
+    // will be able to delete
     public function downloadUploadedADM($id)
     {
         $file_attach_ticket = AttachmentFile::find($id);

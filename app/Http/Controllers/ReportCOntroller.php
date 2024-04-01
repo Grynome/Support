@@ -552,6 +552,7 @@ class ReportCOntroller extends Controller
             'Onsite Ke',
             'SO',
             'Send',
+            'St Arrive',
             'Arrive',
             'Go',
             'On Location',
@@ -621,6 +622,7 @@ class ReportCOntroller extends Controller
                     $item->total_onsite,
                     $item->so_num,
                     $item->send,
+                    $item->st_arrive,
                     $item->arrive,
                     $item->gow,
                     $item->on_location,
@@ -789,6 +791,7 @@ class ReportCOntroller extends Controller
             'Part Number',
             'Problem',
             'Solution',
+            'Engineer',
             'SP',
             'User City',
             'Province',
@@ -799,6 +802,7 @@ class ReportCOntroller extends Controller
             'Onsite Ke',
             'SO',
             'Send',
+            'St Arrive',
             'Arrive',
             'Go',
             'On Location',
@@ -905,6 +909,7 @@ class ReportCOntroller extends Controller
                     $item->part_number,
                     $item->problem,
                     $item->solution,
+                    $item->full_name,
                     $item->service_name,
                     $item->lok_kab,
                     $item->lok_provinces,
@@ -915,6 +920,7 @@ class ReportCOntroller extends Controller
                     $item->total_onsite,
                     $item->so_num,
                     $item->send,
+                    $item->st_arrive,
                     $item->arrive,
                     $item->gow,
                     $item->on_location,
@@ -1145,7 +1151,7 @@ class ReportCOntroller extends Controller
         exit();
     }
     public function chart(Request $request){
-        $now = Carbon::now()->addHours(7)->format('Y-m-d');
+        $now = Carbon::now()->format('Y-m-d');
         $date_st = $request->eoc_dtSt;
         $date_nd = $request->eoc_dtNd;
         if (empty($date_st) && empty($date_nd)) {
@@ -1186,7 +1192,7 @@ class ReportCOntroller extends Controller
     // KPI Report
         // Engineer
         public function kpi(Request $request){
-            $now = Carbon::now()->addHours(7)->format('Y-m-d');
+            $now = Carbon::now()->format('Y-m-d');
             $oneMonthAgo = Carbon::parse($now)->subMonth(1)->format('Y-m-d');
             
             if (!isset($request->sort_kpi_project) && !isset($request->kpi_st_date_report) && !isset($request->kpi_nd_date_report)) {
@@ -1520,7 +1526,7 @@ class ReportCOntroller extends Controller
     }
     // Lat Lng Report
     public function latlng(Request $request){
-        $now = Carbon::now()->addHours(7);
+        $now = Carbon::now();
         $oneMonthAgo = $now->copy()->subMonth(1);
         
         if (!isset($request->sort_ltlg_project) && !isset($request->ltlg_st_date_report) && !isset($request->ltlg_nd_date_report)) {
@@ -1657,7 +1663,7 @@ class ReportCOntroller extends Controller
     
     // Activity Helpdesk
     public function ActHP(Request $request){
-        $now = Carbon::now()->addHours(7)->format('Y-m-d');
+        $now = Carbon::now()->format('Y-m-d');
         $data['user_hp'] = User::select('nik', 'full_name')->where('depart', 4)->get();
         if (!isset($request->srt_user_hp) && !isset($request->srt_st_date_act) && !isset($request->srt_nd_date_act)) {
             $data['act_hp'] = VW_Act_Heldepsk::whereBetween('created_at', [$now.' '.'00:00:00', $now.' '.'23:59:59'])
@@ -1803,7 +1809,7 @@ class ReportCOntroller extends Controller
     }
     // Report History Ticket
     public function hisTicket(Request $request){
-        $now = Carbon::now()->addHours(7);
+        $now = Carbon::now();
         $oneMonthAgo = $now->copy()->subMonth(1);
 
             $data['project'] = ProjectInTicket::all();

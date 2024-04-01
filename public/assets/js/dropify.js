@@ -4,7 +4,9 @@
 $(function() {
   'use strict';
 
-  $('#myDropify').dropify();
+  $('.myDropify').each(function () {
+      $(this).dropify();
+  });
   $('#DropifyCover').dropify();
 
 });

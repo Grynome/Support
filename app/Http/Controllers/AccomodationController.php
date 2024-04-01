@@ -104,13 +104,15 @@ class AccomodationController extends Controller
                 } else {
                     if (!empty($enReqs) && empty($typeReqs)) {
                         $data['data_reqs'] = VW_Reqs_En::where(function($case1) {
-                                                $case1->where('type_reqs', 2)
-                                                    ->where('status', '>=', 1)
-                                                    ->where('status', '<', 3);
-                                            })
-                                            ->orWhere(function($case2) {
-                                                $case2->where('type_reqs', 1)
-                                                    ->where('status', 0);
+                                                $case1->where(function($nestedCase1) {
+                                                        $nestedCase1->where('type_reqs', 2)
+                                                                    ->where('status', '>=', 1)
+                                                                    ->where('status', '<', 3);
+                                                    })
+                                                    ->orWhere(function($nestedCase2) {
+                                                        $nestedCase2->where('type_reqs', 1)
+                                                                    ->where('status', 0);
+                                                    });
                                             })
                                             ->where('en_id', $enReqs)
                                             ->get();
@@ -160,11 +162,6 @@ class AccomodationController extends Controller
     public function get_reqs_excel(Request $request){
         $enReqs = $request->en_xcl;
 
-        $getReqs = DB::table('hgt_reqs_en_dt as hred')
-                            ->leftJoin('hgt_category_reqs as hcr', 'hred.ctgr_reqs', '=', 'hcr.id')
-                            ->groupBy('ctgr_reqs')
-                            ->pluck('hcr.description', 'hred.ctgr_reqs');
-
         $rawQ = ReqsEn::leftJoin('hgt_reqs_en_dt as hred', 'hgt_reqs_en.id_dt_reqs', '=', 'hred.id_dt_reqs')
                 ->leftJoin('hgt_type_of_transport as htot', 'hgt_reqs_en.id_type_trans', '=', 'htot.id')
                 ->leftJoin('hgt_expenses as he', 'hgt_reqs_en.id_expenses', '=', 'he.id_expenses')
@@ -195,6 +192,14 @@ class AccomodationController extends Controller
                 ->where('hgt_reqs_en.status', 0)
                 ->where('en_id', $enReqs);
 
+        $dt_reqs = $rawQ->pluck('id_dt_reqs')->unique()->toArray();
+
+        $getReqs = DB::table('hgt_reqs_en_dt as hred')
+                            ->leftJoin('hgt_category_reqs as hcr', 'hred.ctgr_reqs', '=', 'hcr.id')
+                            ->whereIn('id_dt_reqs', $dt_reqs)
+                            ->groupBy('ctgr_reqs')
+                            ->pluck('hcr.description', 'hred.ctgr_reqs');
+
         foreach ($getReqs as $id => $description) {
             $escapedDescription = str_replace(' ', '_', $description);
             $rawQ->selectRaw("max(CASE WHEN ctgr_reqs = $id THEN nominal ELSE 0 END) AS `$escapedDescription`");
@@ -208,7 +213,9 @@ class AccomodationController extends Controller
         $hr1 = [
             'Tanggal',
             'Tujuan',
+            'Project',
             'No Tiket',
+            'Case ID',
             'Transport',
             'KM',
             'Liter',
@@ -230,7 +237,6 @@ class AccomodationController extends Controller
         $sheet->setCellValue('A1', 'FORM CLAIM OPERASIONAL');
         $sheet->mergeCells('A1:J1');
 
-        // Set values in A3, B3, E3, F4, and A4
         $sheet->setCellValue('A3', 'Name');
         $sheet->setCellValue('B3', $getUser->full_name);
         $sheet->setCellValue('E3', 'Jabatan');
@@ -249,8 +255,6 @@ class AccomodationController extends Controller
             $tla = $item->tla;
             $kembali = $tln - $tla;
             $refsQ = $item->refsTicket;
-            
-            $reqs_date = Carbon::parse($item->reqs_date)->format('Y-m-d');
 
             for ($i = 0; $i < $rowspan; $i++) {
                 for ($a = 3; $a < 22; $a++) {
@@ -258,10 +262,14 @@ class AccomodationController extends Controller
                     $sheet->mergeCells("$col$row:$col" . ($row + $rowspan - 1));
                 }
                 $sheet->mergeCells("A$row:A" . ($row + $rowspan - 1));
+                $sch = $refsQ->isEmpty() ? '' : ($refsQ->has($i) ? $refsQ[$i]->ti->schedule : '');
+                $get_sch = Carbon::parse($sch)->format('Y-m-d');
                 $data = [
-                    $reqs_date,
+                    $get_sch,
                     $refsQ->isEmpty() ? '' : ($refsQ->has($i) ? $refsQ[$i]->gpi->go_end_user->end_user_name : ''),
+                    $refsQ->isEmpty() ? '' : ($refsQ->has($i) ? $refsQ[$i]->gpi->go_jekfo->project_name : ''),
                     $refsQ->isEmpty() ? '' : ($refsQ->has($i) ? $refsQ[$i]->notiket : ''),
+                    $refsQ->isEmpty() ? '' : ($refsQ->has($i) ? $refsQ[$i]->ti->case_id : ''),
                     $item->type_trans,
                     "",
                     "",
@@ -279,8 +287,8 @@ class AccomodationController extends Controller
                 $row++;
             }
         }
-        $gtCol = chr(65 + count($getReqs) + 4);
-        $NlCol = chr(65 + count($getReqs) + 5);
+        $gtCol = chr(73 + count($getReqs));
+        $NlCol = chr(73 + count($getReqs) + 1);
         $mergeColGT = $gtCol.$row;
         $mergeColNl = $NlCol.$row;
         $colC = $row + 1;
@@ -349,7 +357,7 @@ class AccomodationController extends Controller
     public function add_req_reimburse_en(Request $request, $dsc, $id)
     {
         $nik =  auth()->user()->nik;
-        $now = Carbon::now()->addHours(7);
+        $now = Carbon::now();
         
         $fuckingsubquery = DB::table(function ($query) {
             $query->selectRaw('*')
@@ -469,18 +477,22 @@ class AccomodationController extends Controller
                 ]);
                 if (!empty($request->file('attach_file')[$index])) {
                     if ($execute) {
-                        $files->move(base_path("../public_html/attach_request"), $fileName);
+                        $files->move(base_path("../public_html/uploads/attach_request"), $fileName);
                     }
                 }
             }
             
             $url = url("My-Expenses/id=$id_dt_reqs");
-            $get_hp = User::select('phone')->where('id', 27)->first();
+            $get_hp1 = User::select('phone')->where('id', 27)->first();
+            $get_hp2 = User::select('phone')->where('id', 83)->first();
             $message = urlencode("There's New Request.\nClick link to open the page : ($url)");
-            $phone = substr("$get_hp->phone",1);
-            $link = "https://wa.me/+62{$phone}?text={$message}";
+            $phone1 = substr("$get_hp1->phone",1);
+            $phone2 = substr("$get_hp2->phone",1);
+            $link1 = "https://wa.me/+62{$phone1}?text={$message}";
+            $link2 = "https://wa.me/+62{$phone2}?text={$message}";
             Alert::toast('Successfully Add Request!', 'success');
-            session()->flash('new_reqs', $link);
+            session()->flash('wa_l1', $link1);
+            session()->flash('wa_l2', $link2);
             return redirect('My-Expenses/id=null');
         }
         else {
@@ -645,7 +657,7 @@ class AccomodationController extends Controller
                         'actual' => $amount
                     ]);
                     if ($execute) {
-                        $val[0]->move(base_path("../public_html/attach_request"), $fileName);
+                        $val[0]->move(base_path("../public_html/uploads/attach_request"), $fileName);
                     }
                 }
             }
@@ -678,13 +690,11 @@ class AccomodationController extends Controller
                 $get_id_expenses = Expenses::orderBy('id_expenses','desc')->take(1)->first();
                 $get_Reqs = ReqsEn::where('id_dt_reqs', $id)->first();
                 $get_Reqs->update(['id_expenses' => $get_id_expenses->id_expenses]);
-                if ($get_Reqs->type_reqs == 1) {
-                    $query_dt = ReqsEnDT::where('id_dt_reqs', $id)->get();
-                    foreach ($query_dt as $dt) {
-                        $convert = str_replace(['Rp', ',', '.'], '', $dt->nominal);
-                        $actual = (int) $convert;
-                        ReqsEnDT::where('id', $dt->id)->update(['actual' => $actual]);
-                    }
+                $query_dt = ReqsEnDT::where('id_dt_reqs', $id)->get();
+                foreach ($query_dt as $dt) {
+                    $convert = str_replace(['Rp', ',', '.'], '', $dt->nominal);
+                    $actual = (int) $convert;
+                    ReqsEnDT::where('id', $dt->id)->update(['actual' => $actual]);
                 }
                 Alert::toast("Success on Saving Data", 'success');
             }else{
@@ -748,8 +758,10 @@ class AccomodationController extends Controller
     }
     public function inv_ex($id, $sub){
         $data['reqs'] = VW_Reqs_En::where('id', $id)->first();
+        $data['date'] = Carbon::parse($data['reqs']->reqs_at)->format('Ymd');
         $data['getDT'] = ReqsEnDT::where('id_dt_reqs', $sub)->get();
-        return view('Pages.Accomodation.inv.vw_inv')->with($data);
+        $data['getRef'] = ReqsEn::where('id', $id)->first();
+        return view('Pages.Accomodation.Inv.vw_inv')->with($data);
     }
     public function add_note_le(Request $request, $id){
         $val_note = $request->note_less;
@@ -769,5 +781,14 @@ class AccomodationController extends Controller
             Alert::toast('Failed saving', 'error');
             return back();
         }
+    }
+
+    public function downloadReceiptment($id)
+    {
+        $receiptAttach = ReqsEnDT::find($id);
+
+        $path = base_path("../public_html/$receiptAttach->path");
+
+        return response()->download($path);
     }
 }

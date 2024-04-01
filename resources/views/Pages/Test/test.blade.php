@@ -46,7 +46,7 @@
                                     @endphp
                                     @foreach ($dt_reqs as $item)
                                         @php
-                                            $getRef = $refTC->get($item->test);
+                                            $getRef = $refTC->get($item->id);
                                             $tln = $item->tln;
                                             $tla = $item->tla;
                                             $kembali = $tln - $tla;

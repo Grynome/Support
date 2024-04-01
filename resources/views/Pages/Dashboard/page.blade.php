@@ -209,6 +209,12 @@
                                 response.act_descriptionrd,
                                 response.status_activityrd,
                                 response.act_timerd,
+                                response.act_description4th,
+                                response.status_activity4th,
+                                response.act_time4th,
+                                response.act_description5th,
+                                response.status_activity5th,
+                                response.act_time5th,
                                 response.pending,
                                 response.act_timepending,
                                 response.solve);
@@ -232,6 +238,12 @@
                 act_descriptionrd,
                 status_activityrd,
                 act_timerd,
+                act_description4th,
+                status_activity4th,
+                act_time4th,
+                act_description5th,
+                status_activity5th,
+                act_time5th,
                 pending,
                 act_timepending,
                 solve) {
@@ -299,6 +311,38 @@
                         statusSpanDash.addClass('bg-info').text('On site 3rd : Travel Stop' + ' ' + ket);
                     }
                     act_timeDash.text(act_timerd);
+                } else if (status == 4 && (act_description4th !== null && status_activity4th !== null) &&
+                    status_activitynd == 0) {
+                    if (act_description4th == 2) {
+                        statusSpanDash.addClass('bg-info').text('On site 4th : Go to Location');
+                    } else if (act_description4th == 3) {
+                        statusSpanDash.addClass('bg-info').text('On site 4th : Arrived on location');
+                    } else if (act_description4th == 4) {
+                        statusSpanDash.addClass('bg-info').text('On site 4th : Start Working');
+                    } else if (act_description4th == 5) {
+                        statusSpanDash.addClass('bg-info').text('On site 4th : Stop Working' + ' ' + ket);
+                    } else if (act_description4th == 6) {
+                        statusSpanDash.addClass('bg-info').text('On site 4th : Leave Site' + ' ' + ket);
+                    } else if (act_description4th == 7) {
+                        statusSpanDash.addClass('bg-info').text('On site 4th : Travel Stop' + ' ' + ket);
+                    }
+                    act_timeDash.text(act_time4th);
+                } else if (status == 5 && (act_description5th !== null && status_activity5th !== null) &&
+                    status_activitynd == 0) {
+                    if (act_description5th == 2) {
+                        statusSpanDash.addClass('bg-info').text('On site 5th : Go to Location');
+                    } else if (act_description5th == 3) {
+                        statusSpanDash.addClass('bg-info').text('On site 5th : Arrived on location');
+                    } else if (act_description5th == 4) {
+                        statusSpanDash.addClass('bg-info').text('On site 5th : Start Working');
+                    } else if (act_description5th == 5) {
+                        statusSpanDash.addClass('bg-info').text('On site 5th : Stop Working' + ' ' + ket);
+                    } else if (act_description5th == 6) {
+                        statusSpanDash.addClass('bg-info').text('On site 5th : Leave Site' + ' ' + ket);
+                    } else if (act_description5th == 7) {
+                        statusSpanDash.addClass('bg-info').text('On site 5th : Travel Stop' + ' ' + ket);
+                    }
+                    act_timeDash.text(act_time5th);
                 } else if ((status == 2 || status == 3) && (!pending || pending !== null)) {
                     if (!pending) {
                         if (status == 2) {
@@ -315,9 +359,15 @@
                         if (status == 2) {
                             statusSpanDash.addClass('bg-warning').text(
                                 'Pending : waiting engineer continue 2nd Onsite');
-                        } else {
+                        } else if (status == 3) {
                             statusSpanDash.addClass('bg-warning').text(
                                 'Pending : waiting engineer continue 3rd Onsite)');
+                        } else if (status == 4) {
+                            statusSpanDash.addClass('bg-warning').text(
+                                'Pending : waiting engineer continue 4th Onsite)');
+                        } else if (status == 5) {
+                            statusSpanDash.addClass('bg-warning').text(
+                                'Pending : waiting engineer continue 5th Onsite)');
                         }
                         var datePending = new Date(pending);
                         var options = {

@@ -8,7 +8,7 @@
 <nav class="sidebar">
     <div class="sidebar-header">
         <a href="{{ url('/') }}" class="sidebar-brand">
-            <img src="{{ asset('assets') }}/images/logo/icon-hgt.png" alt=""> App<span>Task</span>
+            <img src="{{ asset('assets') }}/images/logo/icon-hgt.png" alt=""> App<span>Desk</span>
         </a>
         <div class="sidebar-toggler not-active">
             <span></span>
@@ -33,27 +33,50 @@
                     <span class="link-title">Full Dashboard</span>
                 </a>
             </li>
-            @if ($depart == 3 || in_array($role, [20, 15]))
-                <li class="nav-item nav-category">Issue</li>
-                <li class="nav-item">
-                    <a href="{{ url('Search/Data-Issue') }}" class="nav-link" role="button" aria-expanded="false"
-                        aria-controls="general-pages">
-                        <i class="link-icon" data-feather="search"></i>
-                        <span class="link-title">Search</span>
-                    </a>
-                </li>
-                <li class="nav-item nav-category">PIC</li>
-                <li class="nav-item">
-                    <a href="{{ url('Data/Activity=PIC') }}" class="nav-link" role="button" aria-expanded="false"
-                        aria-controls="general-pages">
-                        <i class="link-icon" data-feather="trello"></i>
-                        <span class="link-title">My Activity</span>
-                    </a>
-                </li>
+            @if (in_array($depart, [3, 4]) || in_array($role, [20, 15]))
+                <li class="nav-item nav-category">Search</li>
+                @if ($depart == 3)
+                    <li class="nav-item">
+                        <a href="{{ url('Search/Data-Issue') }}" class="nav-link" role="button" aria-expanded="false"
+                            aria-controls="general-pages">
+                            <i class="link-icon" data-feather="search"></i>
+                            <span class="link-title">Issue</span>
+                        </a>
+                    </li>
+                @else
+                    <li class="nav-item">
+                        <a href="{{ url('/search') }}" class="nav-link" role="button" aria-expanded="false"
+                            aria-controls="general-pages">
+                            <i class="link-icon" data-feather="search"></i>
+                            <span class="link-title">Location</span>
+                        </a>
+                    </li>
+                @endif
+                @if ($depart == 3)
+                    <li class="nav-item nav-category">PIC</li>
+                    <li class="nav-item">
+                        <a href="{{ url('Data/Activity=PIC') }}" class="nav-link" role="button" aria-expanded="false"
+                            aria-controls="general-pages">
+                            <i class="link-icon" data-feather="trello"></i>
+                            <span class="link-title">My Activity</span>
+                        </a>
+                    </li>
+                @endif
             @endif
             @if ($depart != 3)
                 <li class="nav-item nav-category">Ticketing</li>
-                @if ($depart != 15)
+                @if ($depart == 10)
+                    <li class="nav-item">
+                        <a href="{{ url('Inquiry/Docs') }}" class="nav-link" role="button" aria-expanded="false"
+                            aria-controls="general-pages">
+                            <i class="link-icon" data-feather="folder"></i>
+                            <span class="link-title">
+                                Inquiry Docs
+                            </span>
+                        </a>
+                    </li>
+                @endif
+                @if (!in_array($depart, [15, 10]))
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="collapse" href="#ticket" role="button"
                             aria-expanded="false" aria-controls="ticket">
@@ -69,8 +92,6 @@
                                     <a href="{{ url('helpdesk/manage=Ticket') }}" class="nav-link">
                                         @if ($depart == 9)
                                             AWB Not Available
-                                        @elseif ($depart == 10)
-                                            Inquiry
                                         @else
                                             All Open
                                             <span
@@ -86,25 +107,17 @@
                                             Open Today
                                         </a>
                                     </li>
-                                @elseif ($depart == 10)
-                                    <li class="nav-item">
-                                        <a href="{{ url('helpdesk/Ticket=today') }}" class="nav-link">
-                                            Request List
-                                        </a>
-                                    </li>
                                 @endif
                                 <li class="nav-item">
                                     <a href="{{ route('ticket.closed') }}" class="nav-link">
                                         @if ($depart == 9)
                                             AWB Available
-                                        @elseif ($depart == 10)
-                                            Complete
                                         @else
                                             Closed
                                         @endif
                                     </a>
                                 </li>
-                                @if (($role == 19 && $depart == 4) || $role == 20)
+                                @if ($depart == 4 || $role == 20)
                                     <li class="nav-item">
                                         <a href="{{ route('ticket.cancel') }}" class="nav-link">
                                             Cancel Ticket

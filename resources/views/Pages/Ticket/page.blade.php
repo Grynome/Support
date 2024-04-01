@@ -315,20 +315,25 @@
                                                                 data-bs-dismiss="modal" aria-label="btn-close"></button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                                                            <div
+                                                                class="d-flex justify-content-between align-items-center flex-wrap mb-3">
                                                                 <div>
                                                                     <h4 class="mb-md-0">Add Fields</h4>
                                                                 </div>
-                                                                <div class="d-flex align-items-center flex-wrap text-nowrap">
-                                                                    <button class="btn btn-inverse-primary add-records-part" type="button"
-                                                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                        title="Add Fields"><i
-                                                                            class="btn-icon-append icon-lg" data-feather="plus"></i></button>
+                                                                <div
+                                                                    class="d-flex align-items-center flex-wrap text-nowrap">
+                                                                    <button
+                                                                        class="btn btn-inverse-primary add-records-part"
+                                                                        type="button" data-bs-toggle="tooltip"
+                                                                        data-bs-placement="top" title="Add Fields"><i
+                                                                            class="btn-icon-append icon-lg"
+                                                                            data-feather="plus"></i></button>
                                                                 </div>
                                                             </div>
                                                             <hr>
                                                             <div class="part-records">
-                                                                <div class="d-flex justify-content-between align-items-center flex-wrap mb-3 record-parts-rmv">
+                                                                <div
+                                                                    class="d-flex justify-content-between align-items-center flex-wrap mb-3 record-parts-rmv">
                                                                     <u>
                                                                         <h4 class="mb-md-0">Form</h4>
                                                                     </u>
@@ -493,7 +498,7 @@
                                                                     </div>
                                                                     <div class="modal-body">
                                                                         <div class="table-responsive">
-                                                                            <table id="display" class="table">
+                                                                            <table id="dt-prj-nt" class="table">
                                                                                 <thead>
                                                                                     <tr>
                                                                                         <th>No</th>
@@ -781,17 +786,6 @@
                                                 <option value="">- Choose Engineer -</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-6 mb-2">
-                                            <label for='L2 Engineer' class='form-label'>L2 Engineer</label>
-                                            <select class='js-example-basic-single form-select' data-width='100%'
-                                                name="l2_engineer" id="l2-engineer">
-                                                <option value="">- Choose L2 -</option>
-                                                @foreach ($l2 as $item)
-                                                    <option value="{{ $item->nik }}">
-                                                        {{ $item->full_name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -878,6 +872,7 @@
             });
         }
         $(document).ready(function() {
+            $('#dt-prj-nt').DataTable();
             $('#partner-select').on('change', function() {
                 if ($("#partner-select").val() != "") {
                     getProjectsByPartner('{{ route('getProjectsByPartner') }}', $("#partner-select").val(),
@@ -1394,12 +1389,12 @@
         }
     </script>
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             // Initial Ajax request to fetch data and populate original records
             $.ajax({
                 url: '{{ route('fetch.select') }}',
                 method: 'GET',
-                success: function (data) {
+                success: function(data) {
                     // Update the options in the original records
                     updateOptions($('.part-records .select2-part:eq(0)'), data.types, 'part_type');
                     updateOptions($('.part-records .select2-part:eq(1)'), data.categories, 'type_name');
@@ -1411,24 +1406,24 @@
                         }, 0);
                     });
                 },
-                error: function (error) {
+                error: function(error) {
                     console.log('Error fetching data:', error);
                 }
             });
 
             // Event listener for Add Records button
-            $('.add-records-part').click(function () {
+            $('.add-records-part').click(function() {
                 // Clone the original records
                 var clonedRecords = $('<div class="part-records">' + $('.part-records').html() +
-                '</div>');;
+                    '</div>');;
 
-                clonedRecords.find('.select2-part').each(function () {
+                clonedRecords.find('.select2-part').each(function() {
                     $(this).next('.select2-container').remove();
                 });
                 // Append remove button
                 clonedRecords.find('.record-parts-rmv').append(
                     '<button class="btn btn-outline-danger btn-icon btn-md remove-parts-fields" type="button"><i class="btn-icon-append" data-feather="minus"></i></button>'
-                    );
+                );
                 // Append the cloned records to the container
                 $('.part-records-multiple').append(clonedRecords);
 
@@ -1447,8 +1442,9 @@
 
                 // Add new options
                 selectElement.append('<option value="">- Select -</option>');
-                $.each(data, function (index, item) {
-                    selectElement.append('<option value="' + item.id + '">' + item[columnName] + '</option>');
+                $.each(data, function(index, item) {
+                    selectElement.append('<option value="' + item.id + '">' + item[columnName] +
+                        '</option>');
                 });
             }
             $(document).on('click', '.remove-parts-fields', function() {

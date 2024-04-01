@@ -58,6 +58,17 @@
             },
         });
 
+        $('table#loc').DataTable({
+            "aLengthMenu": [
+                [5, 10, 30, 50, -1],
+                [5, 10, 30, 50, "All"]
+            ],
+            "iDisplayLength": 5,
+            "language": {
+                search: ""
+            },
+        });
+
         $('table#d-Monthly').DataTable({
             "aLengthMenu": [
                 [10, 30, 50, -1],
@@ -86,36 +97,6 @@
             var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
             length_sel.removeClass('form-control-sm');
         });
-    });
-
-    $(document).ready(function() {
-        var sweetalert = "{{ session()->get('sweetalert') }}";
-        var message = "{{ session()->get('message') }}";
-        if (sweetalert) {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                }
-            })
-
-            Toast.fire({
-                icon: 'success',
-                title: message
-            }).then((result) => {
-                if (result.dismiss === Swal.DismissReason.timer) {
-                    var modal = "{{ session()->get('modal') }}";
-                    if (modal) {
-                        $('#' + modal).modal('show');
-                    }
-                }
-            });
-        }
     });
 </script>
 @stack('custom')

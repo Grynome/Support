@@ -32,27 +32,20 @@ class LoginController extends Controller
         $depart = auth()->user()->depart;
         $verify = auth()->user()->verify;
         $nik = auth()->user()->nik;
-        if ($role == 19 || $role == 1) {
-            if ($verify != 1) {
-                return redirect('/NotVerified');
-            } else {
-                return redirect('/');
-            }
+        
+        if ($verify != 1) {
+            return redirect('/NotVerified');
         } else {
-            if ($depart == 3) {
-                if ($verify != 1) {
-                    return redirect('/NotVerified');
-                } else {
-                    return redirect('/');
-                }
+            if (in_array($role, [19, 1])) {
+                return redirect('/');
             } else {
-                if ($verify != 1) {
-                    return redirect('/NotVerified');
+                if ($depart == 3) {
+                        return redirect('/');
                 } else {
                     if ($nik == "HGT-KR055") {
                         return redirect("/Choose-dept");
                     } else {
-                        if ($depart == 15) {
+                        if (in_array($depart, [15, 10])) {
                             return redirect('/');
                         } else {
                             return redirect()->route('manage.ticket');
@@ -74,7 +67,7 @@ class LoginController extends Controller
     }
 
     public function showLoginForm(){
-        return view('auth.login');
+        return view('auth.newLogin');
     }
     /**
      * Get the login username to be used by the controller.

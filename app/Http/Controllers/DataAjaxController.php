@@ -181,4 +181,19 @@ class DataAjaxController extends Controller
             'categories' => $categories,
         ]);
     }
+
+    public function getLoc(Request $request){
+        $username = $request->input('username');
+        $email = $request->input('email');
+        
+        $userByUsername = User::where('username', $username)->first();
+        $userByEmail = User::where('email', $email)->first();
+        
+        $response = [
+            'usernameExists' => !is_null($userByUsername),
+            'emailExists' => !is_null($userByEmail),
+        ];
+        
+        return response()->json($response);
+    }
 }

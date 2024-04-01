@@ -134,11 +134,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        @if ($depart == 10)
-                                            <th>Notiket</th>
-                                            <th>Project</th>
-                                            <th>Service Point</th>
-                                        @elseif ($depart == 6 || $depart == 13 || $role == 1)
+                                        @if ($depart == 6 || $depart == 13 || $role == 1)
                                             <th>Notiket</th>
                                             <th>Case ID</th>
                                             <th>Company</th>
@@ -176,14 +172,26 @@
                                         $num = 1;
                                         $now = Carbon::now()->addHours(7);
                                         $date = Carbon::now()->addHours(7)->format('Y-m-d');
-                                        $getDT = TiketPartDetail::select('sub1.part_detail_id', 'sub1.send', 'sub1.arrive', 'sub1.part_onsite')
+                                        $getDT = TiketPartDetail::select(
+                                            'sub1.part_detail_id',
+                                            'sub1.send',
+                                            'sub1.arrive',
+                                            'sub1.part_onsite',
+                                        )
                                             ->from(function ($query) {
                                                 $query
                                                     ->select(DB::raw('MAX(sub2.id) AS id'))
                                                     ->from(function ($subquery) {
-                                                        $subquery->select('htpd.*')
-                                                        ->from('hgt_tiket_part_detail as htpd')
-                                                        ->leftJoin('hgt_sts_type_part as hstp', 'htpd.type_part', '=', 'hstp.id')->whereRaw('hstp.status = 0');
+                                                        $subquery
+                                                            ->select('htpd.*')
+                                                            ->from('hgt_tiket_part_detail as htpd')
+                                                            ->leftJoin(
+                                                                'hgt_sts_type_part as hstp',
+                                                                'htpd.type_part',
+                                                                '=',
+                                                                'hstp.id',
+                                                            )
+                                                            ->whereRaw('hstp.status = 0');
                                                     }, 'sub2')
                                                     ->groupBy('part_detail_id', 'part_onsite');
                                             }, 'aa')
@@ -191,13 +199,27 @@
                                     @endphp
                                     @foreach ($ticket as $item)
                                         @php
-                                            $part_onsite = in_array($item->status, [0, 1, 9]) ? 1 : ($item->status == 2 ? 2 : ($item->status == 3 ? 3 : ($item->status == 4 ? 4 : 5)));
+                                            $part_onsite = in_array($item->status, [0, 1, 9])
+                                                ? 1
+                                                : ($item->status == 2
+                                                    ? 2
+                                                    : ($item->status == 3
+                                                        ? 3
+                                                        : ($item->status == 4
+                                                            ? 4
+                                                            : 5)));
                                             $getDTForItem = clone $getDT;
                                             $resultDT = $getDTForItem->whereRaw("part_onsite = $part_onsite");
 
                                             $getPN = TiketPartNew::select('notiket', 'sub3.*')
-                                                ->leftJoin(DB::raw('(' . $resultDT->toSql() . ') sub3'), function ($join) {
-                                                    $join->on('hgt_tiket_part_new.part_detail_id', '=', 'sub3.part_detail_id');
+                                                ->leftJoin(DB::raw('(' . $resultDT->toSql() . ') sub3'), function (
+                                                    $join,
+                                                ) {
+                                                    $join->on(
+                                                        'hgt_tiket_part_new.part_detail_id',
+                                                        '=',
+                                                        'sub3.part_detail_id',
+                                                    );
                                                 })
                                                 ->whereRaw("notiket = '$item->notiket'")
                                                 ->groupBy('notiket')
@@ -230,11 +252,7 @@
                                             <tr>
                                         @endif
                                         <td>{{ $num }}</td>
-                                        @if ($depart == 10)
-                                            <td>{{ $item->notiket }}</td>
-                                            <td>{{ $item->project_name }}</td>
-                                            <td>{{ $item->service_name }}</td>
-                                        @elseif ($depart == 6 || $depart == 13 || $role == 1)
+                                        @if ($depart == 6 || $depart == 13 || $role == 1)
                                             <td>{{ $item->notiket }}</td>
                                             <td>{{ $item->case_id }}</td>
                                             <td>{{ $item->company }}</td>
@@ -358,9 +376,17 @@
                                                                 : 'Open')
                                                             : 'Progress Activity')) }}
                                             @elseif ($depart == 13)
-                                                {{ $item->status == 9 ? 'Waiting Engineer to Submit Activity' : 'Update your Activity' }}
-                                            @elseif ($depart == 10)
-                                                {{ $item->status_docs == 0 ? 'Documents isn\'t received' : 'Documents received' }}
+                                                {{ empty($item->l2_nik)
+                                                    ? 'Take the Ticket for Support'
+                                                    : ($item->status == 0
+                                                        ? 'Waiting for Update'
+                                                        : ($item->status == 9
+                                                            ? ($item->l2_nik == $nik
+                                                                ? 'Waiting Engineer to Submit Activity'
+                                                                : 'Taken By : ' . $item->l2_name)
+                                                            : ($item->l2_nik == $nik
+                                                                ? 'Update your Activity'
+                                                                : 'Taken By : ' . $item->l2_name))) }}
                                             @endif
                                         </td>
                                         <td>
@@ -386,10 +412,10 @@
                                                             name="longitude">
                                                     </form>
                                                     @if ($depart == 6 || $role == 1)
-                                                            <a href="{{ url("Add/Reqs-Accomodation/$item->notiket") }}"
-                                                                class="btn btn-inverse-info btn-icon btn-sm">
-                                                                <i data-feather="credit-card"></i>
-                                                            </a>
+                                                        <a href="{{ url("Add/Reqs-Accomodation/$item->notiket") }}"
+                                                            class="btn btn-inverse-info btn-icon btn-sm">
+                                                            <i data-feather="credit-card"></i>
+                                                        </a>
                                                         &nbsp;
                                                         @if ($item->status == 9)
                                                             <button type="button"
@@ -410,25 +436,42 @@
                                                         @endif
                                                     @elseif ($depart == 13)
                                                         @php
-                                                            $vald_act_l2 = ActivityL2En::where('notiket', $item->notiket)->first();
+                                                            $vald_act_l2 = ActivityL2En::where(
+                                                                'notiket',
+                                                                $item->notiket,
+                                                            )->first();
                                                         @endphp
-                                                        @if ($date == Carbon::parse($item->departure)->format('Y-m-d'))
-                                                            @if (empty($vald_act_l2) && ($item->status > 0 && $item->status < 9))
-                                                                <button type="button"
-                                                                    class="btn btn-inverse-info btn-icon btn-sm updt-en-ticket"
-                                                                    data-fm-updt-id="{{ $num }}">
-                                                                    <i data-feather="edit"></i>
-                                                                </button>
-                                                                &nbsp;
-                                                            @elseif ($item->status != 9)
-                                                                <a
-                                                                    href="{{ url("Timeline/L2-Engineer/Ticket=$item->notiket") }}">
+                                                        @if (empty($item->l2_nik))
+                                                            <form action="{{ url("L2/Take-Ticket/$item->notiket") }}"
+                                                                method="post" id="fm-l2-support{{ $num }}">
+                                                                @csrf
+                                                                {{ method_field('patch') }}
+                                                            </form>
+                                                            <button type="button"
+                                                                class="btn btn-inverse-primary btn-icon btn-sm l2-support"
+                                                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                                                title="Take to Support"
+                                                                data-take-ticket="{{ $num }}">
+                                                                <i data-feather="archive"></i>
+                                                            </button>
+                                                            &nbsp;
+                                                        @else
+                                                            @if ($date == Carbon::parse($item->departure)->format('Y-m-d'))
+                                                                @if (empty($vald_act_l2) && ($item->status > 0 && $item->status < 9))
                                                                     <button type="button"
-                                                                        class="btn btn-inverse-info btn-icon btn-sm">
+                                                                        class="btn btn-inverse-info btn-icon btn-sm updt-en-ticket"
+                                                                        data-fm-updt-id="{{ $num }}">
+                                                                        <i data-feather="edit"></i>
+                                                                    </button>
+                                                                    &nbsp;
+                                                                @elseif ($item->l2_nik == $nik && !in_array($item->status, [0, 9]))
+                                                                    <button type="button"
+                                                                        class="btn btn-inverse-info btn-icon btn-sm"
+                                                                        onclick="location.href=('{{ url('Timeline/L2-Engineer/Ticket=') }}' + {{ $item->notiket }})">
                                                                         <i data-feather="activity"></i>
                                                                     </button>
-                                                                </a>
-                                                                &nbsp;
+                                                                    &nbsp;
+                                                                @endif
                                                             @endif
                                                         @endif
                                                     @elseif ($depart == 4)
@@ -459,7 +502,9 @@
                                                         @if (in_array($item->status, array_slice($ar_sts, 1)))
                                                             @if ($item->reqsCek == 1)
                                                                 @php
-                                                                    $cek_part = VW_Tiket_Part::selectRaw('MAX(CASE WHEN arrive IS NULL THEN 1 ELSE null END) AS cpt')
+                                                                    $cek_part = VW_Tiket_Part::selectRaw(
+                                                                        'MAX(CASE WHEN arrive IS NULL THEN 1 ELSE null END) AS cpt',
+                                                                    )
                                                                         ->where('notiket', $item->notiket)
                                                                         ->groupBy('notiket')
                                                                         ->first();
@@ -488,20 +533,6 @@
                                                                     <i data-feather="file"></i>
                                                                 </button>
                                                             </a>
-                                                            &nbsp;
-                                                        @endif
-                                                    @elseif ($depart == 10)
-                                                        @if ($item->status_docs == 0)
-                                                            <button type="button"
-                                                                class="btn btn-inverse-primary btn-icon btn-sm btn-receive-docs{{ $num }}">
-                                                                <i data-feather="check"></i>
-                                                            </button>
-                                                            <form action="{{ url("Update-Ticket/Docs/$item->notiket") }}"
-                                                                id="receive-docs{{ $num }}"
-                                                                style="display: none;" method="post">
-                                                                @csrf
-                                                                {{ method_field('patch') }}
-                                                            </form>
                                                             &nbsp;
                                                         @endif
                                                     @endif
@@ -543,6 +574,28 @@
             } else {
                 var title = "Receive Ticket??";
             }
+
+            $('.l2-support').each(function(index) {
+                $(this).on('click', function() {
+                    var ls_id = $(this).data('take-ticket');
+                    var fmTakeTicket = $('#fm-l2-support' + ls_id);
+
+                    Swal.fire({
+                        title: 'Would take this ticket?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#34a853',
+                        confirmButtonText: 'Next',
+                        cancelButtonColor: '#d33',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fmTakeTicket.submit();
+                        }
+                    });
+                    return false;
+                });
+            });
 
             $('.updt-en-ticket').each(function(index) {
                 $(this).on('click', function() {
@@ -709,55 +762,31 @@
                 });
             });
         </script>
-    @elseif ($depart == 10)
         <script>
-            for (let i = 0; i < 9999; i++) {
-                $('.btn-receive-docs' + i + '').on('click', function() {
-                    var getLink = $(this).attr('href');
+            $('.sort').on('click', function() {
+                let st_date = document.getElementById("st-date-mt").value;
+                let nd_date = document.getElementById("nd-date-mt").value;
+
+                if (st_date == "" && nd_date != "") {
                     Swal.fire({
-                        title: 'Documents its received?',
-                        text: 'This ticket will be updated the docs its received!',
-                        icon: 'question',
-                        showCancelButton: true,
+                        title: 'Your sort first date is null!',
+                        icon: 'warning',
                         confirmButtonColor: '#34a853',
-                        confirmButtonText: 'Next',
-                        cancelButtonColor: '#d33',
-                        cancelButtonText: 'Cancel'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = getLink;
-                            jQuery('#receive-docs' + i + '').submit();
-                        }
+                        confirmButtonText: 'OK',
                     });
                     return false;
-                });
-            }
+                } else if (st_date != "" && nd_date == "") {
+                    Swal.fire({
+                        title: 'Your sort second date is null!',
+                        icon: 'warning',
+                        confirmButtonColor: '#34a853',
+                        confirmButtonText: 'OK',
+                    });
+                    return false;
+                } else {
+                    jQuery('#sorting').submit();
+                }
+            });
         </script>
     @endif
-    <script>
-        $('.sort').on('click', function() {
-            let st_date = document.getElementById("st-date-mt").value;
-            let nd_date = document.getElementById("nd-date-mt").value;
-
-            if (st_date == "" && nd_date != "") {
-                Swal.fire({
-                    title: 'Your sort first date is null!',
-                    icon: 'warning',
-                    confirmButtonColor: '#34a853',
-                    confirmButtonText: 'OK',
-                });
-                return false;
-            } else if (st_date != "" && nd_date == "") {
-                Swal.fire({
-                    title: 'Your sort second date is null!',
-                    icon: 'warning',
-                    confirmButtonColor: '#34a853',
-                    confirmButtonText: 'OK',
-                });
-                return false;
-            } else {
-                jQuery('#sorting').submit();
-            }
-        });
-    </script>
 @endpush

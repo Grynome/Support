@@ -141,6 +141,9 @@ class BoardController extends Controller
             'act_description4th' => $act_description4thVal,
             'status_activity4th' => $status_activity4thVal,
             'act_time4th' => $act_time4thVal,
+            'act_description5th' => $act_description5thVal,
+            'status_activity5th' => $status_activity5thVal,
+            'act_time5th' => $act_time5thVal,
             'pending' => $pendingsts,
             'act_timepending' => $pendingactTime,
             'solve' => $solveValue

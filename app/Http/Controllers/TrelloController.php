@@ -10,7 +10,7 @@ class TrelloController extends Controller
 {
     public function trelloEn()
     {
-        $yesterday = Carbon::now()->addHours(7)->subDay();
+        $yesterday = Carbon::now()->subDay(2);
             $year3 = $yesterday->year;
             $month3 = $yesterday->month;
             $day3 = $yesterday->day;
@@ -24,6 +24,10 @@ class TrelloController extends Controller
             $year2 = $dayAfterTomorrow->year;
             $month2 = $dayAfterTomorrow->month;
             $day2 = $dayAfterTomorrow->day;
+        $now = Carbon::now();
+            $ynow = $now->year;
+            $mnow = $now->month;
+            $dnow = $now->day;
         $data['tomorow'] = Ticketing::whereRaw("YEAR(departure) = $year1")
                                         ->whereRaw("MONTH(departure) = $month1")
                                         ->whereRaw("DAY(departure) = $day1")->get();
@@ -32,7 +36,8 @@ class TrelloController extends Controller
                                         ->whereRaw("DAY(departure) = $day2")->get();
         $data['kamari'] = Ticketing::whereRaw("YEAR(departure) = $year3")
                                     ->whereRaw("MONTH(departure) = $month3")
-                                    ->whereRaw("DAY(departure) = $day3")
+                                    ->whereRaw("DAY(departure) >= $day3")
+                                    ->whereRaw("DAY(departure) < $dnow")
                                     ->where("status", '<' ,10)->get();
         
         return view('Pages.Trello.engineer')->with($data);

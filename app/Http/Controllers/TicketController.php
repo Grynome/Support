@@ -106,15 +106,14 @@ class TicketController extends Controller
             } elseif ($depart == 6) {
                 $data['ticket'] = ManageTicketProcs::where('nik', $nik)->get();
             } elseif ($depart == 13) {
-                $data['ticket'] = ManageTicketProcs::where('l2_nik', $nik)->where('status', '!=', 0)->get();
-            }
+                $data['ticket'] = ManageTicketProcs::where('departure', '>=', now()->subDay())
+                                    ->where('departure', '<', now()->addDays(3))
+                                    ->orderByDesc('departure')
+                                    ->get();
+                                }
         } else if ($depart == 9){
             $data['ticket'] = Ticketing::where('status', 10)->where('total_return', '>', 0)->where('status_awb', 0)
                                 ->whereIn('project_id', ['PRJ-020-HGT', 'PRJ-021-HGT'])->get();
-        } else if ($depart == 10){
-            $now = Carbon::now()->endOfDay();
-            $oneMonthAgo = $now->copy()->startOfDay()->subMonth(1);
-            $data['ticket'] = Ticketing::where('status', 10)->where('status_docs', 0)->whereBetween('closedate', [$oneMonthAgo, $now])->get();
         }
                     
         return view('Pages.Ticket.manage')->with($data)
@@ -127,7 +126,7 @@ class TicketController extends Controller
     {
         $depart =  auth()->user()->depart;
         
-        $now = Carbon::now()->addHours(7)->format('Y-m-d');
+        $now = Carbon::now()->format('Y-m-d');
         $oneMonthAgo = Carbon::parse($now)->subMonth(1)->format('Y-m-d');   
 
         if (empty($request->stCl_date) && empty($request->ndCl_date)) {
@@ -162,8 +161,6 @@ class TicketController extends Controller
                                         ->where('ht.status', 10)
                                         ->orderBy('entrydate','desc');
                                 })->get();
-        } else if($depart == 10) {
-            $data['ticket_closed'] = Ticketing::where('status_docs', 1)->whereBetween('docs_rcv_at', [$tanggal1.' '.'00:00:00', $tanggal2.' '.'23:59:59'])->get();
         } else if($depart == 9) {
             $data['ticket_closed'] = Ticketing::where('status_awb', 1)->whereBetween('awb_at', [$tanggal1.' '.'00:00:00', $tanggal2.' '.'23:59:59'])->get();
         } else {
@@ -197,7 +194,7 @@ class TicketController extends Controller
     {
         $depart =  auth()->user()->depart;
         
-        $now = Carbon::now()->addHours(7)->format('Y-m-d');
+        $now = Carbon::now()->format('Y-m-d');
         $oneMonthAgo = Carbon::parse($now)->subMonth(1)->format('Y-m-d');   
 
         if (empty($request->stCC_date) && empty($request->ndCC_date)) {
@@ -234,7 +231,7 @@ class TicketController extends Controller
     }
     public function ticket_today(Request $request)
     {
-        $now = Carbon::now()->addHours(7)->format('Y-m-d');
+        $now = Carbon::now()->format('Y-m-d');
         $data['ticket'] = ManageTicketProcs::whereBetween('departure', [$now.' '.'00:00:00', $now.' '.'23:59:59'])->get();
         return view('Pages.Ticket.today')->with($data);
     }
@@ -283,7 +280,7 @@ class TicketController extends Controller
             return $array_bln[$bln];
         }
         $roman = getRomawi(date('n'));
-        $dtGenerate = Carbon::now()->addHours(7)->format('ymd');
+        $dtGenerate = Carbon::now()->format('ymd');
         $get_id = Ticket::where('entrydate','LIKE','%'.$tgl.'%')->orderBy('notiket','desc')->take(1)->get();
         if ($get_id->isEmpty()) {
             $int = 1;
@@ -521,7 +518,7 @@ class TicketController extends Controller
                             'error' => 'File upload failed.',
                         ], 500);
                     }
-                    $file->move(public_path('files'),$fileName);
+                    $file->move(base_path("../public_html/files"),$fileName);
                     $fileModel = new AttachmentFile();
                     $fileModel->notiket = $kode_awal;
                     $fileModel->type_attach = 0;
@@ -548,38 +545,33 @@ class TicketController extends Controller
         $data['office_type'] = OfficeType::all()->where('deleted', 0);
         $data['province'] = \Indonesia::allProvinces()->where('deleted', 0);
         $data['severity'] = Severity::all()->where('deleted', 0);
-        if ($depart == 10) {
-            $data['file_attach_ticket'] = VW_Docs::all()->where('notiket',$id);
-            $data['attach_uploaded'] = AttachmentFile::all()->where('notiket',$id);
-        }else{
-            $data['test'] = LogTiket::where('notiket','230705046')->orderBy('created_at', 'asc')->first();
-            $data['file_attach_ticket'] = AttachmentFile::all()->where('notiket',$id)->where('type_attach',0);
-            $data['log_detil'] = LogTiket::where('notiket',$id)->orderBy('created_at','desc')->get();
-            $data['validate_problem'] = TiketInfo::all()->where('notiket',$id)->first();
-            $data['tiket_part'] = VW_Tiket_Part::all()->where('notiket',$id);
-            $data['engineer'] = VW_List_Engineer::all();
-            $data['l2_en'] = VW_List_Engineer::all()->where('depart', 13);
-            $data['sla'] = SLA::all()->where('deleted', 0);
-            $data['type'] = PartType::all()->where('deleted', 0);
-            $data['type_note'] = CategoryNote::all()->where('deleted', 0);
-            $data['ktgr_unit'] = CategoryUnit::all()->where('deleted', 0);
-            $data['merk'] = Merk::all()->where('deleted', 0);
-            $data['typeTicket'] = TypeTicket::all()->where('deleted', 0);
-            $data['source'] = Source::all()->where('deleted', 0);
-            $data['ctgr_part'] = CategoryPart::all()->where('deleted', 0);
-            if ($depart == 9) {
-                $data['validate_awb'] = Ticket::select('status_awb')->where('notiket', $id)->first();
-                $data['log_awb'] = VW_LogLogistik::all()->where('notiket',$id);
-                $data['done_awb'] = VW_Tiket_Part::all()->where('notiket',$id)->whereNotNull('awb_num');
-            }
-            $data['getStsP'] = StsPending::all()->where('deleted', 0);
-
-            $cek_part = VW_Tiket_Part::selectRaw('MAX(CASE WHEN arrive IS NULL THEN 1 ELSE null END) AS cpt')
-                            ->where('notiket', $id)
-                            ->groupBy('notiket')
-                            ->first();
+        $data['test'] = LogTiket::where('notiket','230705046')->orderBy('created_at', 'asc')->first();
+        $data['file_attach_ticket'] = AttachmentFile::all()->where('notiket',$id)->where('type_attach',0);
+        $data['log_detil'] = LogTiket::where('notiket',$id)->orderBy('created_at','desc')->get();
+        $data['validate_problem'] = TiketInfo::all()->where('notiket',$id)->first();
+        $data['tiket_part'] = VW_Tiket_Part::all()->where('notiket',$id);
+        $data['engineer'] = VW_List_Engineer::all();
+        $data['l2_en'] = VW_List_Engineer::all()->where('depart', 13);
+        $data['sla'] = SLA::all()->where('deleted', 0);
+        $data['type'] = PartType::all()->where('deleted', 0);
+        $data['type_note'] = CategoryNote::all()->where('deleted', 0);
+        $data['ktgr_unit'] = CategoryUnit::all()->where('deleted', 0);
+        $data['merk'] = Merk::all()->where('deleted', 0);
+        $data['typeTicket'] = TypeTicket::all()->where('deleted', 0);
+        $data['source'] = Source::all()->where('deleted', 0);
+        $data['ctgr_part'] = CategoryPart::all()->where('deleted', 0);
+        if ($depart == 9) {
+            $data['validate_awb'] = Ticket::select('status_awb')->where('notiket', $id)->first();
+            $data['log_awb'] = VW_LogLogistik::all()->where('notiket',$id);
+            $data['done_awb'] = VW_Tiket_Part::all()->where('notiket',$id)->whereNotNull('awb_num');
         }
-        return view('Pages.Ticket.detil')->with($data)->with('id', $id)->with('cek_part', $cek_part);
+        $data['getStsP'] = StsPending::all()->where('deleted', 0);
+
+        $data['cek_part'] = VW_Tiket_Part::selectRaw('MAX(CASE WHEN arrive IS NULL THEN 1 ELSE null END) AS cpt')
+                        ->where('notiket', $id)
+                        ->groupBy('notiket')
+                        ->first();
+        return view('Pages.Ticket.detil')->with($data)->with('id', $id);
     }
     public function add_note_at_detil(Request $request, $notiket){
         $nik =  auth()->user()->nik;
@@ -639,8 +631,6 @@ class TicketController extends Controller
                     'en_id'    => $nik,
                     'act_description'    => 1,
                     'act_time'    => $dateTime,
-                    'latitude'    => $request->latitude,
-                    'longitude'    => $request->longitude,
                     'visitting'    => 0,
                     'status'    => 1,
                     'created_at'    => $dateTime
@@ -679,8 +669,6 @@ class TicketController extends Controller
                     'en_id'    => $nik,
                     'act_description'    => 2,
                     'act_time'    => $dateTime,
-                    'latitude'    => $request->latitude,
-                    'longitude'    => $request->longitude,
                     'visitting'    => $visit,
                     'status'    => 1,
                     'created_at'    => $dateTime
@@ -721,8 +709,6 @@ class TicketController extends Controller
                         'en_id'    => $nik,
                         'act_description'    => 3,
                         'act_time'    => $dateTime,
-                        'latitude'    => $request->latitude,
-                        'longitude'    => $request->longitude,
                         'visitting'    => $visit,
                         'status'    => 1,
                         'created_at'    => $dateTime
@@ -762,8 +748,6 @@ class TicketController extends Controller
                         'en_id'    => $nik,
                         'act_description'    => 4,
                         'act_time'    => $dateTime,
-                        'latitude'    => $request->latitude,
-                        'longitude'    => $request->longitude,
                         'visitting'    => $visit,
                         'status'    => 1,
                         'created_at'    => $dateTime
@@ -820,8 +804,6 @@ class TicketController extends Controller
                             'act_description'    => 8,
                             'note'    => $request->note_reqs_part,
                             'act_time'    => $dateTime,
-                            'latitude'    => $request->latitude,
-                            'longitude'    => $request->longitude,
                             'visitting'    => $visit,
                             'status'    => 0,
                             'created_at'    => $dateTime],
@@ -829,8 +811,6 @@ class TicketController extends Controller
                             'en_id'    => $nik,
                             'act_description'    => 5,
                             'act_time'    => $dateTime,
-                            'latitude'    => $request->latitude,
-                            'longitude'    => $request->longitude,
                             'visitting'    => $visit,
                             'status'    => 1,
                             'created_at'    => $dateTime]
@@ -856,8 +836,6 @@ class TicketController extends Controller
                         'en_id'    => $nik,
                         'act_description'    => 9,
                         'act_time'    => $dateTime,
-                        'latitude'    => $request->latitude,
-                        'longitude'    => $request->longitude,
                         'visitting'    => $visit,
                         'status'    => 0,
                         'created_at'    => $dateTime],
@@ -865,8 +843,6 @@ class TicketController extends Controller
                         'en_id'    => $nik,
                         'act_description'    => 5,
                         'act_time'    => $dateTime,
-                        'latitude'    => $request->latitude,
-                        'longitude'    => $request->longitude,
                         'visitting'    => $visit,
                         'status'    => 1,
                         'created_at'    => $dateTime]
@@ -915,8 +891,6 @@ class TicketController extends Controller
                         'en_id'    => $nik,
                         'act_description'    => 6,
                         'act_time'    => $dateTime,
-                        'latitude'    => $request->latitude,
-                        'longitude'    => $request->longitude,
                         'visitting'    => $visit,
                         'status'    => 1,
                         'created_at'    => $dateTime
@@ -958,8 +932,6 @@ class TicketController extends Controller
                     'en_id'    => $nik,
                     'act_description'    => 7,
                     'act_time'    => $dateTime,
-                    'latitude'    => $request->latitude,
-                    'longitude'    => $request->longitude,
                     'visitting'    => $visit,
                     'status'    => 0,
                     'created_at'    => $dateTime
@@ -1177,6 +1149,33 @@ class TicketController extends Controller
             return back();
         }
     }
+    
+    public function l2_support(Request $request, $key){
+        $nik =  auth()->user()->nik;
+        $full_name =  auth()->user()->full_name;
+        $value = [
+            'l2_id'    => $nik
+        ];
+        $query = Ticket::where('notiket', $key)->first();
+        $result = $query->update($value);
+        if($result) {
+            $dateTime = Carbon::now();
+            $logging = [
+                'notiket'    => $key,
+                'note'    => 'L2 '.$full_name.' Take this ticket for Supporting',
+                'user'     => $nik,
+                'created_at'     => $dateTime
+            ];
+            LogTiket::insert($logging);
+            Alert::toast('Successfully take the Ticket!', 'success');
+            return back();
+        }
+        else {
+            Alert::toast('Error Failed!', 'error');
+            return back();
+        }
+    }
+
     public function change_engineer(Request $request, $key){
         $get_sp_en = ServicePoint::select('service_id')->where('service_name',$request->sp_en_name)->first();
         $value = [
@@ -1203,32 +1202,6 @@ class TicketController extends Controller
             } else {
                 return back();
             }
-        }
-        else {
-            Alert::toast('Error when updating!', 'error');
-            return back();
-        }
-    }
-    public function change_l2(Request $request, $key){
-        $value = [
-            'l2_id'    => $request->nik_engineer
-        ];
-        $query = Ticket::where('notiket', $key)->first();
-        $result = $query->update($value);
-        if($result) {
-            $nik =  auth()->user()->nik;
-            $depart =  auth()->user()->depart;
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
-            $data_en = User::all()->where('nik',$request->nik_engineer)->first();
-            $logging = [
-                'notiket'    => $key,
-                'note'    => 'Change L2 to'.' '.@$data_en->full_name,
-                'user'     => $nik,
-                'created_at'     => $dateTime
-            ];
-            LogTiket::insert($logging);
-            Alert::toast('L2 successfully changed!', 'success');
-            return back();
         }
         else {
             Alert::toast('Error when updating!', 'error');
@@ -1268,22 +1241,30 @@ class TicketController extends Controller
             $id_part = $part_detail_id->part_detail_id;
         }
         
-        $AECek = ActivityEngineer::select('notiket', 'en_id', 'visitting')
-            ->selectRaw('ROW_NUMBER() OVER(PARTITION BY notiket ORDER BY visitting DESC) as rn');
+        $AECek = ActivityEngineer::select(
+            'notiket',
+            'en_id',
+            'visitting',
+        )->selectRaw(
+            'ROW_NUMBER() OVER(PARTITION BY notiket ORDER BY visitting DESC) as rn',
+        );
         $getAE = ActivityEngineer::fromSub($AECek, 'a')
             ->where('rn', 1)
             ->where('notiket', $notiket)
             ->first();
-        
-        if (empty($getAE) || $getAE->visitting == 0) {
+        $gcek = Ticket::select('status')
+            ->where('notiket', $notiket)
+            ->first();
+
+        if (empty($getAE) ||($gcek->status == 1 && $getAE->visitting == 0)) {
             $part_onsite = 1;
-        } else if ($getAE->visitting == 1){
+        } elseif ($gcek->status == 2 && ($getAE->visitting == 0 || $getAE->visitting == 1)) {
             $part_onsite = 2;
-        } else if ($getAE->visitting == 2){
+        } elseif ($gcek->status == 3 && ($getAE->visitting == 1 || $getAE->visitting == 2)) {
             $part_onsite = 3;
-        } else if ($getAE->visitting == 3){
+        } elseif ($gcek->status == 4 && ($getAE->visitting == 2 || $getAE->visitting == 3)) {
             $part_onsite = 4;
-        } else if ($getAE->visitting == 4){
+        } elseif ($gcek->status == 5 && ($getAE->visitting == 3 || $getAE->visitting == 4)) {
             $part_onsite = 5;
         }
         
@@ -1506,15 +1487,9 @@ class TicketController extends Controller
 
             $url = url("Detail/Ticket=$id");
             $get_hp = User::select('phone')->where('nik', $query_sts_ticket->en_id)->first();
-            $get_l2 = User::select('phone')->where('nik', $query_sts_ticket->l2_id)->first();
             $message = urlencode("You have a new Ticket with No Ticket.$id\nClick link to open the page : ($url)");
             $phone = substr("$get_hp->phone",1);
             $link = "https://wa.me/+62{$phone}?text={$message}";
-            if (!empty($get_l2)) {
-                $phonel2 = substr("$get_l2->phone",1);
-                $linkl2 = "https://wa.me/+62{$phonel2}?text={$message}";
-                session()->flash('whatsapp_link_2', $linkl2);
-            }
             Alert::toast('Ticket Successfully Sending to Engineer!', 'success');
             session()->flash('whatsapp_link_1', $link);
             return redirect()->back();
@@ -1532,7 +1507,7 @@ class TicketController extends Controller
             // ~~~~~
             $attachQuery = AttachmentFile::where('notiket', $id)->get();
             foreach ($attachQuery as $value) {
-                $pathFile = public_path("$value->path");
+                $pathFile = base_path("../public_html/$get_dt->path");
 
                 if (file_exists($pathFile)) {
                     unlink($pathFile);
@@ -1563,7 +1538,7 @@ class TicketController extends Controller
             foreach ($getActEn as $value) {
                 $delAttachEn = EngineerAttachment::where('engineer_attach_id', $value->en_attach_id)->get();
                 foreach ($delAttachEn as $item) {
-                    $pathFile = public_path("$item->path");
+                    $pathFile = base_path("../public_html/$item->path");
 
                     if (file_exists($pathFile)) {
                         unlink($pathFile);
@@ -1621,7 +1596,7 @@ class TicketController extends Controller
         
         foreach ($files as $file) {
             $fileName = uniqid().'_'.$file->getClientOriginalName();
-            $file->move(public_path('/uploads'), $fileName);
+            $file->move(base_path("../public_html/uploads"), $fileName);
             
             $path = '/uploads/'.$fileName;
 
@@ -1660,18 +1635,18 @@ class TicketController extends Controller
         $get_id_attachment = EngineerAttachment::orderBy('engineer_attach_id','desc')->take(1)->get();
         if ($get_id_attachment->isEmpty()) {
             $no = 1;
-                $id_attach = "EN/Attach-00".$no;
+                $id_attach = "L2/Attach-00".$no;
         } else {
             $data_attach_engineer = $get_id_attachment[0]->engineer_attach_id;
             $get_int_attach = substr($data_attach_engineer, 10,10);
             $autonumber = (int)$get_int_attach;
             $autonumber++;
             if($autonumber > 9 && $autonumber < 100){
-                $id_attach = "EN/Attach-0".$autonumber;
-            }elseif($autonumber > 99 && $autonumber < 1000){
-                $id_attach = "EN/Attach-".$autonumber;
+                $id_attach = "L2/Attach-0".$autonumber;
+            }elseif($autonumber > 99){
+                $id_attach = "L2/Attach-".$autonumber;
             }elseif($autonumber <= 9){
-                $id_attach = "EN/Attach-00".$autonumber;
+                $id_attach = "L2/Attach-00".$autonumber;
             }
         }
         
@@ -1887,33 +1862,7 @@ class TicketController extends Controller
             return back();
         }
     }
-    public function update_receive_docs($id)
-    {
-        $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
-        $value = [
-            'status_docs'    => 1
-        ];
-
-        $query_docs_sts_ticket = Ticket::where('notiket', $id)->first();
-        $result = $query_docs_sts_ticket->update($value);
-
-        if($result) {
-            $logging = [
-                'notiket'    => $id,
-                'action'    => 'Document Received',
-                'id_admin'     => $nik,
-                'created_at'     => $dateTime
-            ];
-            LogAdmin::insert($logging);
-            Alert::toast('Documents its Received!', 'success');
-            return redirect('helpdesk/manage=Ticket');
-        }
-        else {
-            Alert::toast('Error when updating!', 'error');
-            return back();
-        }
-    }
+    // Function will be able to delete
     public function update_schedule_en(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
@@ -2113,33 +2062,6 @@ class TicketController extends Controller
             return back();
         }
     }
-    public function remove_l2en_dt(Request $request, $id)
-    {
-        $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
-        
-        $query = Ticket::where('notiket', $id)->first();
-        if($query) {
-            $value = [
-                'l2_id'    => null
-
-            ];
-            $logging = [
-                'notiket'    => $id,
-                'note'    => 'Removing Engineer from ticket',
-                'user'     => $nik,
-                'created_at'     => $dateTime
-            ];
-            $query->update($value);
-            LogTiket::insert($logging);
-            Alert::toast('Successfully removing L2 engineer!', 'success');
-            return back();
-        }
-        else {
-            Alert::toast('Error when Removing', 'error');
-            return back();
-        }
-    }
     public function prev_sts_ticket(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
@@ -2326,6 +2248,7 @@ class TicketController extends Controller
             return back();
         }
     }
+    // will be able to delete
     public function store_attach_adm(Request $request, $id)
     {
         $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
@@ -2333,7 +2256,7 @@ class TicketController extends Controller
         
         foreach ($files as $file) {
             $fileName = uniqid().'_'.$file->getClientOriginalName();
-            $file->move(public_path('/uploads/bundle_adm'), $fileName);
+            $file->move(base_path("../public_html/uploads/bundle_adm"), $fileName);
             
             $path = '/uploads/bundle_adm/'.$fileName;
 

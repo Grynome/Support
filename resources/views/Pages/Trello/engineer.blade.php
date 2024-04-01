@@ -15,7 +15,7 @@
                     <div class="card-body">
                         <div class="row mb-3">
                             <div class="col">
-                                <h6 class="card-title">Yesterday</h6>
+                                <h6 class="card-title">Since 2 days Ago</h6>
                                 <p class="form-label fw-bolder">
                                     Ticket Not Yet Closed
                                 </p>
@@ -45,7 +45,7 @@
                                             <td>{{ $item->full_name }}</td>
                                             <td>{{ $item->departure }}</td>
                                             <td>
-                                                <a href="{{url("Detail/Ticket=$item->notiket")}}">
+                                                <a href="{{ url("Detail/Ticket=$item->notiket") }}">
                                                     <button type="button" class="btn btn-inverse-info btn-icon btn-sm">
                                                         <i data-feather="search"></i>
                                                     </button>
@@ -94,7 +94,7 @@
                                             <td>{{ $item->full_name }}</td>
                                             <td>{{ $item->departure }}</td>
                                             <td>
-                                                <a href="{{url("Detail/Ticket=$item->notiket")}}">
+                                                <a href="{{ url("Detail/Ticket=$item->notiket") }}">
                                                     <button type="button" class="btn btn-inverse-info btn-icon btn-sm">
                                                         <i data-feather="search"></i>
                                                     </button>
@@ -143,7 +143,7 @@
                                             <td>{{ $item->full_name }}</td>
                                             <td>{{ $item->departure }}</td>
                                             <td>
-                                                <a href="{{url("Detail/Ticket=$item->notiket")}}">
+                                                <a href="{{ url("Detail/Ticket=$item->notiket") }}">
                                                     <button type="button" class="btn btn-inverse-info btn-icon btn-sm">
                                                         <i data-feather="search"></i>
                                                     </button>

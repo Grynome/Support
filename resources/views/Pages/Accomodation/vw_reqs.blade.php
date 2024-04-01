@@ -11,7 +11,7 @@
     } else {
         $tab2 = 'All Expenses';
     }
-
+    $temp = 'null';
 @endphp
 @extends('Theme/header')
 @section('getPage')
@@ -21,7 +21,7 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Tables</a></li>
                 <li class="breadcrumb-item active" aria-current="page">
-                    My Expenses
+                    My Expenses {{ $enReqs }}
                 </li>
             </ol>
         </nav>
@@ -48,7 +48,7 @@
                                 </h6>
                             </div>
                             @if ($depart == 15)
-                                <form action="{{ route('sorting.request') }}" method="post">
+                                <form action="{{ route('sorting.request', $temp) }}" method="post">
                                     @csrf
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h4 class="mb-3 mt-3 me-2 mb-md-0">Data Request</h4>
@@ -168,14 +168,19 @@
                                                         ->groupBy('id_dt_reqs')
                                                         ->havingRaw('SUM(CASE WHEN `status` = 1 THEN 0 ELSE 1 END) = 0')
                                                         ->first();
-                                                    $cek_attach = ReqsEnDT::selectRaw('MAX(CASE WHEN path IS NULL or actual = "" THEN 1 ELSE null END) AS qca')
+                                                    $cek_attach = ReqsEnDT::selectRaw(
+                                                        'MAX(CASE WHEN path IS NULL or actual = "" THEN 1 ELSE null END) AS qca',
+                                                    )
                                                         ->where('id_dt_reqs', $item->id_dt_reqs)
                                                         ->groupBy('id_dt_reqs')
                                                         ->first();
                                                     $status = $item->status;
                                                     $checked = $dtReqs->where('status', 2);
                                                     $rct = $depart == 6 ? 'En' : 'Acc';
-                                                    $btnDTReqs = $checked->isNotEmpty() && empty($item->reject) ? 'danger' : 'info';
+                                                    $btnDTReqs =
+                                                        $checked->isNotEmpty() && empty($item->reject)
+                                                            ? 'danger'
+                                                            : 'info';
                                                 @endphp
                                                 <tr>
                                                     <td>
@@ -185,7 +190,12 @@
                                                                 aria-label="First group">
                                                                 @if ($status == 2 && $cek_attach->qca == null && ($depart == 15 || ($depart == 6 && $role == 19)))
                                                                     @php
-                                                                        $cek_Ssts = $depart == 6 ? [2] : ($role == 19 ? [3] : [0, 4]);
+                                                                        $cek_Ssts =
+                                                                            $depart == 6
+                                                                                ? [2]
+                                                                                : ($role == 19
+                                                                                    ? [3]
+                                                                                    : [0, 4]);
                                                                     @endphp
                                                                     @if (in_array($item->side_sts, $cek_Ssts))
                                                                         <form action="{{ route('done.reqs', $item->id) }}"
@@ -242,7 +252,11 @@
                                                                 @else
                                                                     @if ($depart == 6)
                                                                         @php
-                                                                            [$urlDsc, $title] = $checked->isNotEmpty() && empty($item->reject) ? ['Re', 'Re-Create'] : ['Refs', 'Additional Detil'];
+                                                                            [$urlDsc, $title] =
+                                                                                $checked->isNotEmpty() &&
+                                                                                empty($item->reject)
+                                                                                    ? ['Re', 'Re-Create']
+                                                                                    : ['Refs', 'Additional Detil'];
                                                                         @endphp
                                                                         @if (($item->type_reqs == 2 && ($status == 0 || $item->reject > 0)) || ($item->type_reqs == 1 && empty($cek_confirm)))
                                                                             <button type="button"
@@ -279,8 +293,8 @@
                                                                         @endif
                                                                     @else
                                                                         @if (
-                                                                            (($item->type_reqs == 2 && $item->status == 1) || ($item->type_reqs == 1 && !empty($cek_confirm))) &&
-                                                                                !empty(@$item->get_expenses->status))
+                                                                            ($item->type_reqs == 2 && $item->status == 1 && !empty(@$item->get_expenses->status)) ||
+                                                                                ($item->type_reqs == 1 && !empty($cek_confirm)))
                                                                             <button type="button"
                                                                                 class="btn btn-inverse-primary btn-icon btn-sm btn-execute-reqs-en"
                                                                                 data-bs-toggle="tooltip"
@@ -309,7 +323,7 @@
                                                                             </button>
                                                                             &nbsp;
                                                                         @endif
-                                                                        @if (!empty($cek_confirm) && empty($item->id_expenses))
+                                                                        @if ($item->type_reqs == 2 && !empty($cek_confirm) && empty($item->id_expenses))
                                                                             <a
                                                                                 href="{{ url("Form/Reqs-Expenses/$item->id_dt_reqs") }}">
                                                                                 <button type="button"
@@ -357,10 +371,10 @@
                                                                 </button>
                                                             </div>
                                                         </div>
-                                                        <div class="modal fade" id="dt-refs-ticket{{ $no }}"
-                                                            tabindex="-1" aria-labelledby="DtReqsModal"
-                                                            aria-hidden="true">
-                                                            <div class="modal-dialog">
+                                                        <div class="modal fade bd-example-modal-lg"
+                                                            id="dt-refs-ticket{{ $no }}" tabindex="-1"
+                                                            aria-labelledby="DtReqsModal" aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
                                                                         <button type="button" class="btn-close"
@@ -382,6 +396,8 @@
                                                                                     <tr>
                                                                                         <th>No</th>
                                                                                         <th>Notiket</th>
+                                                                                        <th>Service Point</th>
+                                                                                        <th>Kota</th>
                                                                                         <th>Onsite</th>
                                                                                         <th>Option</th>
                                                                                     </tr>
@@ -394,6 +410,10 @@
                                                                                         <tr>
                                                                                             <td>{{ $non }}</td>
                                                                                             <td>{{ $val->notiket }}</td>
+                                                                                            <td>{{ $item->service_name }}
+                                                                                            </td>
+                                                                                            <td>{{ $val->gpi->go_end_user->get_kab->name }}
+                                                                                            </td>
                                                                                             <td>{{ $val->reqs_at }}</td>
                                                                                             <td>
                                                                                                 <a href="{{ url("Detail/Ticket=$val->notiket") }}"
@@ -507,6 +527,7 @@
                                                                                             <th>Category</th>
                                                                                             <th>Nominal</th>
                                                                                             <th>Additional</th>
+                                                                                            <th></th>
                                                                                             <th>Actual Price</th>
                                                                                             <th>Status</th>
                                                                                             @if ($depart == 15)
@@ -586,11 +607,41 @@
                                                                                                             data-inputmask="'alias': 'currency', 'prefix':'Rp'" />
                                                                                                     @endif
                                                                                                 </td>
+                                                                                                <td>
+                                                                                                    <button type="button"
+                                                                                                        data-bs-toggle="tooltip"
+                                                                                                        data-bs-placement="top"
+                                                                                                        title="Download Receipt"
+                                                                                                        class="btn btn-inverse-success btn-icon btn-download-receipt"
+                                                                                                        data-receipt-id="{{ $dtr->id }}">
+                                                                                                        <i class="btn-icon-prepend"
+                                                                                                            data-feather="download-cloud"></i>
+                                                                                                    </button>
+                                                                                                </td>
                                                                                                 <td>{{ 'Rp ' . number_format($dtr->actual, 0, ',', '.') }}
                                                                                                 </td>
                                                                                                 <td>
                                                                                                     @php
-                                                                                                        [$sts, $spn] = empty($dtr->status) ? ['Not Checked Yet', 'info'] : ($dtr->status == 1 ? ['Confirmed', 'success'] : ['Rejected', 'danger']);
+                                                                                                        [
+                                                                                                            $sts,
+                                                                                                            $spn,
+                                                                                                        ] = empty(
+                                                                                                            $dtr->status
+                                                                                                        )
+                                                                                                            ? [
+                                                                                                                'Not Checked Yet',
+                                                                                                                'info',
+                                                                                                            ]
+                                                                                                            : ($dtr->status ==
+                                                                                                            1
+                                                                                                                ? [
+                                                                                                                    'Confirmed',
+                                                                                                                    'success',
+                                                                                                                ]
+                                                                                                                : [
+                                                                                                                    'Rejected',
+                                                                                                                    'danger',
+                                                                                                                ]);
                                                                                                     @endphp
                                                                                                     <h4><span
                                                                                                             class="badge bg-{{ $spn }}">{{ $sts }}</span>
@@ -599,7 +650,15 @@
                                                                                                 @if ($depart == 15)
                                                                                                     <td>
                                                                                                         @php
-                                                                                                            $dsb = !empty($item->reject) || !empty(@$item->get_expenses) ? 'disabled' : '';
+                                                                                                            $dsb =
+                                                                                                                !empty(
+                                                                                                                    $item->reject
+                                                                                                                ) ||
+                                                                                                                !empty(
+                                                                                                                    @$item->get_expenses
+                                                                                                                )
+                                                                                                                    ? 'disabled'
+                                                                                                                    : '';
                                                                                                         @endphp
                                                                                                         <fieldset
                                                                                                             id="check-choose{{ $noDT }}"
@@ -715,55 +774,128 @@
                                                                         ? (empty($item->reject)
                                                                             ? ($role == 19
                                                                                 ? ['Need to Proceed', 'primary']
-                                                                                : ['Waiting Confirm Your Leader', 'info'])
+                                                                                : [
+                                                                                    'Waiting Confirm Your Leader',
+                                                                                    'info',
+                                                                                ])
                                                                             : ($role == 19
-                                                                                ? ['Waiting for delete by Engineer', 'warning']
-                                                                                : ['Rejected by Your Leader', 'danger']))
+                                                                                ? [
+                                                                                    'Waiting for delete by Engineer',
+                                                                                    'warning',
+                                                                                ]
+                                                                                : [
+                                                                                    'Rejected by Your Leader',
+                                                                                    'danger',
+                                                                                ]))
                                                                         : ($status == 1
                                                                             ? ($depart == 6
                                                                                 ? ($checked->isEmpty()
                                                                                     ? (@$item->get_expenses->status == 1
-                                                                                        ? ['Waiting for Disburse Funds', 'info']
-                                                                                        : ['In Checks By Accounting', 'info'])
+                                                                                        ? [
+                                                                                            'Waiting for Disburse Funds',
+                                                                                            'info',
+                                                                                        ]
+                                                                                        : [
+                                                                                            'In Checks By Accounting',
+                                                                                            'info',
+                                                                                        ])
                                                                                     : (empty($item->reject)
-                                                                                        ? ['wait for sent back!', 'warning']
-                                                                                        : ['Rejected by Accounting', 'danger']))
+                                                                                        ? [
+                                                                                            'wait for sent back!',
+                                                                                            'warning',
+                                                                                        ]
+                                                                                        : [
+                                                                                            'Rejected by Accounting',
+                                                                                            'danger',
+                                                                                        ]))
                                                                                 : (!empty($cek_confirm)
-                                                                                    ? (empty(@$item->get_expenses->status)
-                                                                                        ? ['Need to Create Form Request', 'primary']
-                                                                                        : (@$item->get_expenses->status == 1
-                                                                                            ? ['Please to Execute', 'info']
-                                                                                            : ['Rejected, Please return it to En', 'info']))
+                                                                                    ? (empty(
+                                                                                        @$item->get_expenses->status
+                                                                                    )
+                                                                                        ? [
+                                                                                            'Need to Create Form Request',
+                                                                                            'primary',
+                                                                                        ]
+                                                                                        : (@$item->get_expenses
+                                                                                            ->status == 1
+                                                                                            ? [
+                                                                                                'Please to Execute',
+                                                                                                'info',
+                                                                                            ]
+                                                                                            : [
+                                                                                                'Rejected, Please return it to En',
+                                                                                                'info',
+                                                                                            ]))
                                                                                     : ($checked->isNotEmpty()
                                                                                         ? (empty($item->reject)
-                                                                                            ? ['Some Reqs had been Rejected, Return it!', 'warning']
-                                                                                            : ['Waiting : Sent it back', 'info'])
-                                                                                        : ['Pls, to check!', 'primary'])))
+                                                                                            ? [
+                                                                                                'Some Reqs had been Rejected, Return it!',
+                                                                                                'warning',
+                                                                                            ]
+                                                                                            : [
+                                                                                                'Waiting : Sent it back',
+                                                                                                'info',
+                                                                                            ])
+                                                                                        : [
+                                                                                            'Pls, to check!',
+                                                                                            'primary',
+                                                                                        ])))
                                                                             : ($status == 2
                                                                                 ? ($cek_attach->qca == 1
                                                                                     ? ($depart == 6
-                                                                                        ? ['Complete the data', 'warning']
-                                                                                        : ['Data is uncomplete', 'warning'])
+                                                                                        ? [
+                                                                                            'Complete the data',
+                                                                                            'warning',
+                                                                                        ]
+                                                                                        : [
+                                                                                            'Data is uncomplete',
+                                                                                            'warning',
+                                                                                        ])
                                                                                     : ($depart == 6
-                                                                                        ? ['It will updating to finish', 'info']
+                                                                                        ? [
+                                                                                            'It will updating to finish',
+                                                                                            'info',
+                                                                                        ]
                                                                                         : ($item->tln == $item->tla
                                                                                             ? ['Set it Finish', 'info']
                                                                                             : ($item->tln >= $item->tla
-                                                                                                ? ['Kembalian (Rp ' . number_format($item->tln - $item->tla, 0, ',', '.') . ')', 'info']
-                                                                                                : ['Kurang (Rp ' . number_format($item->tla - $item->tln, 0, ',', '.') . ')', 'warning']))))
+                                                                                                ? [
+                                                                                                    'Kembalian (Rp ' .
+                                                                                                    number_format(
+                                                                                                        $item->tln -
+                                                                                                            $item->tla,
+                                                                                                        0,
+                                                                                                        ',',
+                                                                                                        '.',
+                                                                                                    ) .
+                                                                                                    ')',
+                                                                                                    'info',
+                                                                                                ]
+                                                                                                : [
+                                                                                                    'Kurang (Rp ' .
+                                                                                                    number_format(
+                                                                                                        $item->tla -
+                                                                                                            $item->tln,
+                                                                                                        0,
+                                                                                                        ',',
+                                                                                                        '.',
+                                                                                                    ) .
+                                                                                                    ')',
+                                                                                                    'warning',
+                                                                                                ]))))
                                                                                 : ['Done', 'success'])))
                                                                     : ($depart == 6
                                                                         ? ($checked->isEmpty()
-                                                                            ? (@$item->get_expenses->status == 1
-                                                                                ? ['Waiting for Disburse Funds', 'info']
-                                                                                : ['In Checks By Accounting', 'info'])
+                                                                            ? ['Waiting for Disburse Funds', 'info']
                                                                             : ['Request Rejected!', 'warning'])
                                                                         : (!empty($cek_confirm)
-                                                                            ? (empty(@$item->get_expenses->status)
-                                                                                ? ['Need to Create Form Request', 'primary']
-                                                                                : ['Please to Execute', 'info'])
-                                                                            : ($checked->isNotEmpty() && empty($item->reject)
-                                                                                ? ['Would be Delete or Re-Create!', 'warning']
+                                                                            ? ['Please to Execute', 'info']
+                                                                            : ($checked->isNotEmpty() &&
+                                                                            empty($item->reject)
+                                                                                ? [
+                                                                                    'Would be Delete or Re-Create!',
+                                                                                    'warning',
+                                                                                ]
                                                                                 : ['Pls, to check!', 'primary'])));
                                                         @endphp
                                                         <h4><span
@@ -828,14 +960,17 @@
     <script src="{{ asset('assets') }}/js/inputmask.js"></script>
 @endpush
 @push('custom')
-    @if (session('new_reqs'))
+    @if (session('wa_l1') && session('wa_l2'))
         <script>
-            const waNQ = "{{ session('new_reqs') }}";
+            const l1 = "{{ session('wa_l1') }}";
 
-            window.open(waNQ, '_blank');
+            window.open(l1, '_blank');
+            const l2 = "{{ session('wa_l2') }}";
+
+            window.open(l2, '_blank');
         </script>
-    @elseif (session('confirm1') && session('confirm2'))
-        @if ($depart == 6 && $role == 19)
+    @endif
+    @if (session('confirm1') && session('confirm2'))
         <script>
             const c1 = "{{ session('confirm1') }}";
 
@@ -844,7 +979,6 @@
 
             window.open(c2, '_blank');
         </script>
-        @endif
     @endif
     <script>
         // Confirm Remove Request
@@ -1209,6 +1343,38 @@
                 // Initialize tooltips
                 $('[data-bs-toggle="tooltip"]').tooltip();
             }
+        });
+    </script>
+    <script>
+        $('.btn-download-receipt').each(function(index) {
+            $(this).on('click', function() {
+                var receiptId = $(this).data('receipt-id');
+                
+                var formId = 'downloadForm_' + receiptId;
+
+                $('#' + formId).remove();
+
+                var form = $('<form>').attr({
+                    id: formId,
+                    method: 'POST', 
+                    action: '{{ route("receipt.download", ["id" => ":id"]) }}'.replace(':id', receiptId),
+                    style: 'display: none;' 
+                });
+
+                // Add CSRF token to form
+                var token = $('meta[name="csrf-token"]').attr('content');
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: '_token',
+                    value: token
+                }).appendTo(form);
+
+                form.appendTo('body');
+
+                form.submit();
+
+                form.remove();
+            });
         });
     </script>
 @endpush

@@ -31,6 +31,8 @@ use App\Http\Controllers\PICController;
 use App\Http\Controllers\IssueController;
 use App\Http\Controllers\LogAsController;
 use App\Http\Controllers\AccomodationController;
+use App\Http\Controllers\DocsController;
+use App\Http\Controllers\LocationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +49,11 @@ Route::auth();
         Route::post('/check-username-email', [DataAjaxController::class, 'checkUsernameAndEmail'])->name('check.UserMail');
     Route::post('Add/User-HGT', [RegisterController::class, 'store']);
     Route::get('/Dashboard', [BoardController::class, 'dashboard']);
+    
+    Route::get('/newLogin', function () {
+        return view('auth.newLogin');
+    });
+
     Route::get('get-tickets/', [BoardController::class, 'getTickets']);
     Route::get('ticketsToday/', [BoardController::class, 'getTicketsToday']);
     Route::get('status/{tiketID}', [BoardController::class, 'getStatusDash']);
@@ -115,8 +122,8 @@ Route::group(['middleware'=>'auth'], function(){
             Route::post('Update/L2-Engineer/{key}/Ticket', [TicketController::class, 'update_l2engineer'])->where(['key' => '.*']);
             // Change ENGINEER TICKET
             Route::patch('Update/{key}/Change-Engineer', [TicketController::class, 'change_engineer'])->where(['key' => '.*']);
-            // Change L2 TICKET
-            Route::patch('Update/{key}/Change-L2', [TicketController::class, 'change_l2'])->where(['key' => '.*']);
+            // L2 Take Ticket for Supporting
+            Route::patch('L2/Take-Ticket/{key}', [TicketController::class, 'l2_support'])->where(['key' => '.*']);
             // Adding Part
             Route::post('Part/{notiket}/Added', [TicketController::class, 'store_part_dt'])->where(['notiket' => '.*']);
                 // Detail Part
@@ -169,8 +176,6 @@ Route::group(['middleware'=>'auth'], function(){
                 Route::patch('Update/All-List/{id}', [TicketController::class, 'update_awb_all_list'])->where(['id' => '.*']);
             //Update Done AWB
             Route::patch('Update-Ticket/AWB/{id}', [TicketController::class, 'update_finish_awb'])->where(['id' => '.*']);
-        //Update Docs Received
-        Route::patch('Update-Ticket/Docs/{id}', [TicketController::class, 'update_receive_docs'])->where(['id' => '.*']);
         //Update Schedule Engineer
         Route::patch('Update-Ticket/Schedule/{id}', [TicketController::class, 'update_schedule_en'])->where(['id' => '.*']);
         //Update Requested Part from engineer
@@ -185,8 +190,6 @@ Route::group(['middleware'=>'auth'], function(){
         Route::patch('Return/Ticket/{id}', [TicketController::class, 'prev_sts_ticket'])->where(['id' => '.*']);
         // Remove Engineer
         Route::patch('Remove-Engineer/Ticket/{id}', [TicketController::class, 'remove_en_dt'])->where(['id' => '.*']);
-        // Remove Engineer
-        Route::patch('Remove/L2-Engineer/DT/{id}', [TicketController::class, 'remove_l2en_dt'])->where(['id' => '.*']);
         //Update Schedule Engineer
         Route::patch('Change-SLA/Ticket={key}', [TicketController::class, 'updt_sla'])->where(['key' => '.*']);
         // Delete Log Note Ticket
@@ -485,18 +488,28 @@ Route::group(['middleware'=>'auth'], function(){
         Route::patch('Finish/Reqs-En/{id}', [AccomodationController::class, 'finish_reqs'])->name('done.reqs');
     Route::get('My-Expenses/id={id}', [AccomodationController::class, 'vw_request_reimburse']);
         // Filter
-        Route::post('My-Expenses/sorting', [AccomodationController::class, 'vw_request_reimburse'])->name('sorting.request');
+        Route::post('My-Expenses/id={id}/sorting', [AccomodationController::class, 'vw_request_reimburse'])->name('sorting.request');
         // Get Excel Reimburse
         Route::post('Excel/Data-Reimburse', [AccomodationController::class, 'get_reqs_excel'])->name('excel.reimburse');
     Route::get('/getReqsDone', [AccomodationController::class, 'done_reqs'])->name('fetch.reqs.done');
     Route::get('Print-Out/{id}-{sub}', [AccomodationController::class, 'inv_ex']);
+    Route::post('Receipt/{id}/Download', [AccomodationController::class, 'downloadReceiptment'])->name('receipt.download');
+
+    // Admin Page
+    Route::get('Inquiry/Docs', [DocsController::class, 'vw_upload_docs']);
+        //Update Docs Received
+        Route::patch('Update-Ticket/Docs/{id}', [DocsController::class, 'update_receive_docs'])->where(['id' => '.*']);
 
     
     // Search Issue
     Route::get('Search/Data-Issue', [IssueController::class, 'srch']);
         // Directing search issue ticket
         Route::post('Direct/Issue-Ticket', [IssueController::class, 'dirSearchIssue']);
-            // View Profile
+
+    // Search location
+    Route::get('/search', [LocationController::class, 'index']);
+
+    // View Profile
     Route::get('Profile/{user}', [ProfileController::class, 'profile']);
         // Edit User
         Route::patch('update/user/{user}', [ProfileController::class, 'update_biodata'])->name('update.user');
