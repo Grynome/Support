@@ -3,6 +3,7 @@
 @php
     $role = auth()->user()->role;
     $depart = auth()->user()->depart;
+    $id_user = auth()->user()->id;
     $dtrs = 'Null';
     use App\Models\ReqsEnDT;
     use App\Models\RefReqs;
@@ -34,7 +35,7 @@
                             <div class="col-md-10">
                                 <h6 class="card-title">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        @if ($depart == 6 && $role == 16)
+                                        @if ($depart == 6 && ($role == 16 || $id_user == 83))
                                             <a href="{{ url("Past/Reqs-Accomodation/$dtrs") }}">
                                                 <button type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                                     title="Request for Past Tickets"
