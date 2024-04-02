@@ -1900,7 +1900,7 @@
                                                                                 <button type="button"
                                                                                     data-bs-toggle="tooltip"
                                                                                     data-bs-placement="top"
-                                                                                    title="Duplicate Part"
+                                                                                    title="Clone Part"
                                                                                     data-dplbtn-ids="{{ $no }}"
                                                                                     class="btn btn-inverse-info btn-icon btn-sm btn-dpl-part">
                                                                                     <i
