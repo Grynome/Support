@@ -37,7 +37,7 @@ class HomeController extends Controller
     public function store_wn_square(Request $request)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         
         $values = [
             'nik'    => $nik,

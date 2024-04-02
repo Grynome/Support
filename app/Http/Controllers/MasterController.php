@@ -33,7 +33,7 @@ class MasterController extends Controller
         
         public function store_ctgr_unit(Request $request)
         {
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             
             $values = [
                 'merk_id'    => $request->add_ktgr_merk,
@@ -95,7 +95,7 @@ class MasterController extends Controller
         
         public function store_merk_unit(Request $request)
         {
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             
             $values = [
                 'merk'    => $request->merk_unit_val,
@@ -153,7 +153,7 @@ class MasterController extends Controller
         }
         public function store_office_type(Request $request)
         {
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             
             $values = [
                 'name_type'    => $request->type_name,
@@ -221,7 +221,7 @@ class MasterController extends Controller
         }
         public function add_init_merk_category(Request $request)
         {
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             
             $values = [
                 'merk_id'    => $request->init_merk,
@@ -279,7 +279,7 @@ class MasterController extends Controller
         
         public function store_ticket_type(Request $request)
         {
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             
             $values = [
                 'type_name'    => $request->type_ticket_name,
@@ -335,7 +335,7 @@ class MasterController extends Controller
         
         public function store_ktgr_part(Request $request)
         {
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             
             $values = [
                 'type_name'    => $request->part_kategory_name,
@@ -392,7 +392,7 @@ class MasterController extends Controller
         
         public function store_ktgr_note(Request $request)
         {
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             
             $values = [
                 'ktgr_name'    => $request->ktgr_note_name,
@@ -449,7 +449,7 @@ class MasterController extends Controller
 
         public function store_ktgr_pending(Request $request)
         {
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             
             $values = [
                 'ktgr_pending'    => $request->ktgr_pd_name,
@@ -505,7 +505,7 @@ class MasterController extends Controller
 
         public function store_TAP(Request $request)
         {
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             
             $values = [
                 'name'    => $request->act_type_pic,

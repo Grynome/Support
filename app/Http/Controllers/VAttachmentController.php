@@ -25,7 +25,7 @@ class VAttachmentController extends Controller
         return view('Pages.Attachment.TEAttach.index')->with($data)->with('notiket', $notiket);
     }
     public function store_attachment_detil(Request $request, $id){
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $files = $request->file('files_detil');
 
         $data_type = EngineerAttachment::select('type_attach')->where('engineer_attach_id', $id)->groupBy('engineer_attach_id')->first();

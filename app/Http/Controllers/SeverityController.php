@@ -15,7 +15,7 @@ class SeverityController extends Controller
     }
     public function store(Request $request)
     {
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         
         $values = [
             'severity_name'    => $request->severity_name,

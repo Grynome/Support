@@ -19,7 +19,7 @@ class SourceController extends Controller
     }
     public function store(Request $request)
     {
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $get_id = Source::orderBy('sumber_id','desc')->take(1)->get();
         if ($get_id->isEmpty()) {
             $int = 1;

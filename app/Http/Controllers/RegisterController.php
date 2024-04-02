@@ -22,7 +22,7 @@ class RegisterController extends Controller
     public function store(Request $request)
     {
         $getNIK = User::orderBy('nik','desc')->take(1)->get();
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         if ($getNIK->isEmpty()) {
             $int = 1;
             $kode_awal = "HGT-KR00".$int;

@@ -20,7 +20,7 @@ class DocsController extends Controller
     public function update_receive_docs($id)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $value = [
             'status_docs'    => 1
         ];

@@ -17,7 +17,7 @@ class BoardController extends Controller
     }
     public function getTicketsToday()
     {
-        $tgl = date("Y-m-d", strtotime("+7 hours"));
+        $tgl = date("Y-m-d");
         $num_ticket = Ticket::selectRaw('COUNT(*) AS today_ticket')
                         ->fromSub(function ($query) use ($tgl) {
                             $query->selectRaw('COUNT(*) AS total_ticket')
@@ -52,7 +52,7 @@ class BoardController extends Controller
     }
     public function getTickets()
     {
-        $tgl = date("Y-m-d", strtotime("+7 hours"));
+        $tgl = date("Y-m-d");
         $tickets = VW_Ticket::where('status', '<', 10)->where('departure', 'LIKE','%'.$tgl.'%')->get();
                                 // ->where(function($query) {
                                 //     $query->whereBetween('departure', [Carbon::now()->addHours(7)->subDay(), Carbon::now()->addHours(7)])

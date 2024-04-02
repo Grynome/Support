@@ -16,7 +16,7 @@ class PartController extends Controller
     
     public function store(Request $request)
     {
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         
         $values = [
             'part_type'    => $request->type_part_name,

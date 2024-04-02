@@ -28,7 +28,7 @@ class WebsiteController extends Controller
     
     public function store_wb_upload(Request $request)
     {
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
 
         $file = $request->file('wb_file_upload');
         $fileName = uniqid().'_'.$file->getClientOriginalName();

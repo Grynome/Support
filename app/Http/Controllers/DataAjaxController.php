@@ -60,7 +60,7 @@ class DataAjaxController extends Controller
     }
     public function getTicketsTodayFD()
     {
-        $tgl = date("Y-m-d", strtotime("+7 hours"));
+        $tgl = date("Y-m-d");
         $num_ticket = Ticket::selectRaw('COUNT(*) AS today_ticket')
                         ->fromSub(function ($query) use ($tgl) {
                             $query->selectRaw('COUNT(*) AS total_ticket')

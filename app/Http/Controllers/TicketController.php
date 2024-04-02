@@ -272,8 +272,8 @@ class TicketController extends Controller
         return view('Pages.Ticket.page')->with($data);
     }
     public function add_ticket(Request $request){
-        $tgl = date("Y-m-d", strtotime("+7 hours"));
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $tgl = date("Y-m-d");
+        $dateTime = date("Y-m-d H:i:s");
         $nik =  auth()->user()->nik;
         function getRomawi($bln){
             $array_bln = array(1=>"I","II","III", "IV", "V","VI","VII","VIII","IX","X", "XI","XII");
@@ -575,7 +575,7 @@ class TicketController extends Controller
     }
     public function add_note_at_detil(Request $request, $notiket){
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $getUpdt = Ticket::select('ext_status', 'sts_pending')->where('notiket', $notiket)->first();
         $logging = [
             'notiket'    => $notiket,
@@ -618,7 +618,7 @@ class TicketController extends Controller
         $validate = Ticket::select('status')->where('notiket',$key)->first();
         $nik =  auth()->user()->nik;
         $dept =  auth()->user()->depart;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         if ($dept == 6 || $dept == 1) {
             if ($validate->status == 9) {
                 $value = [
@@ -1038,7 +1038,7 @@ class TicketController extends Controller
                 })->first();
         $nik =  auth()->user()->nik;
         $dept =  auth()->user()->depart;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         
         if (empty($fuckingsubquery)) {
             $resp_en = [
@@ -1187,7 +1187,7 @@ class TicketController extends Controller
         if($result) {
             $nik =  auth()->user()->nik;
             $depart =  auth()->user()->depart;
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             $data_en = User::all()->where('nik',$request->nik_engineer)->first();
             $logging = [
                 'notiket'    => $key,
@@ -1211,7 +1211,7 @@ class TicketController extends Controller
     public function store_part_dt(Request $request, $notiket)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         
         $part_detail_id = VW_Tiket_Part::select('part_detail_id')->where('notiket', $notiket)->first();
         if (empty($part_detail_id)) {
@@ -1293,7 +1293,6 @@ class TicketController extends Controller
                 ];
                 LogTiket::insert($logging);
 
-                session()->flash('modal', 'part-detail');
                 session()->flash('sweetalert', 'show');
                 session()->flash('message', 'Successfully Adding Part in this Ticket!');
                 
@@ -1327,7 +1326,7 @@ class TicketController extends Controller
         $query = TiketPartDetail::where('id', $id)->first();
         $query->update($updt_part);
             $nik =  auth()->user()->nik;
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             $logging = [
                 'notiket'    => $notiket,
                 'note'    => 'Action Change on PART '.$query->unit_name,
@@ -1348,7 +1347,7 @@ class TicketController extends Controller
         $get_list_part = TiketPartDetail::where('id', $id)->first();
         if($get_list_part) {
             $nik =  auth()->user()->nik;
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             $logging = [
                 'notiket'    => $notiket,
                 'note'    => 'Delete PART '.$get_list_part->unit_name,
@@ -1432,7 +1431,7 @@ class TicketController extends Controller
         $result = $query_sts_part->update($value);
         if($result) {
             $nik =  auth()->user()->nik;
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             if ($request->sts_part_reqs == 0) {
                 $note = "Update Status From Yes PART to No";
             } else {
@@ -1471,7 +1470,7 @@ class TicketController extends Controller
         if($query_sts_ticket) {
             $result = $query_sts_ticket->update($value);
             $nik =  auth()->user()->nik;
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             $logging = [
                 'notiket'    => $id,
                 'note'    => 'Tickets are ready to be Taken, and sending to Engineer',
@@ -1554,7 +1553,7 @@ class TicketController extends Controller
             TiketPendingDaily::where('tiket_pending', $id)->delete();
             // ~~~~~
             $nik =  auth()->user()->nik;
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             $logging = [
                 'key'    => $id,
                 'who_is'    => $nik,
@@ -1573,7 +1572,7 @@ class TicketController extends Controller
     }
     public function store_attachment_engineer(Request $request)
     {
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $files = $request->file('files');
 
         $get_id_attachment = EngineerAttachment::orderBy('engineer_attach_id','desc')->take(1)->get();
@@ -1630,7 +1629,7 @@ class TicketController extends Controller
     }
     public function store_attachment_l2engineer(Request $request)
     {
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
 
         $get_id_attachment = EngineerAttachment::orderBy('engineer_attach_id','desc')->take(1)->get();
         if ($get_id_attachment->isEmpty()) {
@@ -1692,7 +1691,7 @@ class TicketController extends Controller
     public function store_part_list_awb(Request $request, $notiket, $pid)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         if ($request->vald == 1) {
             $sts = 0;
         } else {
@@ -1762,7 +1761,7 @@ class TicketController extends Controller
     public function update_awb_all_list(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $valuelist = [
             'status'    => 1
         ];
@@ -1820,7 +1819,7 @@ class TicketController extends Controller
     public function update_journey_part(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
 
         $query_get_part_detil = TiketPartDetail::where('id', $id)->first();
         if ($query_get_part_detil->status == 0) {
@@ -1842,7 +1841,7 @@ class TicketController extends Controller
         $result = $query_get_part_detil->update($value);
 
         if($result) {
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             $logging = [
                 'notiket'    => $request->log_part_notik,
                 'note'    => 'Update Part '.$query_get_part_detil->unit_name.' '.$note,
@@ -1851,7 +1850,6 @@ class TicketController extends Controller
             ];
             LogTiket::insert($logging);
 
-            session()->flash('modal', 'part-detail');
             session()->flash('sweetalert', 'show');
             session()->flash('message', $message);
 
@@ -1866,7 +1864,7 @@ class TicketController extends Controller
     public function update_schedule_en(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $value = [
             'schedule'    => $request->sch_time_sch
         ];
@@ -1893,7 +1891,7 @@ class TicketController extends Controller
     public function update_part_ready(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $value = [
             'updated_at'    => $dateTime
         ];
@@ -1934,7 +1932,7 @@ class TicketController extends Controller
     public function updt_end_user(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $value_eu = [
             'end_user_name'    => $request->company_eu,
             'office_type_id'    => $request->type_kantor_eu,
@@ -1977,7 +1975,7 @@ class TicketController extends Controller
     public function updt_close_instant(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         
         $query = Ticket::where('notiket', $id)->first();
         if($query) {
@@ -2007,7 +2005,7 @@ class TicketController extends Controller
     public function cancle_ticket(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         
         $query = Ticket::where('notiket', $id)->first();
         if($query) {
@@ -2036,7 +2034,7 @@ class TicketController extends Controller
     public function remove_en_dt(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         
         $query = Ticket::where('notiket', $id)->first();
         if($query) {
@@ -2065,7 +2063,7 @@ class TicketController extends Controller
     public function prev_sts_ticket(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         
         $query = Ticket::where('notiket', $id)->first();
         if($query) {
@@ -2093,7 +2091,7 @@ class TicketController extends Controller
     public function dt_updt_unit(Request $request, $id)
     {
         $nik =  auth()->user()->nik;
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         
         $value = [
             'category_id'    => $request->dt_ktgr_u,
@@ -2142,7 +2140,7 @@ class TicketController extends Controller
         $query = Ticket::where('notiket', $key)->first();
         if($query) {
             $nik =  auth()->user()->nik;
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             $data_sla = SLA::select('sla_name')->where('id',$request->updt_sla)->first();
             $logging = [
                 'notiket'    => $key,
@@ -2201,7 +2199,7 @@ class TicketController extends Controller
         $result = $query->update($value);
         if($result) {
             $nik =  auth()->user()->nik;
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             $logging = [
                 'notiket'    => $id,
                 'note'    => 'Update Info Ticket (Type Ticket/Case ID/Source)',
@@ -2233,7 +2231,7 @@ class TicketController extends Controller
             $query = TiketInfo::where('notiket', $notik)->first();
             $query->update($updtUnitDT);
             $nik =  auth()->user()->nik;
-            $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+            $dateTime = date("Y-m-d H:i:s");
             $logging = [
                 'notiket'    => $notik,
                 'note'    => 'Add Unit '.$request->dt_type_unit_add.' to update Type Unit on this Ticket',
@@ -2251,7 +2249,7 @@ class TicketController extends Controller
     // will be able to delete
     public function store_attach_adm(Request $request, $id)
     {
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $files = $request->file('filesAdm');
         
         foreach ($files as $file) {

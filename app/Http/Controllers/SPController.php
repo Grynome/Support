@@ -21,7 +21,7 @@ class SPController extends Controller
         return view('Pages/ServicePoint/form')->with($data);
     }
     public function store(Request $request){
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $values = [
             'service_name'    => $request->sp_name,
             'ownership'    => $request->ownership_sp,

@@ -99,4 +99,35 @@
         });
     });
 </script>
+<script>
+    $(document).ready(function() {
+        var sweetalert = "{{ session()->get('sweetalert') }}";
+        var message = "{{ session()->get('message') }}";
+        if (sweetalert) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+
+            Toast.fire({
+                icon: 'success',
+                title: message
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    var modal = "{{ session()->get('modal') }}";
+                    if (modal) {
+                        $('#' + modal).modal('show');
+                    }
+                }
+            });
+        }
+    });
+</script>
 @stack('custom')

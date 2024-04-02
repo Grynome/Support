@@ -23,7 +23,7 @@ class UserController extends Controller
         return view('Pages/User/user')->with($data)->with('sts_verify', $request->stats_user);
     }
     public function verify(Request $request, $id){
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $value = [
             'verify'    => 1,
             'verify_at'    => $dateTime
@@ -40,7 +40,7 @@ class UserController extends Controller
         }
     }
     public function deactivated(Request $request, $id){
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $value = [
             'verify'    => 2,
             'verify_at'    => $dateTime

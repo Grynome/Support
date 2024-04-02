@@ -20,7 +20,7 @@ class PartnerController extends Controller
         return view('Pages/Partner/form')->with($data);
     }
     public function store_partner(Request $request){
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $get_id = Partner::orderBy('partner_id','desc')->take(1)->get();
         if ($get_id->isEmpty()) {
             $int = 1;

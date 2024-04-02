@@ -886,10 +886,23 @@
                                                         <i data-feather="info"
                                                             class="icon-sm me-sm-2 me-lg-0 me-xl-2 mb-md-1 mb-xl-0"></i>
                                                         @if ($depart == 9)
-                                                            <p class="d-none d-sm-block">AWB</p>
+                                                            <p class="d-sm-block">&nbsp;AWB</p>
                                                         @else
-                                                            <p class="d-none d-sm-block">Ticket</p>
+                                                            <p class="d-sm-block">&nbsp;Ticket</p>
                                                         @endif
+                                                    </div>
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="parts-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#parts" role="tab" aria-controls="parts"
+                                                    aria-selected="true">
+                                                    <div
+                                                        class="d-flex flex-row flex-lg-column flex-xl-row align-items-center justify-content-center">
+                                                        <i data-feather="info"
+                                                            class="icon-sm me-sm-2 me-lg-0 me-xl-2 mb-md-1 mb-xl-0"></i>
+                                                        <p class="d-sm-block">&nbsp;Parts
+                                                            ( {{ $detail->first()->part_request }} )</p>
                                                     </div>
                                                 </a>
                                             </li>
@@ -903,7 +916,7 @@
                                                                 class="d-flex flex-row flex-lg-column flex-xl-row align-items-center justify-content-center">
                                                                 <i data-feather="info"
                                                                     class="icon-sm me-sm-2 me-lg-0 me-xl-2 mb-md-1 mb-xl-0"></i>
-                                                                <p class="d-none d-sm-block">Problem</p>
+                                                                <p class="d-sm-block">&nbsp;Problem</p>
                                                             </div>
                                                         </a>
                                                     </li>
@@ -1511,383 +1524,6 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-md-12 border-bottom-dt mb-2">
-                                                                    <div class="row text-body fw-bolder">
-                                                                        <div class="col-3">
-                                                                            Part Request
-                                                                        </div>
-                                                                        <div class="col-1">
-                                                                            :
-                                                                        </div>
-                                                                        <div class="col-8">
-                                                                            {{ $detail->first()->part_request }}
-                                                                            @if ($depart != 10)
-                                                                                @if (@$detail->first()->part_request == 'Yes')
-                                                                                    <a href="#part-detail"
-                                                                                        data-bs-toggle="modal">
-                                                                                        ( <i class="icon-lg"
-                                                                                            data-feather="search"></i> )
-                                                                                    </a>
-                                                                                    @if ($depart == 6 || $depart == 13)
-                                                                                        @php
-                                                                                            $sz = '';
-                                                                                            $sz1 = '';
-                                                                                        @endphp
-                                                                                    @else
-                                                                                        @php
-                                                                                            $sz = 'bd-example-modal-xl';
-                                                                                            $sz1 = 'modal-xl';
-                                                                                        @endphp
-                                                                                    @endif
-                                                                                    <div class="modal fade {{ $sz }}"
-                                                                                        id="part-detail" tabindex="-1"
-                                                                                        aria-labelledby="partModal"
-                                                                                        aria-hidden="true">
-                                                                                        <div
-                                                                                            class="modal-dialog {{ $sz1 }}">
-                                                                                            <div class="modal-content">
-                                                                                                <div class="modal-header">
-                                                                                                    <h5
-                                                                                                        class="modal-title">
-                                                                                                        Detail
-                                                                                                        Part
-                                                                                                    </h5>
-                                                                                                    <button type="button"
-                                                                                                        class="btn-close"
-                                                                                                        data-bs-dismiss="modal"
-                                                                                                        aria-label="btn-close"></button>
-                                                                                                </div>
-                                                                                                <div class="modal-body">
-                                                                                                    @if ($depart == 4 || $role == 20 || $role == 15)
-                                                                                                        @if ($detail->first()->status == 10)
-                                                                                                        @else
-                                                                                                            <div
-                                                                                                                class="mb-3">
-                                                                                                                <div class="btn-group me-2"
-                                                                                                                    role="group"
-                                                                                                                    aria-label="First group">
-                                                                                                                    <button
-                                                                                                                        type="button"
-                                                                                                                        class="btn btn-inverse-primary btn-icon-text"
-                                                                                                                        data-bs-toggle="modal"
-                                                                                                                        data-bs-target="#add-part">
-                                                                                                                        ADD
-                                                                                                                        Part
-                                                                                                                        <i class="btn-icon-append"
-                                                                                                                            data-feather="plus"></i>
-                                                                                                                    </button>
-                                                                                                                    &nbsp;
-                                                                                                                    <button
-                                                                                                                        type="button"
-                                                                                                                        onclick="window.location.href='{{ url('Ticket/' . $id . '/Part-Detail') }}'"
-                                                                                                                        class="btn btn-inverse-info btn-icon-text">
-                                                                                                                        Update
-                                                                                                                        <i
-                                                                                                                            data-feather="edit"></i>
-                                                                                                                    </button>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        @endif
-                                                                                                    @else
-                                                                                                    @endif
-                                                                                                    <div
-                                                                                                        class="table-responsive">
-                                                                                                        <table
-                                                                                                            id="display"
-                                                                                                            class="table">
-                                                                                                            <thead>
-                                                                                                                <tr>
-                                                                                                                    <th>
-                                                                                                                        No
-                                                                                                                    </th>
-                                                                                                                    <th>
-                                                                                                                        Part
-                                                                                                                    </th>
-                                                                                                                    @if (@$detail->first()->status != 6)
-                                                                                                                        @if ($depart != 6)
-                                                                                                                            <th>
-                                                                                                                                Category
-                                                                                                                            </th>
-                                                                                                                            <th>
-                                                                                                                                Part
-                                                                                                                                Number
-                                                                                                                            </th>
-                                                                                                                            <th>
-                                                                                                                                SO
-                                                                                                                                Number
-                                                                                                                            </th>
-                                                                                                                            <th>
-                                                                                                                                RMA
-                                                                                                                            </th>
-                                                                                                                            <th>
-                                                                                                                                Type
-                                                                                                                            </th>
-                                                                                                                            <th>
-                                                                                                                                ETA
-                                                                                                                            </th>
-                                                                                                                            <th>
-                                                                                                                                Option
-                                                                                                                            </th>
-                                                                                                                        @endif
-                                                                                                                    @endif
-                                                                                                                    <th>
-                                                                                                                        Status
-                                                                                                                    </th>
-                                                                                                                </tr>
-                                                                                                            </thead>
-                                                                                                            <tbody>
-                                                                                                                @php
-                                                                                                                    $no = 1;
-                                                                                                                @endphp
-                                                                                                                @foreach ($tiket_part as $item)
-                                                                                                                    <tr>
-                                                                                                                        <td>{{ $no }}
-                                                                                                                        </td>
-                                                                                                                        <td>{{ $item->unit_name }}
-                                                                                                                        </td>
-                                                                                                                        @if (@$detail->first()->status != 6)
-                                                                                                                            @if ($depart != 6)
-                                                                                                                                <td>{{ $item->type_name }}
-                                                                                                                                </td>
-                                                                                                                                <td>{{ $item->pn }}
-                                                                                                                                </td>
-                                                                                                                                <td>{{ $item->so_num }}
-                                                                                                                                </td>
-                                                                                                                                <td>{{ $item->rma }}
-                                                                                                                                </td>
-                                                                                                                                <td>{{ $item->part_type }}
-                                                                                                                                </td>
-                                                                                                                                <td>{{ $item->eta }}
-                                                                                                                                </td>
-                                                                                                                                <td>
-                                                                                                                                    @if ($item->status == 2 || $item->sts_type == 0)
-                                                                                                                                        No
-                                                                                                                                        Action
-                                                                                                                                        Needed
-                                                                                                                                    @else
-                                                                                                                                        <form
-                                                                                                                                            action="{{ url("Update/Part-log/$item->id") }}"
-                                                                                                                                            method="post"
-                                                                                                                                            id="form-update-journey{{ $no }}"
-                                                                                                                                            style="display:none;">
-                                                                                                                                            @csrf
-                                                                                                                                            {{ method_field('patch') }}
-                                                                                                                                            <input
-                                                                                                                                                type="hidden"
-                                                                                                                                                name="log_part_notik"
-                                                                                                                                                value="{{ $id }}">
-                                                                                                                                            <input
-                                                                                                                                                type="hidden"
-                                                                                                                                                value="{{ $item->status }}"
-                                                                                                                                                id="cek-journey-part{{ $no }}">
-                                                                                                                                        </form>
-                                                                                                                                        <button
-                                                                                                                                            type="button"
-                                                                                                                                            class="btn btn-inverse-info btn-icon btn-sm btn-update-journey{{ $no }}">
-                                                                                                                                            <i
-                                                                                                                                                data-feather="truck"></i>
-                                                                                                                                        </button>
-                                                                                                                                    @endif
-                                                                                                                                    <button
-                                                                                                                                        type="button"
-                                                                                                                                        data-bs-toggle="tooltip"
-                                                                                                                                        data-bs-placement="top"
-                                                                                                                                        title="Duplicate"
-                                                                                                                                        data-id-fmdpl="{{ $no }}"
-                                                                                                                                        class="btn btn-inverse-info btn-icon btn-sm btn-dpl-part">
-                                                                                                                                        <i
-                                                                                                                                            class="mdi mdi-content-duplicate"></i>
-                                                                                                                                    </button>
-                                                                                                                                </td>
-                                                                                                                            @endif
-                                                                                                                        @endif
-                                                                                                                        <td>{{ $item->sts_journey }}
-                                                                                                                        </td>
-                                                                                                                    </tr>
-                                                                                                                    @php
-                                                                                                                        $no++;
-                                                                                                                    @endphp
-                                                                                                                @endforeach
-                                                                                                            </tbody>
-                                                                                                        </table>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                <div class="modal-footer">
-                                                                                                    <button type="button"
-                                                                                                        class="btn btn-secondary"
-                                                                                                        data-bs-dismiss="modal">Cancel</button>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div class="modal fade bd-example-modal-lg"
-                                                                                        id="add-part" tabindex="-1"
-                                                                                        aria-labelledby="sourceModalLabel"
-                                                                                        aria-hidden="true">
-                                                                                        <div class="modal-dialog modal-lg">
-                                                                                            <div class="modal-content">
-                                                                                                <div class="modal-header">
-                                                                                                    <h5 class="modal-title"
-                                                                                                        id="sourceModalLabel">
-                                                                                                        Adding
-                                                                                                        Part
-                                                                                                    </h5>
-                                                                                                    <button type="button"
-                                                                                                        class="btn-close"
-                                                                                                        data-bs-dismiss="modal"
-                                                                                                        aria-label="btn-close"></button>
-                                                                                                </div>
-                                                                                                <div class="modal-body">
-                                                                                                    <form
-                                                                                                        action="{{ url("Part/$id/Added") }}"
-                                                                                                        method="post"
-                                                                                                        id="part-form">
-                                                                                                        @csrf
-                                                                                                        <div
-                                                                                                            class="row">
-                                                                                                            <div
-                                                                                                                class="row mb-3">
-                                                                                                                <div
-                                                                                                                    class="col-md-4">
-                                                                                                                    <label
-                                                                                                                        for="choose-type-part"
-                                                                                                                        class="form-label">Type
-                                                                                                                        Part
-                                                                                                                    </label>
-                                                                                                                    <select
-                                                                                                                        class="js-example-basic-single form-select"
-                                                                                                                        data-width="100%"
-                                                                                                                        id="choose-type-part"
-                                                                                                                        name="status_part_updt">
-                                                                                                                        <option
-                                                                                                                            value="">
-                                                                                                                            -
-                                                                                                                            Select
-                                                                                                                            Status
-                                                                                                                            -
-                                                                                                                        </option>
-                                                                                                                        @foreach ($type as $item)
-                                                                                                                            <option
-                                                                                                                                value="{{ $item->id }}">
-                                                                                                                                {{ $item->part_type }}
-                                                                                                                            </option>
-                                                                                                                        @endforeach
-                                                                                                                    </select>
-                                                                                                                </div>
-                                                                                                                <div
-                                                                                                                    class="col-md-4">
-                                                                                                                    <label
-                                                                                                                        for="choose-ctgr"
-                                                                                                                        class="form-label">Category
-                                                                                                                        Part</label>
-                                                                                                                    <select
-                                                                                                                        class="js-example-basic-single form-select"
-                                                                                                                        data-width="100%"
-                                                                                                                        id="choose-ctgr"
-                                                                                                                        name="kat_part_dt">
-                                                                                                                        <option
-                                                                                                                            value="">
-                                                                                                                            -
-                                                                                                                            Choose
-                                                                                                                            -
-                                                                                                                        </option>
-                                                                                                                        @foreach ($ctgr_part as $item)
-                                                                                                                            <option
-                                                                                                                                value="{{ $item->id }}">
-                                                                                                                                {{ $item->type_name }}
-                                                                                                                            </option>
-                                                                                                                        @endforeach
-                                                                                                                    </select>
-                                                                                                                </div>
-                                                                                                                <div
-                                                                                                                    class="col-md-4">
-                                                                                                                    <label
-                                                                                                                        for="choose-part-name"
-                                                                                                                        class="form-label">Part
-                                                                                                                        Name
-                                                                                                                    </label>
-                                                                                                                    <input
-                                                                                                                        class="form-control"
-                                                                                                                        name="type_unit_updt"
-                                                                                                                        type="text"
-                                                                                                                        id="choose-part-name"
-                                                                                                                        placeholder="Type Unit">
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                            <div
-                                                                                                                class="row mb-3">
-                                                                                                                <div
-                                                                                                                    class="col-md-3">
-                                                                                                                    <label
-                                                                                                                        for="input-so"
-                                                                                                                        class="form-label">SO
-                                                                                                                        Number</label>
-                                                                                                                    <input
-                                                                                                                        class="form-control"
-                                                                                                                        name="so_num_updt"
-                                                                                                                        type="text"
-                                                                                                                        id="input-so"
-                                                                                                                        placeholder="SO Number">
-                                                                                                                </div>
-                                                                                                                <div
-                                                                                                                    class="col-md-3">
-                                                                                                                    <label
-                                                                                                                        for="input-rma"
-                                                                                                                        class="form-label">RMA
-                                                                                                                    </label>
-                                                                                                                    <input
-                                                                                                                        class="form-control"
-                                                                                                                        name="rma_part_updt"
-                                                                                                                        type="text"
-                                                                                                                        id="input-rma"
-                                                                                                                        placeholder="Type RMA Number">
-                                                                                                                </div>
-                                                                                                                <div
-                                                                                                                    class="col-md-3">
-                                                                                                                    <label
-                                                                                                                        for="pn-2"
-                                                                                                                        class="form-label">Part
-                                                                                                                        Number</label>
-                                                                                                                    <input
-                                                                                                                        id="pn-2"
-                                                                                                                        class="form-control"
-                                                                                                                        name="product_number_updt"
-                                                                                                                        type="text"
-                                                                                                                        placeholder="Product Number">
-                                                                                                                </div>
-                                                                                                                <div
-                                                                                                                    class="col-md-3">
-                                                                                                                    <label
-                                                                                                                        for="sn-2"
-                                                                                                                        class="form-label">CT
-                                                                                                                        Number</label>
-                                                                                                                    <input
-                                                                                                                        id="sn-2"
-                                                                                                                        class="form-control"
-                                                                                                                        name="serial_number_updt"
-                                                                                                                        type="text"
-                                                                                                                        placeholder="Serial Number">
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </form>
-                                                                                                </div>
-                                                                                                <div class="modal-footer">
-                                                                                                    <button type="button"
-                                                                                                        class="btn btn-secondary"
-                                                                                                        data-bs-toggle="modal"
-                                                                                                        data-bs-target="#part-detail">Back</button>
-                                                                                                    <button type="button"
-                                                                                                        class="btn btn-primary store-part-dt">Save</button>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                @endif
-                                                                            @endif
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -2035,6 +1671,258 @@
                                                         </div>
                                                     @endif
                                                 @endif
+                                            </div>
+                                            <div class="tab-pane fade" id="parts" role="tabpanel"
+                                                aria-labelledby="parts-tab">
+                                                @if (($depart == 4 || $role == 20 || $role == 15) && $detail->first()->status != 10 && @$detail->first()->part_request == 'Yes')
+                                                    <div class="btn-group mb-3" role="group" aria-label="First group">
+                                                        <button type="button"
+                                                            class="btn btn-inverse-primary btn-icon-text"
+                                                            data-bs-toggle="modal" data-bs-target="#add-part">
+                                                            ADD
+                                                            Part
+                                                            <i class="btn-icon-append" data-feather="plus"></i>
+                                                        </button>
+                                                        &nbsp;
+                                                        <button type="button"
+                                                            onclick="window.location.href='{{ url('Ticket/' . $id . '/Part-Detail') }}'"
+                                                            class="btn btn-inverse-info btn-icon-text">
+                                                            Update
+                                                            <i data-feather="edit"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal fade bd-example-modal-lg" id="add-part" tabindex="-1"
+                                                        aria-labelledby="sourceModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="sourceModalLabel">
+                                                                        Adding
+                                                                        Part
+                                                                    </h5>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="btn-close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form action="{{ url("Part/$id/Added") }}"
+                                                                        method="post" id="part-form">
+                                                                        @csrf
+                                                                        <div class="row">
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-md-4">
+                                                                                    <label for="choose-type-part"
+                                                                                        class="form-label">Type
+                                                                                        Part
+                                                                                    </label>
+                                                                                    <select
+                                                                                        class="js-example-basic-single form-select"
+                                                                                        data-width="100%"
+                                                                                        id="choose-type-part"
+                                                                                        name="status_part_updt">
+                                                                                        <option value="">
+                                                                                            -
+                                                                                            Select
+                                                                                            Status
+                                                                                            -
+                                                                                        </option>
+                                                                                        @foreach ($type as $item)
+                                                                                            <option
+                                                                                                value="{{ $item->id }}">
+                                                                                                {{ $item->part_type }}
+                                                                                            </option>
+                                                                                        @endforeach
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-4">
+                                                                                    <label for="choose-ctgr"
+                                                                                        class="form-label">Category
+                                                                                        Part</label>
+                                                                                    <select
+                                                                                        class="js-example-basic-single form-select"
+                                                                                        data-width="100%" id="choose-ctgr"
+                                                                                        name="kat_part_dt">
+                                                                                        <option value="">
+                                                                                            -
+                                                                                            Choose
+                                                                                            -
+                                                                                        </option>
+                                                                                        @foreach ($ctgr_part as $item)
+                                                                                            <option
+                                                                                                value="{{ $item->id }}">
+                                                                                                {{ $item->type_name }}
+                                                                                            </option>
+                                                                                        @endforeach
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-4">
+                                                                                    <label for="choose-part-name"
+                                                                                        class="form-label">Part
+                                                                                        Name
+                                                                                    </label>
+                                                                                    <input class="form-control"
+                                                                                        name="type_unit_updt" type="text"
+                                                                                        id="choose-part-name"
+                                                                                        placeholder="Type Unit">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-md-3">
+                                                                                    <label for="input-so"
+                                                                                        class="form-label">SO
+                                                                                        Number</label>
+                                                                                    <input class="form-control"
+                                                                                        name="so_num_updt" type="text"
+                                                                                        id="input-so"
+                                                                                        placeholder="SO Number">
+                                                                                </div>
+                                                                                <div class="col-md-3">
+                                                                                    <label for="input-rma"
+                                                                                        class="form-label">RMA
+                                                                                    </label>
+                                                                                    <input class="form-control"
+                                                                                        name="rma_part_updt" type="text"
+                                                                                        id="input-rma"
+                                                                                        placeholder="Type RMA Number">
+                                                                                </div>
+                                                                                <div class="col-md-3">
+                                                                                    <label for="pn-2"
+                                                                                        class="form-label">Part
+                                                                                        Number</label>
+                                                                                    <input id="pn-2" class="form-control"
+                                                                                        name="product_number_updt"
+                                                                                        type="text"
+                                                                                        placeholder="Product Number">
+                                                                                </div>
+                                                                                <div class="col-md-3">
+                                                                                    <label for="sn-2"
+                                                                                        class="form-label">CT
+                                                                                        Number</label>
+                                                                                    <input id="sn-2" class="form-control"
+                                                                                        name="serial_number_updt"
+                                                                                        type="text"
+                                                                                        placeholder="Serial Number">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                            data-bs-dismiss="modal">Back</button>
+                                                                    <button type="button"
+                                                                        class="btn btn-primary store-part-dt">Save</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                                <div class="table-responsive">
+                                                    <table id="display" class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>
+                                                                    No
+                                                                </th>
+                                                                <th>
+                                                                    Part
+                                                                </th>
+                                                                @if (@$detail->first()->status != 6)
+                                                                    @if ($depart != 6)
+                                                                        <th>
+                                                                            Category
+                                                                        </th>
+                                                                        <th>
+                                                                            Part
+                                                                            Number
+                                                                        </th>
+                                                                        <th>
+                                                                            SO
+                                                                            Number
+                                                                        </th>
+                                                                        <th>
+                                                                            RMA
+                                                                        </th>
+                                                                        <th>
+                                                                            Type
+                                                                        </th>
+                                                                        <th>
+                                                                            ETA
+                                                                        </th>
+                                                                        <th>
+                                                                            Option
+                                                                        </th>
+                                                                    @endif
+                                                                @endif
+                                                                <th>
+                                                                    Status
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @php
+                                                                $no = 1;
+                                                            @endphp
+                                                            @if (@$detail->first()->part_request == 'Yes')
+                                                                @foreach ($tiket_part as $item)
+                                                                    <tr>
+                                                                        <td>{{ $no }}
+                                                                        </td>
+                                                                        <td>{{ $item->unit_name }}
+                                                                        </td>
+                                                                        @if (@$detail->first()->status != 6)
+                                                                            @if ($depart != 6)
+                                                                                <td>{{ $item->type_name }}
+                                                                                </td>
+                                                                                <td>{{ $item->pn }}
+                                                                                </td>
+                                                                                <td>{{ $item->so_num }}
+                                                                                </td>
+                                                                                <td>{{ $item->rma }}
+                                                                                </td>
+                                                                                <td>{{ $item->part_type }}
+                                                                                </td>
+                                                                                <td>{{ $item->eta }}
+                                                                                </td>
+                                                                                <td>
+                                                                                    @if ($item->status == 2 || $item->sts_type == 1)
+                                                                                        No
+                                                                                        Action
+                                                                                        Needed
+                                                                                    @else
+                                                                                        <form
+                                                                                            action="{{ url("Update/Part-log/$item->id") }}"
+                                                                                            method="post"
+                                                                                            id="form-update-journey{{ $no }}"
+                                                                                            style="display:none;">
+                                                                                            @csrf
+                                                                                            {{ method_field('patch') }}
+                                                                                            <input type="hidden"
+                                                                                                name="log_part_notik"
+                                                                                                value="{{ $id }}">
+                                                                                            <input type="hidden"
+                                                                                                value="{{ $item->status }}"
+                                                                                                id="cek-journey-part{{ $no }}">
+                                                                                        </form>
+                                                                                        <button type="button"
+                                                                                            class="btn btn-inverse-info btn-icon btn-sm btn-update-journey{{ $no }}">
+                                                                                            <i data-feather="truck"></i>
+                                                                                        </button>
+                                                                                    @endif
+                                                                                </td>
+                                                                            @endif
+                                                                        @endif
+                                                                        <td>{{ $item->sts_journey }}
+                                                                        </td>
+                                                                    </tr>
+                                                                    @php
+                                                                        $no++;
+                                                                    @endphp
+                                                                @endforeach
+                                                            @endif
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                             @if ($depart != 9)
                                                 @if (!empty($validate_problem))
@@ -2918,7 +2806,6 @@
 
             for (let i = 0; i < 50; i++) {
                 $('.btn-update-journey' + i + '').on('click', function() {
-                    $('#part-detail').modal('hide');
                     if ($('#cek-journey-part' + i + '').val() === "0") {
                         var text = "This part will be update to send!";
                     } else {
@@ -2937,8 +2824,6 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             jQuery('#form-update-journey' + i + '').submit();
-                        } else if (result.isDenied) {
-                            $('#part-detail').modal('show');
                         }
                     });
                     return false;

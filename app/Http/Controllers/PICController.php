@@ -27,7 +27,7 @@ class PICController extends Controller
     }
     public function store(Request $request)
     {
-        $dateTime = date("Y-m-d H:i:s", strtotime("+7 hours"));
+        $dateTime = date("Y-m-d H:i:s");
         $nik =  auth()->user()->nik;
         $values = [
             'nik'    => $nik,
