@@ -1674,7 +1674,10 @@
                                             </div>
                                             <div class="tab-pane fade" id="parts" role="tabpanel"
                                                 aria-labelledby="parts-tab">
-                                                @if (($depart == 4 || $role == 20 || $role == 15) && $detail->first()->status != 10 && @$detail->first()->part_request == 'Yes')
+                                                @if (
+                                                    ($depart == 4 || $role == 20 || $role == 15) &&
+                                                        $detail->first()->status != 10 &&
+                                                        @$detail->first()->part_request == 'Yes')
                                                     <div class="btn-group mb-3" role="group" aria-label="First group">
                                                         <button type="button"
                                                             class="btn btn-inverse-primary btn-icon-text"
@@ -1691,8 +1694,9 @@
                                                             <i data-feather="edit"></i>
                                                         </button>
                                                     </div>
-                                                    <div class="modal fade bd-example-modal-lg" id="add-part" tabindex="-1"
-                                                        aria-labelledby="sourceModalLabel" aria-hidden="true">
+                                                    <div class="modal fade bd-example-modal-lg" id="add-part"
+                                                        tabindex="-1" aria-labelledby="sourceModalLabel"
+                                                        aria-hidden="true">
                                                         <div class="modal-dialog modal-lg">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
@@ -1761,7 +1765,8 @@
                                                                                         Name
                                                                                     </label>
                                                                                     <input class="form-control"
-                                                                                        name="type_unit_updt" type="text"
+                                                                                        name="type_unit_updt"
+                                                                                        type="text"
                                                                                         id="choose-part-name"
                                                                                         placeholder="Type Unit">
                                                                                 </div>
@@ -1781,15 +1786,16 @@
                                                                                         class="form-label">RMA
                                                                                     </label>
                                                                                     <input class="form-control"
-                                                                                        name="rma_part_updt" type="text"
-                                                                                        id="input-rma"
+                                                                                        name="rma_part_updt"
+                                                                                        type="text" id="input-rma"
                                                                                         placeholder="Type RMA Number">
                                                                                 </div>
                                                                                 <div class="col-md-3">
                                                                                     <label for="pn-2"
                                                                                         class="form-label">Part
                                                                                         Number</label>
-                                                                                    <input id="pn-2" class="form-control"
+                                                                                    <input id="pn-2"
+                                                                                        class="form-control"
                                                                                         name="product_number_updt"
                                                                                         type="text"
                                                                                         placeholder="Product Number">
@@ -1798,7 +1804,8 @@
                                                                                     <label for="sn-2"
                                                                                         class="form-label">CT
                                                                                         Number</label>
-                                                                                    <input id="sn-2" class="form-control"
+                                                                                    <input id="sn-2"
+                                                                                        class="form-control"
                                                                                         name="serial_number_updt"
                                                                                         type="text"
                                                                                         placeholder="Serial Number">
@@ -1809,7 +1816,7 @@
                                                                 </div>
                                                                 <div class="modal-footer">
                                                                     <button type="button" class="btn btn-secondary"
-                                                                            data-bs-dismiss="modal">Back</button>
+                                                                        data-bs-dismiss="modal">Back</button>
                                                                     <button type="button"
                                                                         class="btn btn-primary store-part-dt">Save</button>
                                                                 </div>
@@ -1818,11 +1825,10 @@
                                                     </div>
                                                 @endif
                                                 <div class="table-responsive">
-                                                    <table id="display" class="table">
+                                                    <table id="display" class="table tbl-pdt">
                                                         <thead>
                                                             <tr>
                                                                 <th>
-                                                                    No
                                                                 </th>
                                                                 <th>
                                                                     Part
@@ -1866,7 +1872,41 @@
                                                             @if (@$detail->first()->part_request == 'Yes')
                                                                 @foreach ($tiket_part as $item)
                                                                     <tr>
-                                                                        <td>{{ $no }}
+                                                                        <td>
+                                                                            <div class="d-flex align-items-center">
+                                                                                <form
+                                                                                    action="{{ url("Duplicate/$item->id/Part") }}"
+                                                                                    method="post"
+                                                                                    id="fm-dpl-part-{{ $no }}">
+                                                                                    @csrf
+                                                                                    <select
+                                                                                        class="js-example-basic-single form-select"
+                                                                                        data-width="100%"
+                                                                                        id="slt-dpl-sts-part-{{ $no }}"
+                                                                                        name="val_sts_part_dpl">
+                                                                                        <option value="">
+                                                                                            -
+                                                                                            Status
+                                                                                            -
+                                                                                        </option>
+                                                                                        @foreach ($type as $spt)
+                                                                                            <option
+                                                                                                value="{{ $spt->id }}">
+                                                                                                {{ $spt->part_type }}
+                                                                                            </option>
+                                                                                        @endforeach
+                                                                                    </select>
+                                                                                </form>
+                                                                                <button type="button"
+                                                                                    data-bs-toggle="tooltip"
+                                                                                    data-bs-placement="top"
+                                                                                    title="Duplicate Part"
+                                                                                    data-dplbtn-ids="{{ $no }}"
+                                                                                    class="btn btn-inverse-info btn-icon btn-sm btn-dpl-part">
+                                                                                    <i
+                                                                                        class="mdi mdi-content-duplicate"></i>
+                                                                                </button>
+                                                                            </div>
                                                                         </td>
                                                                         <td>{{ $item->unit_name }}
                                                                         </td>
@@ -1886,9 +1926,7 @@
                                                                                 </td>
                                                                                 <td>
                                                                                     @if ($item->status == 2 || $item->sts_type == 1)
-                                                                                        No
-                                                                                        Action
-                                                                                        Needed
+                                                                                        {{ $item->sts_type == 1 ? '-' : 'No Action Needed' }}
                                                                                     @else
                                                                                         <form
                                                                                             action="{{ url("Update/Part-log/$item->id") }}"
@@ -1912,7 +1950,7 @@
                                                                                 </td>
                                                                             @endif
                                                                         @endif
-                                                                        <td>{{ $item->sts_journey }}
+                                                                        <td>{{ $item->sts_type == 1 ? 'Replaced' : $item->sts_journey }}
                                                                         </td>
                                                                     </tr>
                                                                     @php
@@ -2358,6 +2396,38 @@
     <script src="{{ asset('assets') }}/js/chat.js"></script>
 @endpush
 @push('custom')
+    <script>
+        $('.btn-dpl-part').each(function(index) {
+            $(this).on('click', function() {
+                var vds = $(this).data('dplbtn-ids');
+                if ($('#slt-dpl-sts-part-' + vds).val() === "") {
+                    Swal.fire({
+                        title: "Select the Status First!!",
+                        icon: "warning",
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    var fmdpl = $('#fm-dpl-part-' + vds);
+
+                    Swal.fire({
+                        title: "Duplicate this part?",
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonColor: '#34a853',
+                        confirmButtonText: 'Next',
+                        cancelButtonColor: '#d33',
+                        cancelButtonText: "Cancel"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fmdpl.submit();
+                        }
+                    });
+                    return false;
+                }
+            });
+        });
+    </script>
     <script>
         $(document).ready(function() {
             $('.q-wrapper').click(function() {

@@ -2276,4 +2276,24 @@ class TicketController extends Controller
             return back();
         }
     }
+    // will be able to delete
+    public function store_dpl_part(Request $request, $id)
+    {
+        $get_pdt = TiketPartDetail::findOrFail($id);
+
+        $values_list = $get_pdt->toArray();
+
+        $values_list['type_part'] = $request->val_sts_part_dpl;
+        $values_list['status'] = 0;
+
+        if($get_pdt) {
+            TiketPartDetail::create($values_list);
+            Alert::toast('Part Successfully Duplicated!', 'success');
+            return back();
+        }
+        else {
+            Alert::toast('Something Error, Try Again!', 'error');
+            return back();
+        }
+    }
 }

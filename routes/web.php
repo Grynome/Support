@@ -198,6 +198,8 @@ Route::group(['middleware'=>'auth'], function(){
         Route::patch('edit/Log-Note/{id}', [TicketController::class, 'edt_note']);
         // Edit Case ID
         Route::patch('edit-InfoTicket/Ticket={id}', [TicketController::class, 'edt_info_ticket']);
+    // ~ Duplicate Part
+    Route::post('Duplicate/{id}/Part', [TicketController::class, 'store_dpl_part']);
     // END MANAGE TICKET
     // PIC
         // vw page activity
