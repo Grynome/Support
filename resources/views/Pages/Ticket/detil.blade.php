@@ -1873,7 +1873,7 @@
                                                                 @foreach ($tiket_part as $item)
                                                                     <tr>
                                                                         <td>
-                                                                            <div class="d-flex align-items-center">
+                                                                            @if ($depart == 4)
                                                                                 <form
                                                                                     action="{{ url("Duplicate/$item->id/Part") }}"
                                                                                     method="post"
@@ -1897,16 +1897,15 @@
                                                                                         @endforeach
                                                                                     </select>
                                                                                 </form>
+                                                                                <hr>
                                                                                 <button type="button"
                                                                                     data-bs-toggle="tooltip"
-                                                                                    data-bs-placement="top"
-                                                                                    title="Clone Part"
+                                                                                    data-bs-placement="top" title="Clone Part"
                                                                                     data-dplbtn-ids="{{ $no }}"
                                                                                     class="btn btn-inverse-info btn-icon btn-sm btn-dpl-part">
-                                                                                    <i
-                                                                                        class="mdi mdi-content-duplicate"></i>
+                                                                                    <i class="mdi mdi-content-duplicate"></i>
                                                                                 </button>
-                                                                            </div>
+                                                                            @endif
                                                                         </td>
                                                                         <td>{{ $item->unit_name }}
                                                                         </td>
@@ -1925,27 +1924,29 @@
                                                                                 <td>{{ $item->eta }}
                                                                                 </td>
                                                                                 <td>
-                                                                                    @if ($item->status == 2 || $item->sts_type == 1)
-                                                                                        {{ $item->sts_type == 1 ? '-' : 'No Action Needed' }}
-                                                                                    @else
-                                                                                        <form
-                                                                                            action="{{ url("Update/Part-log/$item->id") }}"
-                                                                                            method="post"
-                                                                                            id="form-update-journey{{ $no }}"
-                                                                                            style="display:none;">
-                                                                                            @csrf
-                                                                                            {{ method_field('patch') }}
-                                                                                            <input type="hidden"
-                                                                                                name="log_part_notik"
-                                                                                                value="{{ $id }}">
-                                                                                            <input type="hidden"
-                                                                                                value="{{ $item->status }}"
-                                                                                                id="cek-journey-part{{ $no }}">
-                                                                                        </form>
-                                                                                        <button type="button"
-                                                                                            class="btn btn-inverse-info btn-icon btn-sm btn-update-journey{{ $no }}">
-                                                                                            <i data-feather="truck"></i>
-                                                                                        </button>
+                                                                                    @if ($depart == 4)
+                                                                                        @if ($item->status == 2 || $item->sts_type == 1)
+                                                                                            {{ $item->sts_type == 1 ? '-' : 'No Action Needed' }}
+                                                                                        @else
+                                                                                            <form
+                                                                                                action="{{ url("Update/Part-log/$item->id") }}"
+                                                                                                method="post"
+                                                                                                id="form-update-journey{{ $no }}"
+                                                                                                style="display:none;">
+                                                                                                @csrf
+                                                                                                {{ method_field('patch') }}
+                                                                                                <input type="hidden"
+                                                                                                    name="log_part_notik"
+                                                                                                    value="{{ $id }}">
+                                                                                                <input type="hidden"
+                                                                                                    value="{{ $item->status }}"
+                                                                                                    id="cek-journey-part{{ $no }}">
+                                                                                            </form>
+                                                                                            <button type="button"
+                                                                                                class="btn btn-inverse-info btn-icon btn-sm btn-update-journey{{ $no }}">
+                                                                                                <i data-feather="truck"></i>
+                                                                                            </button>
+                                                                                        @endif
                                                                                     @endif
                                                                                 </td>
                                                                             @endif
@@ -2104,68 +2105,56 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <table id="display" class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>
-                                                    No</th>
-                                                <th>
-                                                    Activity</th>
-                                                <th>
-                                                    Pending</th>
-                                                <th>
-                                                    Note</th>
-                                                <th>
-                                                    User</th>
-                                                <th>
-                                                    Created At</th>
-                                                <th>
-                                                    Option</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @php
-                                                $no = 1;
-                                            @endphp
-                                            @foreach ($log_detil as $item)
-                                                @php
-                                                    $profile = @$item->get_user->profile;
-                                                @endphp
+                                    <div class="table-responsive">
+                                        <table id="display" class="table">
+                                            <thead>
                                                 <tr>
-                                                    <td>{{ $no }}</td>
-                                                    <td>{{ @$item->typeNote->ktgr_name }}</td>
-                                                    <td>
-                                                        {{ @$item->typePending->ktgr_pending }}
-                                                    </td>
-                                                    <td>{!! $item->note !!}</td>
-                                                    <td>
-                                                        @if ($depart == 4)
-                                                            <img class="rounded-circle profile-user"
-                                                                src="{{ asset("$profile") }}" alt="profile">
-                                                            <br>
-                                                        @endif
-                                                        {{ @$item->get_user->full_name }}
-                                                    </td>
-                                                    <td>{{ $item->created_at }}</td>
-                                                    <td>
-                                                        <div class="btn-toolbar" role="toolbar"
-                                                            aria-label="Toolbar with button groups">
-                                                            <div class="btn-group me-2" role="group"
-                                                                aria-label="First group">
-                                                                @if ($nik == 'HGT-KR016' && $item->type_log != 1)
-                                                                    <button type="button"
-                                                                        data-bs-target="#edit-note{{ $no }}"
-                                                                        data-bs-toggle="modal"
-                                                                        class="btn btn-inverse-info btn-icon btn-sm">
-                                                                        <i data-feather="edit"></i>
-                                                                    </button>
-                                                                    &nbsp;
-                                                                    <button type="button"
-                                                                        class="btn btn-inverse-danger btn-icon btn-sm btn-remove-dt-log{{ $no }}">
-                                                                        <i data-feather="trash-2"></i>
-                                                                    </button>
-                                                                @else
-                                                                    @if ($nik == $item->user && $item->type_log != 1)
+                                                    <th>
+                                                        No</th>
+                                                    <th>
+                                                        Activity</th>
+                                                    <th>
+                                                        Pending</th>
+                                                    <th>
+                                                        Note</th>
+                                                    <th>
+                                                        User</th>
+                                                    <th>
+                                                        Created At</th>
+                                                    <th>
+                                                        Option</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $no = 1;
+                                                @endphp
+                                                @foreach ($log_detil as $item)
+                                                    @php
+                                                        $profile = @$item->get_user->profile;
+                                                    @endphp
+                                                    <tr>
+                                                        <td>{{ $no }}</td>
+                                                        <td>{{ @$item->typeNote->ktgr_name }}</td>
+                                                        <td>
+                                                            {{ @$item->typePending->ktgr_pending }}
+                                                        </td>
+                                                        <td>{!! $item->note !!}</td>
+                                                        <td>
+                                                            @if ($depart == 4)
+                                                                <img class="rounded-circle profile-user"
+                                                                    src="{{ asset("$profile") }}" alt="profile">
+                                                                <br>
+                                                            @endif
+                                                            {{ @$item->get_user->full_name }}
+                                                        </td>
+                                                        <td>{{ $item->created_at }}</td>
+                                                        <td>
+                                                            <div class="btn-toolbar" role="toolbar"
+                                                                aria-label="Toolbar with button groups">
+                                                                <div class="btn-group me-2" role="group"
+                                                                    aria-label="First group">
+                                                                    @if ($nik == 'HGT-KR016' && $item->type_log != 1)
                                                                         <button type="button"
                                                                             data-bs-target="#edit-note{{ $no }}"
                                                                             data-bs-toggle="modal"
@@ -2177,118 +2166,132 @@
                                                                             class="btn btn-inverse-danger btn-icon btn-sm btn-remove-dt-log{{ $no }}">
                                                                             <i data-feather="trash-2"></i>
                                                                         </button>
+                                                                    @else
+                                                                        @if ($nik == $item->user && $item->type_log != 1)
+                                                                            <button type="button"
+                                                                                data-bs-target="#edit-note{{ $no }}"
+                                                                                data-bs-toggle="modal"
+                                                                                class="btn btn-inverse-info btn-icon btn-sm">
+                                                                                <i data-feather="edit"></i>
+                                                                            </button>
+                                                                            &nbsp;
+                                                                            <button type="button"
+                                                                                class="btn btn-inverse-danger btn-icon btn-sm btn-remove-dt-log{{ $no }}">
+                                                                                <i data-feather="trash-2"></i>
+                                                                            </button>
+                                                                        @endif
                                                                     @endif
-                                                                @endif
-                                                                @if ($item->type_log != 1)
-                                                                    <form
-                                                                        action="{{ url("Delete/Log-Note/$item->id") }}"
-                                                                        id="form-remove-dt-log{{ $no }}"
-                                                                        method="post">
-                                                                        @csrf
-                                                                        {{ method_field('delete') }}
-                                                                    </form>
-                                                                    <div class="modal fade bd-example-modal-lg"
-                                                                        id="edit-note{{ $no }}"
-                                                                        tabindex="-1"
-                                                                        aria-labelledby="sourceModalLabel"
-                                                                        aria-hidden="true">
-                                                                        <div class="modal-dialog modal-lg">
-                                                                            <div class="modal-content">
-                                                                                <div class="modal-header">
-                                                                                    <h5 class="modal-title"
-                                                                                        id="sourceModalLabel">
-                                                                                        Edit Log Note
-                                                                                    </h5>
-                                                                                    <button type="button"
-                                                                                        class="btn-close"
-                                                                                        data-bs-dismiss="modal"
-                                                                                        aria-label="btn-close"></button>
-                                                                                </div>
-                                                                                <div class="modal-body">
-                                                                                    <form
-                                                                                        action="{{ url("edit/Log-Note/$item->id") }}"
-                                                                                        method="post"
-                                                                                        id="form-edt-note{{ $no }}">
-                                                                                        @csrf
-                                                                                        {{ method_field('patch') }}
-                                                                                        <div class="row">
+                                                                    @if ($item->type_log != 1)
+                                                                        <form
+                                                                            action="{{ url("Delete/Log-Note/$item->id") }}"
+                                                                            id="form-remove-dt-log{{ $no }}"
+                                                                            method="post">
+                                                                            @csrf
+                                                                            {{ method_field('delete') }}
+                                                                        </form>
+                                                                        <div class="modal fade bd-example-modal-lg"
+                                                                            id="edit-note{{ $no }}"
+                                                                            tabindex="-1"
+                                                                            aria-labelledby="sourceModalLabel"
+                                                                            aria-hidden="true">
+                                                                            <div class="modal-dialog modal-lg">
+                                                                                <div class="modal-content">
+                                                                                    <div class="modal-header">
+                                                                                        <h5 class="modal-title"
+                                                                                            id="sourceModalLabel">
+                                                                                            Edit Log Note
+                                                                                        </h5>
+                                                                                        <button type="button"
+                                                                                            class="btn-close"
+                                                                                            data-bs-dismiss="modal"
+                                                                                            aria-label="btn-close"></button>
+                                                                                    </div>
+                                                                                    <div class="modal-body">
+                                                                                        <form
+                                                                                            action="{{ url("edit/Log-Note/$item->id") }}"
+                                                                                            method="post"
+                                                                                            id="form-edt-note{{ $no }}">
+                                                                                            @csrf
+                                                                                            {{ method_field('patch') }}
                                                                                             <div class="row">
-                                                                                                <div class="col-md-6">
-                                                                                                    <div class="row">
-                                                                                                        <div
-                                                                                                            class="col-md-12">
+                                                                                                <div class="row">
+                                                                                                    <div class="col-md-6">
+                                                                                                        <div class="row">
                                                                                                             <div
-                                                                                                                class="mb-3">
+                                                                                                                class="col-md-12">
                                                                                                                 <div
-                                                                                                                    class="d-flex justify-content-between align-items-baseline">
+                                                                                                                    class="mb-3">
+                                                                                                                    <div
+                                                                                                                        class="d-flex justify-content-between align-items-baseline">
+                                                                                                                        <label
+                                                                                                                            for="choose-type-note"
+                                                                                                                            class="form-label fw-bolder">Type
+                                                                                                                            Note
+                                                                                                                            :
+                                                                                                                        </label>
+                                                                                                                    </div>
+                                                                                                                    <select
+                                                                                                                        class="js-example-basic-single form-select"
+                                                                                                                        data-width="100%"
+                                                                                                                        id="choose-type-note"
+                                                                                                                        name="edt_type_note">
+                                                                                                                        <option
+                                                                                                                            value="">
+                                                                                                                            -
+                                                                                                                            Choose
+                                                                                                                            -
+                                                                                                                        </option>
+                                                                                                                        @foreach ($type_note as $tn)
+                                                                                                                            <option
+                                                                                                                                value="{{ $tn->id }}"
+                                                                                                                                {{ $item->type_note == $tn->id ? 'selected' : '' }}>
+                                                                                                                                {{ $tn->ktgr_name }}
+                                                                                                                            </option>
+                                                                                                                        @endforeach
+                                                                                                                    </select>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <div
+                                                                                                                class="col-md-12">
+                                                                                                                <div
+                                                                                                                    class="mb-3">
                                                                                                                     <label
-                                                                                                                        for="choose-type-note"
-                                                                                                                        class="form-label fw-bolder">Type
-                                                                                                                        Note
+                                                                                                                        for="edt-input-desc-note"
+                                                                                                                        class="form-label fw-bolder">Description
                                                                                                                         :
                                                                                                                     </label>
+                                                                                                                    <textarea class="form-control txt-note" rows="3" id="edt-input-desc-note" placeholder="Type Note"
+                                                                                                                        name="edt_log_note">{{ $item->note }}</textarea>
                                                                                                                 </div>
-                                                                                                                <select
-                                                                                                                    class="js-example-basic-single form-select"
-                                                                                                                    data-width="100%"
-                                                                                                                    id="choose-type-note"
-                                                                                                                    name="edt_type_note">
-                                                                                                                    <option
-                                                                                                                        value="">
-                                                                                                                        -
-                                                                                                                        Choose
-                                                                                                                        -
-                                                                                                                    </option>
-                                                                                                                    @foreach ($type_note as $tn)
-                                                                                                                        <option
-                                                                                                                            value="{{ $tn->id }}"
-                                                                                                                            {{ $item->type_note == $tn->id ? 'selected' : '' }}>
-                                                                                                                            {{ $tn->ktgr_name }}
-                                                                                                                        </option>
-                                                                                                                    @endforeach
-                                                                                                                </select>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div
-                                                                                                            class="col-md-12">
-                                                                                                            <div
-                                                                                                                class="mb-3">
-                                                                                                                <label
-                                                                                                                    for="edt-input-desc-note"
-                                                                                                                    class="form-label fw-bolder">Description
-                                                                                                                    :
-                                                                                                                </label>
-                                                                                                                <textarea class="form-control txt-note" rows="3" id="edt-input-desc-note" placeholder="Type Note"
-                                                                                                                    name="edt_log_note">{{ $item->note }}</textarea>
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
-                                                                                        </div>
-                                                                                    </form>
-                                                                                </div>
-                                                                                <div class="modal-footer">
-                                                                                    <button type="button"
-                                                                                        class="btn btn-inverse-secondary"
-                                                                                        data-bs-dismiss="modal">Cancel</button>
-                                                                                    <button type="button"
-                                                                                        class="btn btn-inverse-primary edt-dt-note{{ $no }}">Save</button>
+                                                                                        </form>
+                                                                                    </div>
+                                                                                    <div class="modal-footer">
+                                                                                        <button type="button"
+                                                                                            class="btn btn-inverse-secondary"
+                                                                                            data-bs-dismiss="modal">Cancel</button>
+                                                                                        <button type="button"
+                                                                                            class="btn btn-inverse-primary edt-dt-note{{ $no }}">Save</button>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                @endif
+                                                                    @endif
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                @php
-                                                    $no++;
-                                                @endphp
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                                        </td>
+                                                    </tr>
+                                                    @php
+                                                        $no++;
+                                                    @endphp
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                     <div class="modal fade bd-example-modal-lg" id="add-note" tabindex="-1"
                                         aria-labelledby="sourceModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-lg">
