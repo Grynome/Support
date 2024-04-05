@@ -163,8 +163,7 @@
                                         <i class="btn-icon-append" data-feather="list"></i>
                                     </button>
                                 @elseif (empty($validate_save))
-                                    @if ($hidden->status_awb == 1)
-                                    @else
+                                    @if ($dt_ticket->status_awb != 1)
                                         <button type="button" class="btn btn-inverse-success btn-icon finish-awb">
                                             <i class="btn-icon-append" data-feather="save"></i>
                                         </button>

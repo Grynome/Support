@@ -142,12 +142,6 @@
                                             <th>Problem</th>
                                             <th>Schedule</th>
                                             <th>Deadline</th>
-                                        @elseif ($depart == 9)
-                                            <th>Service Point</th>
-                                            <th>Notiket</th>
-                                            <th>Reference ID</th>
-                                            <th>No HP</th>
-                                            <th>QTY Part</th>
                                         @else
                                             @if ($depart == 4 || $role == 15 || $depart == 3 || $depart == 5)
                                                 <th>No Tiket</th>
@@ -260,12 +254,6 @@
                                             <td>{{ $item->problem }}</td>
                                             <td>{{ $item->departure }}</td>
                                             <td>{{ $item->deadline }}</td>
-                                        @elseif ($depart == 9)
-                                            <td>{{ $item->service_name }}</td>
-                                            <td>{{ $item->notiket }}</td>
-                                            <td>{{ $item->case_id }}</td>
-                                            <td>{{ $item->phone }}</td>
-                                            <td>{{ $item->total_return }}</td>
                                         @else
                                             @if ($depart == 4 || $role == 15 || $depart == 3 || $depart == 5)
                                                 <td>{{ $item->notiket }}</td>
@@ -350,21 +338,6 @@
                                                 @else
                                                     {{ $item->dtStatus . ' ' . $item->solve_en }}
                                                 @endif
-                                            @elseif ($depart == 9)
-                                                @php
-                                                    $val_awb_progress = VW_Tiket_Part::where('notiket', $item->notiket)
-                                                        ->where(function ($query) {
-                                                            $query->whereNull('awb_num')->orWhere('status', 0);
-                                                        })
-                                                        ->first();
-                                                @endphp
-                                                {{ !empty($val_awb_progress) && $item->status_awb == 0
-                                                    ? 'Progress AWB'
-                                                    : (empty($val_awb_progress) && $item->status_awb == 0
-                                                        ? 'Set Done on AWB'
-                                                        : ($item->status_awb == 1
-                                                            ? 'AWB Finished'
-                                                            : '')) }}
                                             @elseif ($depart == 6 || $role == 1)
                                                 {{ $item->status == 9
                                                     ? 'Need to Receive'
@@ -524,16 +497,6 @@
                                                                 </button>
                                                                 &nbsp;
                                                             @endif
-                                                        @endif
-                                                    @elseif ($depart == 9)
-                                                        @if ($item->status_awb == 0)
-                                                            <a href="{{ url("Ticket/AWB/Update=$item->notiket") }}">
-                                                                <button type="button"
-                                                                    class="btn btn-inverse-primary btn-icon btn-sm">
-                                                                    <i data-feather="file"></i>
-                                                                </button>
-                                                            </a>
-                                                            &nbsp;
                                                         @endif
                                                     @endif
                                                     <a href="{{ url("Detail/Ticket=$item->notiket") }}" target="_blank">

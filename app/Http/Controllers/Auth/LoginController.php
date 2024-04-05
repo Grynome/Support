@@ -45,7 +45,7 @@ class LoginController extends Controller
                     if ($nik == "HGT-KR055") {
                         return redirect("/Choose-dept");
                     } else {
-                        if (in_array($depart, [15, 10])) {
+                        if (in_array($depart, [15, 10, 9])) {
                             return redirect('/');
                         } else {
                             return redirect()->route('manage.ticket');

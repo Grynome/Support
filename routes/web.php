@@ -33,6 +33,7 @@ use App\Http\Controllers\LogAsController;
 use App\Http\Controllers\AccomodationController;
 use App\Http\Controllers\DocsController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\LogistikController;
 
 /*
 |--------------------------------------------------------------------------
@@ -166,16 +167,6 @@ Route::group(['middleware'=>'auth'], function(){
                 Route::post('uploaded-download/ADM/{id}', [VAttachmentController::class, 'downloadUploadedADM']);
         // ~ Delete Ticket
         Route::delete('Remove/{id}/Ticket-HGT', [TicketController::class, 'destroy_ticket'])->where(['id' => '.*']);
-        // AWB View
-        Route::get('Ticket/AWB/Update={key}', [TicketController::class, 'view_awb'])->where(['key' => '.*']);
-            // Added List
-            Route::post('Add-List/AWB/{notiket}/{pid}', [TicketController::class, 'store_part_list_awb'])->where(['notiket' => '.*']);
-                // Deleted List\
-                Route::delete('Delete/List-awb/{id}/{part}', [TicketController::class, 'repeat_list'])->where(['id' => '.*']);
-                // Update AWB List\
-                Route::patch('Update/All-List/{id}', [TicketController::class, 'update_awb_all_list'])->where(['id' => '.*']);
-            //Update Done AWB
-            Route::patch('Update-Ticket/AWB/{id}', [TicketController::class, 'update_finish_awb'])->where(['id' => '.*']);
         //Update Schedule Engineer
         Route::patch('Update-Ticket/Schedule/{id}', [TicketController::class, 'update_schedule_en'])->where(['id' => '.*']);
         //Update Requested Part from engineer
@@ -501,7 +492,21 @@ Route::group(['middleware'=>'auth'], function(){
     Route::get('Inquiry/Docs', [DocsController::class, 'vw_upload_docs']);
         //Update Docs Received
         Route::patch('Update-Ticket/Docs/{id}', [DocsController::class, 'update_receive_docs'])->where(['id' => '.*']);
-
+    
+    // Logistik Page
+    // Listed Page
+    Route::get('Listed-Return/Parts', [LogistikController::class, 'page_listed_part']);
+    Route::get('Ticket/AWB/Update={key}', [LogistikController::class, 'view_awb'])->where(['key' => '.*']);
+        // Added List
+        Route::post('Add-List/AWB/{notiket}/{pid}', [LogistikController::class, 'store_part_list_awb'])->where(['notiket' => '.*']);
+            // Deleted List\
+            Route::delete('Delete/List-awb/{id}/{part}', [LogistikController::class, 'repeat_list'])->where(['id' => '.*']);
+            // Update AWB List\
+            Route::patch('Update/All-List/{id}', [LogistikController::class, 'update_awb_all_list'])->where(['id' => '.*']);
+        //Update Done AWB
+        Route::patch('Update-Ticket/AWB/{id}', [LogistikController::class, 'update_finish_awb'])->where(['id' => '.*']);
+        // Get Excel Listed Part
+        Route::post('Excel/Listed-Parts', [LogistikController::class, 'excel_lp'])->name('excel.lp');
     
     // Search Issue
     Route::get('Search/Data-Issue', [IssueController::class, 'srch']);

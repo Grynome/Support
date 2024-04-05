@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Role;
 use App\Models\Dept;
+use App\Models\ServicePoint;
 
 class User extends Authenticatable
 {
@@ -67,6 +68,9 @@ class User extends Authenticatable
     }
     public function dept(){
         return $this->belongsTo(Dept::class, 'depart', 'id');
+    }
+    public function get_sp(){
+        return $this->belongsTo(ServicePoint::class, 'service_point', 'service_id');
     }
 
 }

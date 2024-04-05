@@ -64,7 +64,7 @@
                 @endif
             @endif
             @if ($depart != 3)
-                <li class="nav-item nav-category">Ticketing</li>
+                <li class="nav-item nav-category">{{ $depart == 9 ? 'Logistik' : 'Ticketing' }}</li>
                 @if ($depart == 10)
                     <li class="nav-item">
                         <a href="{{ url('Inquiry/Docs') }}" class="nav-link" role="button" aria-expanded="false"
@@ -82,18 +82,24 @@
                             aria-expanded="false" aria-controls="ticket">
                             <i class="link-icon" data-feather="edit"></i>
                             <span class="position-relative">
-                                <span class="link-title">Manage Ticket</span>
+                                <span class="link-title">{{ $depart == 9 ? 'Generate AWB' : 'Manage Ticket' }}</span>
                             </span>
                             <i class="link-arrow" data-feather="chevron-down"></i>
                         </a>
                         <div class="collapse" id="ticket">
                             <ul class="nav sub-menu">
                                 <li class="nav-item">
-                                    <a href="{{ url('helpdesk/manage=Ticket') }}" class="nav-link">
-                                        @if ($depart == 9)
-                                            AWB Not Available
-                                        @else
-                                            All Open
+                                    @php
+                                        if ($depart == 9) {
+                                            $url = 'Listed-Return/Parts';
+                                        } else {
+                                            $url = 'helpdesk/manage=Ticket';
+                                        }
+
+                                    @endphp
+                                    <a href="{{ url("$url") }}" class="nav-link">
+                                        {{ $depart == 9 ? 'Listed Part' : 'All Open' }}
+                                        @if ($depart != 9)
                                             <span
                                                 class="position-absolute top-10 start-30 translate-middle-y badge rounded-pill bg-danger">
                                                 {{ $not_closed_ticket }}
@@ -111,7 +117,7 @@
                                 <li class="nav-item">
                                     <a href="{{ route('ticket.closed') }}" class="nav-link">
                                         @if ($depart == 9)
-                                            AWB Available
+                                            Done
                                         @else
                                             Closed
                                         @endif
@@ -148,8 +154,8 @@
                     ($depart == 6 && $role == 19) ||
                     in_array($nik, ['HGT-KR138', 'HGT-KR112']))
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#reports" role="button" aria-expanded="false"
-                        aria-controls="report">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#reports" role="button"
+                        aria-expanded="false" aria-controls="report">
                         <i class="link-icon" data-feather="tag"></i>
                         <span class="link-title">Report</span>
                         <i class="link-arrow" data-feather="chevron-down"></i>
