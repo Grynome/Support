@@ -130,11 +130,11 @@ Route::group(['middleware'=>'auth'], function(){
                 // Detail Part
                 Route::get('Ticket/{id}/Part-Detail', [TicketController::class, 'part_detail'])->where(['id' => '.*']);
                 // Update Part
-                Route::patch('Update/{id}/Part/{notiket}', [TicketController::class, 'update_part_detail'])->where(['notiket' => '.*']);
+                Route::patch('Update/Part/{notiket}', [TicketController::class, 'update_part_detail'])->where(['notiket' => '.*']);
                 // Delete Part
-                Route::delete('Delete/{id}/Part/{notiket}', [TicketController::class, 'delete_list_part'])->where(['notiket' => '.*']);
+                Route::delete('Delete/{id}/Part/{notiket}', [TicketController::class, 'delete_list_part'])->name('dstr.part')->where(['notiket' => '.*']);
                 // PART JOURNEY
-                Route::patch('Update/Part-log/{id}', [TicketController::class, 'update_journey_part'])->where(['id' => '.*']);
+                Route::patch('Update/Part-log/{id}', [TicketController::class, 'update_journey_part'])->name('trip.part')->where(['id' => '.*']);
             // Change Status Part Reqs
             Route::patch('Update/{id}/Part-Reqs', [TicketController::class, 'update_part_after'])->where(['id' => '.*']);
             // Change Status Ticket Sending to Engineer
@@ -189,8 +189,8 @@ Route::group(['middleware'=>'auth'], function(){
         Route::patch('edit/Log-Note/{id}', [TicketController::class, 'edt_note']);
         // Edit Case ID
         Route::patch('edit-InfoTicket/Ticket={id}', [TicketController::class, 'edt_info_ticket']);
-    // ~ Duplicate Part
-    Route::post('Duplicate/{id}/Part', [TicketController::class, 'store_dpl_part']);
+        // ~ Duplicate Note
+        Route::post('Duplicate/{id}/Note', [TicketController::class, 'store_dpl_note']);
     // END MANAGE TICKET
     // PIC
         // vw page activity

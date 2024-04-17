@@ -7052,6 +7052,14 @@
        border-right: 0 !important;
    }
 
+   .border-end-lg {
+       border-right: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+   }
+
+   .border-end-lg-0 {
+       border-right: 0 !important;
+   }
+
    .border-bottom {
        border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-body-color) !important;
    }
@@ -7071,7 +7079,13 @@
    .border-start-0 {
        border-left: 0 !important;
    }
+    .border-start-lg {
+        border-left: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+    }
 
+    .border-start-lg-0 {
+        border-left: 0 !important;
+    }
    .border-primary {
        --bs-border-opacity: 1;
        border-color: rgba(var(--bs-primary-rgb), var(--bs-border-opacity)) !important;

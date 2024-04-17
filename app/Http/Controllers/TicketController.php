@@ -1288,42 +1288,167 @@ class TicketController extends Controller
                 return back();
             }
     }
-    public function part_detail($id)
+    public function update_part_detail(Request $request, $notiket)
     {
-        $data['tiket_part'] = VW_Tiket_Part::all()->where('notiket',$id);
-        $data['type'] = PartType::all()->where('deleted', '!=', 1);
-        $data['ctgr_part'] = CategoryPart::all()->where('deleted', 0);
-        return view('Pages.Ticket.Part-Section.ticket-part')->with($data)->with('id', $id);
-    }
-    public function update_part_detail(Request $request, $id, $notiket)
-    {
-        $updt_part = [
-            'unit_name'    => $request->edt_type_unit_updt,
-            'category_part'    => $request->edt_ktgr_part_dt,
-            'so_num'    => $request->edt_so_num_updt,
-            'eta'    => $request->eta_date,
-            'rma'    => $request->edt_rma_updt,
-            'pn'    => $request->edt_product_number_updt,
-            'sn'    => $request->edt_serial_number_updt,
-            'type_part'    => $request->edt_status_part_updt
-        ];
-        if($updt_part) {
-        $query = TiketPartDetail::where('id', $id)->first();
-        $query->update($updt_part);
+        $data = $request->all();
+        $clone_part = $data['clone_pdt'] ?? [];
+        $name_part = $data['un_pdt'] ?? [];
+        $ctgr_part = $data['slc_ctgr_pdt'] ?? [];
+        $pn_part = $data['pn_pdt'] ?? [];
+        $so_part = $data['so_pdt'] ?? [];
+        $rma_part = $data['rma_pdt'] ?? [];
+        $part_type = $data['pt_pdt'] ?? [];
+        $eta_part = $data['eta_pdt'] ?? [];
+        
+        $commonIds = array_unique(
+                        array_merge(
+                            array_keys($clone_part), 
+                            array_keys($name_part), 
+                            array_keys($ctgr_part), 
+                            array_keys($pn_part), 
+                            array_keys($so_part), 
+                            array_keys($rma_part), 
+                            array_keys($part_type), 
+                            array_keys($eta_part)
+                        )
+                    );
+
+        if (!empty($commonIds)) {
             $nik =  auth()->user()->nik;
             $dateTime = date("Y-m-d H:i:s");
-            $logging = [
-                'notiket'    => $notiket,
-                'note'    => 'Action Change on PART '.$query->unit_name,
-                'user'     => $nik,
-                'created_at'     => $dateTime
-            ];
-            LogTiket::insert($logging);
-            Alert::toast('Part is Updated!', 'success');
+            foreach ($commonIds as $id) {
+                $partDT = TiketPartDetail::find($id);
+                if ($partDT) {
+                    if (isset($clone_part[$id])) {
+                        $values_list = $partDT->toArray();
+
+                        $values_list['type_part'] = $request->val_sts_part_dpl;
+                        $values_list['status'] = 0;
+
+                        TiketPartDetail::create($values_list);
+                        $dpl = [
+                            'notiket'    => $notiket,
+                            'note'    => 'Duplicate Part '.$values_list['unit_name'],
+                            'user'     => $nik,
+                            'type_log'     => 1,
+                            'created_at'     => $dateTime
+                        ];
+                        LogTiket::insert($dpl);
+                    }
+
+                    if (isset($name_part[$id])) {
+                        $val_np = $name_part[$id];
+                        if ($val_np != $partDT->unit_name) {
+                            $un = [
+                                'notiket'    => $notiket,
+                                'note'    => 'Change Name Part from '.$partDT->unit_name.' to '.$val_np,
+                                'user'     => $nik,
+                                'type_log'     => 1,
+                                'created_at'     => $dateTime
+                            ];
+                            LogTiket::insert($un);
+                            $partDT->update(['unit_name' => $val_np]);
+                        }
+                    }
+                    if ($val_np != $partDT->unit_name) {
+                        $txt_part = $val_np;
+                    }else {
+                        $txt_part = $partDT->unit_name;
+                    }
+                    if (isset($ctgr_part[$id])) {
+                        $val_ctgr_part = $ctgr_part[$id];
+                        if ($val_ctgr_part != $partDT->category_part) {
+                            $cptawal = CategoryPart::findOrFail($partDT->category_part);
+                            $cptchanged = CategoryPart::findOrFail($val_ctgr_part);
+                            $cpt = [
+                                'notiket'    => $notiket,
+                                'note'    => 'Change Category Part '.$txt_part.' from '.$cptawal->type_name.' to '.$cptchanged->type_name,
+                                'user'     => $nik,
+                                'type_log'     => 1,
+                                'created_at'     => $dateTime
+                            ];
+                            LogTiket::insert($cpt);
+                            $partDT->update(['category_part' => $ctgr_part]);
+                        }
+                    }
+                    if (isset($pn_part[$id])) {
+                        $val_pn_part = $pn_part[$id];
+                        if ($val_pn_part != $partDT->pn) {
+                            $cpn = [
+                                'notiket'    => $notiket,
+                                'note'    => 'Change PN Part '.$txt_part.' from '.$partDT->pn.' to '.$val_pn_part,
+                                'user'     => $nik,
+                                'type_log'     => 1,
+                                'created_at'     => $dateTime
+                            ];
+                            LogTiket::insert($cpn);
+                            $partDT->update(['pn' => $val_pn_part]);
+                        }
+                    }
+                    if (isset($so_part[$id])) {
+                        $val_so_part = $so_part[$id];
+                        if ($val_so_part != $partDT->so_num) {
+                            $cso = [
+                                'notiket'    => $notiket,
+                                'note'    => 'Change SO Part '.$txt_part.' from '.$partDT->so_num.' to '.$val_so_part,
+                                'user'     => $nik,
+                                'type_log'     => 1,
+                                'created_at'     => $dateTime
+                            ];
+                            LogTiket::insert($cso);
+                            $partDT->update(['so_num' => $val_so_part]);
+                        }
+                    }
+                    if (isset($rma_part[$id])) {
+                        $val_rma_part = $rma_part[$id];
+                        if ($val_rma_part != $partDT->rma) {
+                            $crma = [
+                                'notiket'    => $notiket,
+                                'note'    => 'Change RMA Part '.$txt_part.' from '.$partDT->rma.' to '.$val_rma_part,
+                                'user'     => $nik,
+                                'type_log'     => 1,
+                                'created_at'     => $dateTime
+                            ];
+                            LogTiket::insert($crma);
+                            $partDT->update(['rma' => $val_rma_part]);
+                        }
+                    }
+                    if (isset($part_type[$id])) {
+                        $val_part_type = $part_type[$id];
+                        if ($val_part_type != $partDT->type_part) {
+                            $cptyawal = PartType::findOrFail($partDT->type_part);
+                            $cptychanged = PartType::findOrFail($val_part_type);
+                            $cpty = [
+                                'notiket'    => $notiket,
+                                'note'    => 'Change Type Part '.$txt_part.' from '.$cptyawal->part_type.' to '.$cptychanged->part_type,
+                                'user'     => $nik,
+                                'type_log'     => 1,
+                                'created_at'     => $dateTime
+                            ];
+                            LogTiket::insert($cpty);
+                            $partDT->update(['type_part' => $val_part_type]);
+                        }
+                    }
+                    if (isset($eta_part[$id])) {
+                        $val_eta_part = $eta_part[$id];
+                        if ($val_eta_part != $partDT->eta) {
+                            $cpty = [
+                                'notiket'    => $notiket,
+                                'note'    => "Change ETA part $txt_part from $partDT->eta to $val_eta_part",
+                                'user'     => $nik,
+                                'type_log'     => 1,
+                                'created_at'     => $dateTime
+                            ];
+                            LogTiket::insert($cpty);
+                            $partDT->update(['eta' => $val_eta_part]);
+                        }
+                    }
+                }
+            }
+            Alert::toast("Action Had be Done!", 'success');
             return back();
-        }
-        else {
-            Alert::toast('Error when updating part!', 'error');
+        } else {
+            Alert::toast('Action Failed', 'error');
             return back();
         }
     }
@@ -1345,7 +1470,7 @@ class TicketController extends Controller
             return back();
         }
         else {
-            Alert::toast('Error when updating part!', 'error');
+            Alert::toast('Error when Delete part!', 'error');
             return back();
         }
     }
@@ -2117,18 +2242,19 @@ class TicketController extends Controller
         }
     }
     // will be able to delete
-    public function store_dpl_part(Request $request, $id)
+    public function store_dpl_note(Request $request, $id)
     {
-        $get_pdt = TiketPartDetail::findOrFail($id);
+        $get_pdt = LogTiket::findOrFail($id);
 
         $values_list = $get_pdt->toArray();
-
-        $values_list['type_part'] = $request->val_sts_part_dpl;
-        $values_list['status'] = 0;
+        $dateTime = Carbon::now();
+        $nik =  auth()->user()->nik;
+        $values_list['user'] = $nik;
+        $values_list['created_at'] = $dateTime;
 
         if($get_pdt) {
-            TiketPartDetail::create($values_list);
-            Alert::toast('Part Successfully Duplicated!', 'success');
+            LogTiket::create($values_list);
+            Alert::toast('Note Successfully Duplicated!', 'success');
             return back();
         }
         else {

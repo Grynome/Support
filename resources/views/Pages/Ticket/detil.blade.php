@@ -1678,290 +1678,361 @@
                                                     ($depart == 4 || $role == 20 || $role == 15) &&
                                                         $detail->first()->status != 10 &&
                                                         @$detail->first()->part_request == 'Yes')
-                                                    <div class="btn-group mb-3" role="group" aria-label="First group">
-                                                        <button type="button"
-                                                            class="btn btn-inverse-primary btn-icon-text"
-                                                            data-bs-toggle="modal" data-bs-target="#add-part">
-                                                            ADD
-                                                            Part
-                                                            <i class="btn-icon-append" data-feather="plus"></i>
-                                                        </button>
-                                                        &nbsp;
-                                                        <button type="button"
-                                                            onclick="window.location.href='{{ url('Ticket/' . $id . '/Part-Detail') }}'"
-                                                            class="btn btn-inverse-info btn-icon-text">
-                                                            Update
-                                                            <i data-feather="edit"></i>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal fade bd-example-modal-lg" id="add-part"
-                                                        tabindex="-1" aria-labelledby="sourceModalLabel"
-                                                        aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="sourceModalLabel">
-                                                                        Adding
-                                                                        Part
-                                                                    </h5>
-                                                                    <button type="button" class="btn-close"
-                                                                        data-bs-dismiss="modal"
-                                                                        aria-label="btn-close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <form action="{{ url("Part/$id/Added") }}"
-                                                                        method="post" id="part-form">
-                                                                        @csrf
-                                                                        <div class="row">
-                                                                            <div class="row mb-3">
-                                                                                <div class="col-md-4">
-                                                                                    <label for="choose-type-part"
-                                                                                        class="form-label">Type
-                                                                                        Part
-                                                                                    </label>
-                                                                                    <select
-                                                                                        class="js-example-basic-single form-select"
-                                                                                        data-width="100%"
-                                                                                        id="choose-type-part"
-                                                                                        name="status_part_updt">
-                                                                                        <option value="">
-                                                                                            -
-                                                                                            Select
-                                                                                            Status
-                                                                                            -
-                                                                                        </option>
-                                                                                        @foreach ($type as $item)
-                                                                                            <option
-                                                                                                value="{{ $item->id }}">
-                                                                                                {{ $item->part_type }}
-                                                                                            </option>
-                                                                                        @endforeach
-                                                                                    </select>
-                                                                                </div>
-                                                                                <div class="col-md-4">
-                                                                                    <label for="choose-ctgr"
-                                                                                        class="form-label">Category
-                                                                                        Part</label>
-                                                                                    <select
-                                                                                        class="js-example-basic-single form-select"
-                                                                                        data-width="100%" id="choose-ctgr"
-                                                                                        name="kat_part_dt">
-                                                                                        <option value="">
-                                                                                            -
-                                                                                            Choose
-                                                                                            -
-                                                                                        </option>
-                                                                                        @foreach ($ctgr_part as $item)
-                                                                                            <option
-                                                                                                value="{{ $item->id }}">
-                                                                                                {{ $item->type_name }}
-                                                                                            </option>
-                                                                                        @endforeach
-                                                                                    </select>
-                                                                                </div>
-                                                                                <div class="col-md-4">
-                                                                                    <label for="choose-part-name"
-                                                                                        class="form-label">Part
-                                                                                        Name
-                                                                                    </label>
-                                                                                    <input class="form-control"
-                                                                                        name="type_unit_updt"
-                                                                                        type="text"
-                                                                                        id="choose-part-name"
-                                                                                        placeholder="Type Unit">
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row mb-3">
-                                                                                <div class="col-md-3">
-                                                                                    <label for="input-so"
-                                                                                        class="form-label">SO
-                                                                                        Number</label>
-                                                                                    <input class="form-control"
-                                                                                        name="so_num_updt" type="text"
-                                                                                        id="input-so"
-                                                                                        placeholder="SO Number">
-                                                                                </div>
-                                                                                <div class="col-md-3">
-                                                                                    <label for="input-rma"
-                                                                                        class="form-label">RMA
-                                                                                    </label>
-                                                                                    <input class="form-control"
-                                                                                        name="rma_part_updt"
-                                                                                        type="text" id="input-rma"
-                                                                                        placeholder="Type RMA Number">
-                                                                                </div>
-                                                                                <div class="col-md-3">
-                                                                                    <label for="pn-2"
-                                                                                        class="form-label">Part
-                                                                                        Number</label>
-                                                                                    <input id="pn-2"
-                                                                                        class="form-control"
-                                                                                        name="product_number_updt"
-                                                                                        type="text"
-                                                                                        placeholder="Product Number">
-                                                                                </div>
-                                                                                <div class="col-md-3">
-                                                                                    <label for="sn-2"
-                                                                                        class="form-label">CT
-                                                                                        Number</label>
-                                                                                    <input id="sn-2"
-                                                                                        class="form-control"
-                                                                                        name="serial_number_updt"
-                                                                                        type="text"
-                                                                                        placeholder="Serial Number">
-                                                                                </div>
-                                                                            </div>
+                                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                                            <div class="d-flex align-items-center">
+                                                                <button type="button"
+                                                                    class="btn btn-inverse-primary btn-icon-text"
+                                                                    data-bs-toggle="modal" data-bs-target="#add-part">
+                                                                    ADD
+                                                                    Part
+                                                                    <i class="btn-icon-append" data-feather="plus"></i>
+                                                                </button>
+                                                                &nbsp;
+                                                                <button type="button" data-bs-toggle="tooltip"
+                                                                    data-bs-placement="top" title="Save Changes"
+                                                                    class="btn btn-inverse-info btn-icon btn-sv-changes-part">
+                                                                    <i data-feather="save"></i>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal fade bd-example-modal-lg" id="add-part"
+                                                                tabindex="-1" aria-labelledby="sourceModalLabel"
+                                                                aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="sourceModalLabel">
+                                                                                Adding
+                                                                                Part
+                                                                            </h5>
+                                                                            <button type="button" class="btn-close"
+                                                                                data-bs-dismiss="modal"
+                                                                                aria-label="btn-close"></button>
                                                                         </div>
-                                                                    </form>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary"
-                                                                        data-bs-dismiss="modal">Back</button>
-                                                                    <button type="button"
-                                                                        class="btn btn-primary store-part-dt">Save</button>
+                                                                        <div class="modal-body">
+                                                                            <form action="{{ url("Part/$id/Added") }}"
+                                                                                method="post" id="part-form">
+                                                                                @csrf
+                                                                                <div class="row">
+                                                                                    <div class="row mb-3">
+                                                                                        <div class="col-md-4">
+                                                                                            <label for="choose-type-part"
+                                                                                                class="form-label">Type
+                                                                                                Part
+                                                                                            </label>
+                                                                                            <select
+                                                                                                class="js-example-basic-single form-select"
+                                                                                                data-width="100%"
+                                                                                                id="choose-type-part"
+                                                                                                name="status_part_updt">
+                                                                                                <option value="">
+                                                                                                    -
+                                                                                                    Select
+                                                                                                    Status
+                                                                                                    -
+                                                                                                </option>
+                                                                                                @foreach ($type as $item)
+                                                                                                    <option
+                                                                                                        value="{{ $item->id }}">
+                                                                                                        {{ $item->part_type }}
+                                                                                                    </option>
+                                                                                                @endforeach
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-4">
+                                                                                            <label for="choose-ctgr"
+                                                                                                class="form-label">Category
+                                                                                                Part</label>
+                                                                                            <select
+                                                                                                class="js-example-basic-single form-select"
+                                                                                                data-width="100%" id="choose-ctgr"
+                                                                                                name="kat_part_dt">
+                                                                                                <option value="">
+                                                                                                    -
+                                                                                                    Choose
+                                                                                                    -
+                                                                                                </option>
+                                                                                                @foreach ($ctgr_part as $item)
+                                                                                                    <option
+                                                                                                        value="{{ $item->id }}">
+                                                                                                        {{ $item->type_name }}
+                                                                                                    </option>
+                                                                                                @endforeach
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-4">
+                                                                                            <label for="choose-part-name"
+                                                                                                class="form-label">Part
+                                                                                                Name
+                                                                                            </label>
+                                                                                            <input class="form-control"
+                                                                                                name="type_unit_updt"
+                                                                                                type="text"
+                                                                                                id="choose-part-name"
+                                                                                                placeholder="Type Unit">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row mb-3">
+                                                                                        <div class="col-md-3">
+                                                                                            <label for="input-so"
+                                                                                                class="form-label">SO
+                                                                                                Number</label>
+                                                                                            <input class="form-control"
+                                                                                                name="so_num_updt" type="text"
+                                                                                                id="input-so"
+                                                                                                placeholder="SO Number">
+                                                                                        </div>
+                                                                                        <div class="col-md-3">
+                                                                                            <label for="input-rma"
+                                                                                                class="form-label">RMA
+                                                                                            </label>
+                                                                                            <input class="form-control"
+                                                                                                name="rma_part_updt"
+                                                                                                type="text" id="input-rma"
+                                                                                                placeholder="Type RMA Number">
+                                                                                        </div>
+                                                                                        <div class="col-md-3">
+                                                                                            <label for="pn-2"
+                                                                                                class="form-label">Part
+                                                                                                Number</label>
+                                                                                            <input id="pn-2"
+                                                                                                class="form-control"
+                                                                                                name="product_number_updt"
+                                                                                                type="text"
+                                                                                                placeholder="Product Number">
+                                                                                        </div>
+                                                                                        <div class="col-md-3">
+                                                                                            <label for="sn-2"
+                                                                                                class="form-label">CT
+                                                                                                Number</label>
+                                                                                            <input id="sn-2"
+                                                                                                class="form-control"
+                                                                                                name="serial_number_updt"
+                                                                                                type="text"
+                                                                                                placeholder="Serial Number">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-secondary"
+                                                                                data-bs-dismiss="modal">Back</button>
+                                                                            <button type="button"
+                                                                                class="btn btn-primary store-part-dt">Save</button>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    <form
+                                                        action="{{ url("Update/Part/$id") }}"
+                                                        method="post" id="fm-dpl-changes-part">
+                                                        @csrf
+                                                        {{ method_field('patch') }}
+                                                        <h5 class="mb-2 mb-md-0">Note* For duplicate the data please to fill Status Part</h5>
+                                                        <select
+                                                            class="js-example-basic-single form-select"
+                                                            data-width="20%"
+                                                            id="slt-dpl-sts-part"
+                                                            name="val_sts_part_dpl">
+                                                            <option value="">
+                                                                -
+                                                                Choose
+                                                                -
+                                                            </option>
+                                                            @foreach ($type as $spt)
+                                                                <option
+                                                                    value="{{ $spt->id }}">
+                                                                    {{ $spt->part_type }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
                                                 @endif
-                                                <div class="table-responsive">
-                                                    <table id="display" class="table tbl-pdt">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>
-                                                                </th>
-                                                                <th>
-                                                                    Part
-                                                                </th>
-                                                                @if (@$detail->first()->status != 6)
-                                                                    @if ($depart != 6)
-                                                                        <th>
+                                                        <div class="table-responsive mt-3">
+                                                            <table id="display"
+                                                                class="table table-bordered table-hover tbl-pdt">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th style="width: 3%;">
+                                                                        </th>
+                                                                        <th style="width:5%">
+                                                                            <i class="mdi mdi-content-duplicate"></i>
+                                                                        </th>
+                                                                        <th style="width:15%">
+                                                                            Part
+                                                                        </th>
+                                                                        <th style="width:5%">
                                                                             Category
                                                                         </th>
-                                                                        <th>
+                                                                        <th style="width:10%">
                                                                             Part
                                                                             Number
                                                                         </th>
-                                                                        <th>
+                                                                        <th style="width:10%">
                                                                             SO
                                                                             Number
                                                                         </th>
-                                                                        <th>
+                                                                        <th style="width:20%">
                                                                             RMA
                                                                         </th>
-                                                                        <th>
-                                                                            Type
+                                                                        <th style="width:5%">
+                                                                            Type Parts
                                                                         </th>
-                                                                        <th>
-                                                                            ETA
+                                                                        <th style="width:20%">
+                                                                            Etimated
                                                                         </th>
-                                                                        <th>
+                                                                        <th style="width:2%">
                                                                             Option
                                                                         </th>
-                                                                    @endif
-                                                                @endif
-                                                                <th>
-                                                                    Status
-                                                                </th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @php
-                                                                $no = 1;
-                                                            @endphp
-                                                            @if (@$detail->first()->part_request == 'Yes')
-                                                                @foreach ($tiket_part as $item)
-                                                                    <tr>
-                                                                        <td>
-                                                                            @if ($depart == 4)
-                                                                                <form
-                                                                                    action="{{ url("Duplicate/$item->id/Part") }}"
-                                                                                    method="post"
-                                                                                    id="fm-dpl-part-{{ $no }}">
-                                                                                    @csrf
+                                                                        <th style="width:5%">
+                                                                            Status
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @php
+                                                                        $no = 1;
+                                                                        if ($depart == 4) {
+                                                                            $dsbl = "";
+                                                                            $rdly = "";
+                                                                        } else {
+                                                                            $dsbl = "disabled";
+                                                                            $rdly = "readonly";
+                                                                        }
+                                                                    @endphp
+                                                                    @if (@$detail->first()->part_request == 'Yes')
+                                                                        @foreach ($tiket_part as $item)
+                                                                            <tr>
+                                                                                <td>
+                                                                                    @if ($depart == 4)
+                                                                                        <button type="button" data-bs-toggle="tooltip"
+                                                                                            data-bs-placement="top" title="Delete Part"
+                                                                                            class="btn btn-outline-danger btn-icon btn-xs btn-dstr-list-part"
+                                                                                            data-val-idpt="{{ $item->id }}"
+                                                                                            data-val-ntkt="{{ $id }}">
+                                                                                            <i data-feather="minus"></i>
+                                                                                        </button>
+                                                                                    @else
+                                                                                    Null
+                                                                                    @endif
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="checkbox"
+                                                                                        class="form-check-input"
+                                                                                        value="1"
+                                                                                        name="clone_pdt[{{ $item->id }}]" {{$dsbl}}>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input value="{{ $item->unit_name }}"
+                                                                                        name="un_pdt[{{ $item->id }}]"
+                                                                                        class="form-control" type="text" {{$rdly}}>
+                                                                                </td>
+                                                                                <td>
                                                                                     <select
                                                                                         class="js-example-basic-single form-select"
                                                                                         data-width="100%"
-                                                                                        id="slt-dpl-sts-part-{{ $no }}"
-                                                                                        name="val_sts_part_dpl">
+                                                                                        name="slc_ctgr_pdt[{{ $item->id }}]" {{$dsbl}}>
+                                                                                        <option value="">
+                                                                                            -
+                                                                                            Category
+                                                                                            -
+                                                                                        </option>
+                                                                                        @foreach ($ctgr_part as $ctgr)
+                                                                                            <option
+                                                                                                value="{{ $ctgr->id }}"
+                                                                                                {{ $ctgr->type_name == $item->type_name ? 'selected' : '' }}>
+                                                                                                {{ $ctgr->type_name }}
+                                                                                            </option>
+                                                                                        @endforeach
+                                                                                    </select>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input value="{{ $item->pn }}"
+                                                                                        class="form-control"
+                                                                                        name="pn_pdt[{{ $item->id }}]"
+                                                                                        type="text" {{$rdly}}>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input value="{{ $item->so_num }}"
+                                                                                        class="form-control"
+                                                                                        name="so_pdt[{{ $item->id }}]"
+                                                                                        type="text" {{$rdly}}>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input value="{{ $item->rma }}"
+                                                                                        class="form-control"
+                                                                                        name="rma_pdt[{{ $item->id }}]"
+                                                                                        type="text" {{$rdly}}>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <select
+                                                                                        class="js-example-basic-single form-select"
+                                                                                        data-width="100%"
+                                                                                        name="pt_pdt[{{ $item->id }}]" {{$dsbl}}>
                                                                                         <option value="">
                                                                                             -
                                                                                             Status
                                                                                             -
                                                                                         </option>
-                                                                                        @foreach ($type as $spt)
+                                                                                        @foreach ($type as $typ)
                                                                                             <option
-                                                                                                value="{{ $spt->id }}">
-                                                                                                {{ $spt->part_type }}
+                                                                                                value="{{ $typ->id }}"
+                                                                                                {{ $typ->part_type == $item->part_type ? 'Selected' : '' }}>
+                                                                                                {{ $typ->part_type }}
                                                                                             </option>
                                                                                         @endforeach
                                                                                     </select>
-                                                                                </form>
-                                                                                <hr>
-                                                                                <button type="button"
-                                                                                    data-bs-toggle="tooltip"
-                                                                                    data-bs-placement="top" title="Clone Part"
-                                                                                    data-dplbtn-ids="{{ $no }}"
-                                                                                    class="btn btn-inverse-info btn-icon btn-sm btn-dpl-part">
-                                                                                    <i class="mdi mdi-content-duplicate"></i>
-                                                                                </button>
-                                                                            @endif
-                                                                        </td>
-                                                                        <td>{{ $item->unit_name }}
-                                                                        </td>
-                                                                        @if (@$detail->first()->status != 6)
-                                                                            @if ($depart != 6)
-                                                                                <td>{{ $item->type_name }}
                                                                                 </td>
-                                                                                <td>{{ $item->pn }}
-                                                                                </td>
-                                                                                <td>{{ $item->so_num }}
-                                                                                </td>
-                                                                                <td>{{ $item->rma }}
-                                                                                </td>
-                                                                                <td>{{ $item->part_type }}
-                                                                                </td>
-                                                                                <td>{{ $item->eta }}
+                                                                                <td>
+                                                                                    <div class="d-flex">
+                                                                                        <div
+                                                                                            class="input-group flatpickr fpck-eta-parts">
+                                                                                            <input type="text"
+                                                                                                class="form-control"
+                                                                                                placeholder="Select date"
+                                                                                                name="eta_pdt[{{ $item->id }}]"
+                                                                                                value="{{ $item->eta }}"
+                                                                                                data-input required {{$rdly}}>
+                                                                                            <span
+                                                                                                class="input-group-text input-group-addon"
+                                                                                                data-toggle><i
+                                                                                                    data-feather="calendar"></i></span>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </td>
                                                                                 <td>
                                                                                     @if ($depart == 4)
                                                                                         @if ($item->status == 2 || $item->sts_type == 1)
                                                                                             {{ $item->sts_type == 1 ? '-' : 'No Action Needed' }}
                                                                                         @else
-                                                                                            <form
-                                                                                                action="{{ url("Update/Part-log/$item->id") }}"
-                                                                                                method="post"
-                                                                                                id="form-update-journey{{ $no }}"
-                                                                                                style="display:none;">
-                                                                                                @csrf
-                                                                                                {{ method_field('patch') }}
-                                                                                                <input type="hidden"
-                                                                                                    name="log_part_notik"
-                                                                                                    value="{{ $id }}">
-                                                                                                <input type="hidden"
-                                                                                                    value="{{ $item->status }}"
-                                                                                                    id="cek-journey-part{{ $no }}">
-                                                                                            </form>
                                                                                             <button type="button"
-                                                                                                class="btn btn-inverse-info btn-icon btn-sm btn-update-journey{{ $no }}">
-                                                                                                <i data-feather="truck"></i>
+                                                                                                data-bs-toggle="tooltip"
+                                                                                                data-bs-placement="top"
+                                                                                                title="Part Trip"
+                                                                                                class="btn btn-inverse-info btn-icon btn-sm btn-update-journey"
+                                                                                                data-idk="{{ $item->id }}"
+                                                                                                data-notik="{{ $id }}"
+                                                                                                data-trpt="{{ $item->status }}">
+                                                                                                <i
+                                                                                                    data-feather="truck"></i>
                                                                                             </button>
                                                                                         @endif
+                                                                                    @else
+                                                                                    Null
                                                                                     @endif
                                                                                 </td>
-                                                                            @endif
-                                                                        @endif
-                                                                        <td>{{ $item->sts_type == 1 ? 'Replaced' : $item->sts_journey }}
-                                                                        </td>
-                                                                    </tr>
-                                                                    @php
-                                                                        $no++;
-                                                                    @endphp
-                                                                @endforeach
-                                                            @endif
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                                                <td>{{ $item->sts_type == 1 ? 'Replaced' : $item->sts_journey }}
+                                                                                </td>
+                                                                            </tr>
+                                                                            @php
+                                                                                $no++;
+                                                                            @endphp
+                                                                        @endforeach
+                                                                    @endif
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </form>
                                             </div>
                                             @if ($depart != 9)
                                                 @if (!empty($validate_problem))
@@ -2109,8 +2180,8 @@
                                         <table id="display" class="table">
                                             <thead>
                                                 <tr>
-                                                    <th>
-                                                        No</th>
+                                                    <th>No</th>
+                                                    <th></th>
                                                     <th>
                                                         Activity</th>
                                                     <th>
@@ -2134,7 +2205,26 @@
                                                         $profile = @$item->get_user->profile;
                                                     @endphp
                                                     <tr>
-                                                        <td>{{ $no }}</td>
+                                                        <td>{{$no}}</td>
+                                                        <td>
+                                                            @if ($item->type_log != 1)
+                                                                <form
+                                                                    action="{{ url("Duplicate/$item->id/Note") }}"
+                                                                    method="post"
+                                                                    id="fm-dpl-note-{{ $no }}">
+                                                                    @csrf
+                                                                </form>
+                                                                <button type="button"
+                                                                    data-bs-toggle="tooltip"
+                                                                    data-bs-placement="top" title="Clone Note"
+                                                                    data-dplnt-ids="{{ $no }}"
+                                                                    class="btn btn-inverse-info btn-icon btn-sm btn-dpl-note">
+                                                                    <i class="mdi mdi-content-duplicate"></i>
+                                                                </button>
+                                                            @else
+                                                                By System
+                                                            @endif
+                                                        </td>
                                                         <td>{{ @$item->typeNote->ktgr_name }}</td>
                                                         <td>
                                                             {{ @$item->typePending->ktgr_pending }}
@@ -2216,7 +2306,8 @@
                                                                                             <div class="row">
                                                                                                 <div class="row">
                                                                                                     <div class="col-md-6">
-                                                                                                        <div class="row">
+                                                                                                        <div
+                                                                                                            class="row">
                                                                                                             <div
                                                                                                                 class="col-md-12">
                                                                                                                 <div
@@ -2400,21 +2491,58 @@
 @endpush
 @push('custom')
     <script>
-        $('.btn-dpl-part').each(function(index) {
+        $(document).ready(function() {
+            $('.fpck-eta-parts').each(function() {
+                flatpickr(this, {
+                    wrap: true,
+                    enableTime: true,
+                    dateFormat: "Y-m-d",
+                    time_24hr: true
+                });
+            });
+        });
+    </script>
+    <script>
+        $('.btn-dpl-note').each(function(index) {
             $(this).on('click', function() {
-                var vds = $(this).data('dplbtn-ids');
-                if ($('#slt-dpl-sts-part-' + vds).val() === "") {
+                var vds = $(this).data('dplnt-ids');
+                var fmdplNT = $('#fm-dpl-note-' + vds);
+
+                Swal.fire({
+                    title: "Duplicate this note?",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Next',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fmdplNT.submit();
+                    }
+                });
+                return false;
+            });
+        });
+        $('.btn-sv-changes-part').on('click', function() {
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            var partType = document.getElementById('slt-dpl-sts-part').value;
+
+            // Check if at least one checkbox is checked
+            if (checkboxes.length >= 1) {
+                // Check if partType is not selected
+                if (partType === "") {
                     Swal.fire({
-                        title: "Select the Status First!!",
+                        title: "Select the Status Part!!",
+                        text: "If checkbox for clones is checked, please choose status part!!",
                         icon: "warning",
                         confirmButtonColor: '#d33',
                         confirmButtonText: 'OK'
                     });
+                    return false;
                 } else {
-                    var fmdpl = $('#fm-dpl-part-' + vds);
-
                     Swal.fire({
-                        title: "Duplicate this part?",
+                        title: "Continue this action??",
                         icon: 'info',
                         showCancelButton: true,
                         confirmButtonColor: '#34a853',
@@ -2423,12 +2551,27 @@
                         cancelButtonText: "Cancel"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            fmdpl.submit();
+                            $('#fm-dpl-changes-part').submit();
                         }
                     });
                     return false;
                 }
-            });
+            } else {
+                Swal.fire({
+                    title: "Continue this action??",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#34a853',
+                    confirmButtonText: 'Next',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#fm-dpl-changes-part').submit();
+                    }
+                });
+                return false;
+            }
         });
     </script>
     <script>
@@ -2876,32 +3019,6 @@
                 }
                 return false;
             });
-
-            for (let i = 0; i < 50; i++) {
-                $('.btn-update-journey' + i + '').on('click', function() {
-                    if ($('#cek-journey-part' + i + '').val() === "0") {
-                        var text = "This part will be update to send!";
-                    } else {
-                        var text = "The part will be update to received!";
-                    }
-                    Swal.fire({
-                        title: "Update?",
-                        text: text,
-                        icon: 'question',
-                        showCancelButton: false,
-                        showDenyButton: true,
-                        confirmButtonColor: '#34a853',
-                        confirmButtonText: 'Yes',
-                        denyButtonColor: '#d33',
-                        denyButtonText: "No"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            jQuery('#form-update-journey' + i + '').submit();
-                        }
-                    });
-                    return false;
-                });
-            }
             $('.save-updt-sch-en').on('click', function() {
                 if ($('#dt-sch-en').val() === "") {
                     Swal.fire({
@@ -2931,6 +3048,124 @@
                     }
                 });
                 return false;
+            });
+        </script>
+        <script>
+            $('.btn-dstr-list-part').each(function(index) {
+                $(this).on('click', function() {
+                    var idpt = $(this).data('val-idpt');
+                    var ntkt = $(this).data('val-ntkt');
+                    
+                    var fmDstr = 'fm_dstr' + idpt;
+
+                    $('#' + fmDstr).remove();
+
+                    var apndFM = $('<form>').attr({
+                        id: fmDstr,
+                        method: 'POST', 
+                        action: '{{ route("dstr.part", ["id" => ":id", "notiket" => ":notiket"]) }}'.replace(':id', idpt).replace(':notiket', ntkt),
+                        style: 'display: none;' 
+                    });
+
+                    // CSRF
+                    var token = $('meta[name="csrf-token"]').attr('content');
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: '_token',
+                        value: token
+                    }).appendTo(apndFM);
+                    // DELETE
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: '_method',
+                        value: 'DELETE'
+                    }).appendTo(apndFM);
+
+                    apndFM.appendTo('body');
+                    
+                    Swal.fire({
+                        title: "Sure want to Delete?",
+                        icon: 'warning',
+                        showCancelButton: false,
+                        showDenyButton: true,
+                        confirmButtonColor: '#34a853',
+                        confirmButtonText: 'Yes',
+                        denyButtonColor: '#d33',
+                        denyButtonText: "No"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            apndFM.submit();
+                        }
+                    });
+                    return false;
+
+                    apndFM.remove();
+                });
+            });
+
+            $('.btn-update-journey').each(function(index) {
+                $(this).on('click', function() {
+                    var ids = $(this).data('idk');
+                    var notik = $(this).data('notik');
+                    var trippt = $(this).data('trpt');
+                    
+                    var formId = 'fm_journey' + ids;
+
+                    $('#' + formId).remove();
+
+                    var form = $('<form>').attr({
+                        id: formId,
+                        method: 'POST', 
+                        action: '{{ route("trip.part", ["id" => ":id"]) }}'.replace(':id', ids),
+                        style: 'display: none;' 
+                    });
+
+                    // CSRF
+                    var token = $('meta[name="csrf-token"]').attr('content');
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: '_token',
+                        value: token
+                    }).appendTo(form);
+                    // PATCH
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: '_method',
+                        value: 'PATCH'
+                    }).appendTo(form);
+                    // Notiket Input
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'log_part_notik',
+                        value: notik
+                    }).appendTo(form);
+
+                    form.appendTo('body');
+                    
+                    if (trippt === 0) {
+                        var text = "This part will be update to send!";
+                    } else {
+                        var text = "The part will be update to received!";
+                    }
+                    Swal.fire({
+                        title: "Update?",
+                        text: text,
+                        icon: 'question',
+                        showCancelButton: false,
+                        showDenyButton: true,
+                        confirmButtonColor: '#34a853',
+                        confirmButtonText: 'Yes',
+                        denyButtonColor: '#d33',
+                        denyButtonText: "No"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                    return false;
+
+                    form.remove();
+                });
             });
         </script>
     @endif
@@ -3097,7 +3332,6 @@
             window.open(whatsappLink1, '_blank');
         </script>
     @endif
-
     <script>
         const textarea = document.getElementById('input-desc-note');
         const recordButton = document.getElementById('recordButton');

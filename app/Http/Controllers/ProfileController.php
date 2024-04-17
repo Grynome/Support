@@ -64,7 +64,7 @@ class ProfileController extends Controller
         // $cover = $request->file('cover_file');
 
         $nameProfile = uniqid().'_'.$profile->getClientOriginalName();
-        $profile->move(public_path('/files/user/profile'), $nameProfile);
+        $profile->move(base_path("../public_html/files/user/profile"), $nameProfile);
         
         $path = '/files/user/profile/'.$nameProfile;
 
