@@ -23,6 +23,9 @@ use App\Models\RefReqs;
 use App\Models\Ticket;
 use App\Models\VW_Reqs_En;
 use App\Models\User;
+use App\Models\ServicePoint;
+use App\Models\ReqsFL;
+use App\Models\ReqsUpload;
 
 class AccomodationController extends Controller
 {
@@ -44,6 +47,9 @@ class AccomodationController extends Controller
     {
         $nik =  auth()->user()->nik;
         $role =  auth()->user()->role;
+        $data['svc_point'] = ServicePoint::select('service_id', 'service_name')
+                                ->where('deleted', 0)
+                                ->get();
         if ($dsc != "Past") {
             $data['data_tiket'] = Ticket::select('notiket')
                                     ->where('status', '<', '10')
@@ -77,11 +83,15 @@ class AccomodationController extends Controller
         if ($role == 20 || ($role == 19 && $depart == 6)) {
             if ($role == 19 && $depart == 6) {
                 $data['data_reqs'] = VW_Reqs_En::where(function($query) {
-                                            $query->where('type_reqs', '=', 2)
+                                            $query->where('type_reqs', 2)
                                                 ->where('status', 0);
                                         })
                                         ->orWhere(function($query) {
-                                            $query->where('side_sts', '=', 2)
+                                            $query->where('side_sts', 2)
+                                                ->where('status', '<', 3);
+                                        })
+                                        ->orWhere(function($query) use($nik) {
+                                            $query->where('en_id', $nik)
                                                 ->where('status', '<', 3);
                                         })
                                         ->get();
@@ -341,19 +351,6 @@ class AccomodationController extends Controller
         $writer->save('php://output');
         exit();
     }
-    public function done_reqs()
-    {
-        $nik =  auth()->user()->nik;
-        $role =  auth()->user()->role;
-        $depart =  auth()->user()->depart;
-        if ($depart == 6) {
-            $data['query_done_reqs'] = VW_Reqs_En::where('en_id', $nik)->where('status', 3)->get();
-        } else {
-            $data['query_done_reqs'] = VW_Reqs_En::where('status', 3)->get();
-        }
-        
-        return response()->json($data);
-    }
     public function add_req_reimburse_en(Request $request, $dsc, $id)
     {
         $nik =  auth()->user()->nik;
@@ -372,7 +369,7 @@ class AccomodationController extends Controller
             ->groupBy('notiket');
         });
 
-        if ( in_array($dsc, ["Add", "Past"]) ) {
+        if (in_array($dsc, ["Add", "Past"]) ) {
             $tahun = $now->format('y');
             $bulan = $now->format('m');
             $hari = $now->format('d');
@@ -407,6 +404,23 @@ class AccomodationController extends Controller
             $get_id = ReqsEn::where('id_dt_reqs', $id)->first();
         }
         if($get_id) {
+            // Store Need FL or Not
+            if ($request->need_fl == 1) {
+                $get_id_reqs_fl = ReqsEn::orderBy('id','desc')->take(1)->get();
+                if ($get_id_reqs_fl->isEmpty()) {
+                    $int = 1;
+                    $id_rqs_fl = $int;
+                } else {
+                    $id_rqs = $get_id_reqs_fl[0]->id;
+                    $id_rqs++;
+                    $id_rqs_fl = $id_rqs;
+                }
+                $val_fl = [
+                    'id_reqs' => $id_rqs_fl,
+                    'sp' => $request->slct_sp_fl
+                ];
+                ReqsFL::create($val_fl);
+            }
             if (in_array($dsc, ["Add", "Past"])) {
                 $storeReqs = ReqsEn::create($val);
                 $id_dt_reqs = $generate_dt_id;
@@ -459,25 +473,19 @@ class AccomodationController extends Controller
                 $amount = (int) $cleanedAmount;
                 // Attach Request
                 if (!empty($request->file('attach_file')[$index])) {
-                    $files = $request->file('attach_file')[$index];
-                    
-                    $fileName = uniqid() . '.' . $files->getClientOriginalExtension();
-                    $path = 'uploads/attach_request/'.$fileName;
-                } else {
-                    $fileName = null;
-                    $path = null;
-                }
-                
-                $execute = ReqsEnDT::create([
-                    'id_dt_reqs' => $id_dt_reqs,
-                    'ctgr_reqs' => $category,
-                    'nominal' => $amount,
-                    'filename' => $fileName,
-                    'path' => $path
-                ]);
-                if (!empty($request->file('attach_file')[$index])) {
-                    if ($execute) {
-                        $files->move(base_path("../public_html/uploads/attach_request"), $fileName);
+                    foreach ($request->file('attach_file')[$index] as $fileIndex => $file) {
+                        $fileName = uniqid() . '_' . $fileIndex . '.' . $file->getClientOriginalExtension();
+                        $path = 'uploads/attach_request/'.$fileName;
+
+                        $execute = ReqsUpload::create([
+                            'id_dt' => $id_dt_reqs,
+                            'filename' => $fileName,
+                            'path' => $path
+                        ]);
+
+                        if ($execute) {
+                            $file->move(base_path("../public_html/uploads/attach_request"), $fileName);
+                        }
                     }
                 }
             }
@@ -619,7 +627,12 @@ class AccomodationController extends Controller
                             $cleanedAmount = str_replace(['Rp', ',', '.'], '', $nominal);
                             $amount = (int) $cleanedAmount;
                             $reqsEnDT->update(['nominal' => $amount]);
+                            $reqsEnDT->update(['actual' => $amount]);
                         }
+                    }
+                    $reqsEN = ReqsEn::where('id_dt_reqs', $reqsEnDT->id_dt_reqs)->first();
+                    if ($reqsEN->type_reqs == 1) {
+                        $reqsEnDT->update(['actual' => $reqsEnDT->nominal]);
                     }
                 }
             }

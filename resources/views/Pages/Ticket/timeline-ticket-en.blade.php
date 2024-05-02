@@ -87,6 +87,10 @@
         $txt5th = '5th On Site (Activity Uncomplete)';
     @endphp
 @endif
+@push('css-plugin')
+    <link rel="stylesheet" href="{{ asset('assets') }}/vendors/dropzone/dropzone.min.css">
+	<link rel="stylesheet" href="{{ asset('assets') }}/vendors/dropify/dist/dropify.min.css">
+@endpush
 @extends('Theme/header')
 @section('getPage')
     @include('sweetalert::alert')
@@ -98,7 +102,26 @@
                 <li class="breadcrumb-item active" aria-current="page">Timeline</li>
             </ol>
         </nav>
-
+        <div class="row">
+					<div class="col-md-6 stretch-card grid-margin grid-margin-md-0">
+						<div class="card">
+							<div class="card-body">
+								<h6 class="card-title">Dropzone</h6>
+								<p class="text-muted mb-3">Read the <a href="https://www.dropzonejs.com/" target="_blank"> Official Dropzone.js Documentation </a>for a full list of instructions and other options.</p>
+								<form action="/file-upload" class="dropzone" id="exampleDropzone"></form>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 stretch-card">
+						<div class="card">
+							<div class="card-body">
+								<h6 class="card-title">Dropify</h6>
+								<p class="text-muted mb-3">Read the <a href="https://github.com/JeremyFagis/dropify" target="_blank"> Official Dropify Documentation </a>for a full list of instructions and other options.</p>
+								<input type="file" id="myDropify"/>
+							</div>
+						</div>
+					</div>
+				</div>
         <div class="row mb-3">
             <div class="col-md-12">
                 <div class="card">
@@ -141,8 +164,7 @@
                                             requested
                                             part is ready by helpdesk</p>
                                     @else
-                                        @if (
-                                            ($status_ticket->status == 2 && empty($sts_timeline2nd) && $sts_timeline1st->status_activity == 0) ||
+                                        @if (($status_ticket->status == 2 && empty($sts_timeline2nd) && $sts_timeline1st->status_activity == 0) ||
                                                 ($status_ticket->status == 3 && empty($sts_timeline3rd) && $sts_timeline2nd->status_activity == 0) ||
                                                 ($status_ticket->status == 4 && empty($sts_timeline4th) && $sts_timeline3rd->status_activity == 0) ||
                                                 ($status_ticket->status == 5 && empty($sts_timeline5th) && $sts_timeline4th->status_activity == 0))
@@ -279,6 +301,61 @@
                                                             @foreach ($var as $item)
                                                                 <li class="event" data-date="{{ $item->act_time }}">
                                                                     <h3 class="title">{{ $item->sts_ticket }}
+                                                                        @if ($item->act_description == 5 && $item->status_activity == 1)
+                                                                            <button type="button"
+                                                                                class="btn btn-inverse-primary btn-icon btn-xs"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#panel-upl-{{ $noPane }}">
+                                                                                <i class="btn-icon-append"
+                                                                                    data-feather="upload-cloud"></i>
+                                                                            </button>
+                                                                            <div class="modal fade bd-example-modal-lg"
+                                                                                id="panel-upl-{{ $noPane }}" tabindex="-1"
+                                                                                aria-labelledby="sourceModalLabel"
+                                                                                aria-hidden="true">
+                                                                                <div class="modal-dialog modal-lg">
+                                                                                    <div class="modal-content">
+                                                                                        <div class="modal-header">
+                                                                                            <h5 class="modal-title"
+                                                                                                id="sourceModalLabel">
+                                                                                                Upload BAP - Bad & Good Part
+                                                                                            </h5>
+                                                                                            <button type="button"
+                                                                                                class="btn-close"
+                                                                                                data-bs-dismiss="modal"
+                                                                                                aria-label="btn-close"></button>
+                                                                                        </div>
+                                                                                        <div class="modal-body">
+                                                                                            <div class="row">
+                                                                                                <div class="col">
+                                                                                                    <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
+                                                                                                        <div class="mb-3">
+                                                                                                            <h6 class="card-title">BAP</h6>
+                                                                                                            {{-- <input type="file" id="myDropify"/> --}}
+                                                                                                        </div>
+                                                                                                        <div class="d-flex align-items-center flex-wrap text-nowrap">
+                                                                                                            <div class="me-2">
+                                                                                                                <h6 class="card-title">Good Part</h6>
+                                                                                                                <form action="/file-upload" class="dropzone" id="exampleDropzone"></form>
+                                                                                                            </div>
+                                                                                                            <div>
+                                                                                                                <h6 class="card-title">Bad Part</h6>
+                                                                                                                <form action="/file-upload" class="dropzone" id="exampleDropzone"></form>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="modal-footer">
+                                                                                            <button type="button"
+                                                                                                class="btn btn-secondary"
+                                                                                                data-bs-dismiss="modal">Cancel</button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        @endif
                                                                         @if ($depart == 4)
                                                                             {{-- <button type="button"
                                                                                 class="btn btn-inverse-success btn-icon btn-xs get-loc-{{ $noPane }}"
@@ -454,6 +531,14 @@
         </div>
     </div>
 @endsection
+@push('plugin-page')
+	<script src="{{ asset('assets') }}/vendors/dropzone/dropzone.min.js"></script>
+	<script src="{{ asset('assets') }}/vendors/dropify/dist/dropify.min.js"></script>
+@endpush
+@push('custom-plug')
+	<script src="{{ asset('assets') }}/js/dropzone.js"></script>
+	<script src="{{ asset('assets') }}/js/dropify.js"></script>
+@endpush
 @push('custom')
     @if ($depart == 6 || $role == 1)
         <script>

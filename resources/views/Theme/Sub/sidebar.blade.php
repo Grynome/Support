@@ -64,7 +64,7 @@
                 @endif
             @endif
             @if ($depart != 3)
-                <li class="nav-item nav-category">{{ $depart == 9 ? 'Logistik' : 'Ticketing' }}</li>
+                <li class="nav-item nav-category">{{ $depart == 9 ? 'Logistik' : ($depart == 15 ? 'Request' : 'Ticketing') }}</li>
                 @if ($depart == 10)
                     <li class="nav-item">
                         <a href="{{ url('Inquiry/Docs') }}" class="nav-link" role="button" aria-expanded="false"
@@ -143,7 +143,7 @@
                             aria-expanded="false" aria-controls="general-pages">
                             <i class="link-icon" data-feather="credit-card"></i>
                             <span class="link-title">
-                                {{ $dsc_menu = $role == 19 || $depart == 15 ? 'Request' : 'My Expenses' }}
+                                Request
                             </span>
                         </a>
                     </li>

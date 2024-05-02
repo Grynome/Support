@@ -484,7 +484,6 @@ Route::group(['middleware'=>'auth'], function(){
         Route::post('My-Expenses/id={id}/sorting', [AccomodationController::class, 'vw_request_reimburse'])->name('sorting.request');
         // Get Excel Reimburse
         Route::post('Excel/Data-Reimburse', [AccomodationController::class, 'get_reqs_excel'])->name('excel.reimburse');
-    Route::get('/getReqsDone', [AccomodationController::class, 'done_reqs'])->name('fetch.reqs.done');
     Route::get('Print-Out/{id}-{sub}', [AccomodationController::class, 'inv_ex']);
     Route::post('Receipt/{id}/Download', [AccomodationController::class, 'downloadReceiptment'])->name('receipt.download');
 

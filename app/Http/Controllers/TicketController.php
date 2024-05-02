@@ -286,7 +286,7 @@ class TicketController extends Controller
             $int++;
             if($int > 9 && $int < 100){
                 $kode_awal = $dtGenerate."0".$int;
-            }elseif($int > 99 && $int < 1000){
+            }elseif($int > 99){
                 $kode_awal = $dtGenerate.$int;
             }elseif($int <= 9){
                 $kode_awal = $dtGenerate."00".$int;
@@ -299,7 +299,7 @@ class TicketController extends Controller
                 $id_cust = "CUST-00".$ai."-HGT";
         } else {
             $id_customer = $get_cust[0]->end_user_id;
-            $get_int = substr($id_customer, 5,4);
+            $get_int = preg_replace('/[^0-9]/', '', $id_customer);
             $ai = (int)$get_int;
             $ai++;
             if($ai > 9 && $ai < 100){
@@ -409,7 +409,7 @@ class TicketController extends Controller
                 }
                 if($ai < 1000){
                     $id_part = "HGT-PART-".str_pad($autonumber, 3, "0", STR_PAD_LEFT);
-                }elseif($ai > 999 && $ai < 10000){
+                }elseif($ai > 999){
                     $id_part = "HGT-PART-".str_pad($autonumber, 4, "0", STR_PAD_LEFT);
                 }elseif($ai > 9999){
                     $id_part = "HGT-PART-".str_pad($autonumber, 5, "0", STR_PAD_LEFT);
@@ -488,7 +488,7 @@ class TicketController extends Controller
             $ai++;
             if($ai < 1000){
             	$id_cust = "CUST-".str_pad($ai, 3, "0", STR_PAD_LEFT)."-HGT";
-            }elseif($ai > 999 && $ai < 10000){
+            }elseif($ai > 999){
             	$id_cust = "CUST-".str_pad($ai, 4, "0", STR_PAD_LEFT)."-HGT";
             }elseif($ai > 9999){
             	$id_cust = "CUST-".str_pad($ai, 5, "0", STR_PAD_LEFT)."-HGT";
@@ -553,6 +553,7 @@ class TicketController extends Controller
         $data['getStsP'] = StsPending::all()->where('deleted', 0);
 
         $data['cek_part'] = VW_Tiket_Part::selectRaw('MAX(CASE WHEN arrive IS NULL THEN 1 ELSE null END) AS cpt')
+                        ->where('sts_type', 0)
                         ->where('notiket', $id)
                         ->groupBy('notiket')
                         ->first();
@@ -1253,20 +1254,21 @@ class TicketController extends Controller
             $part_onsite = 5;
         }
         
-        $values_part_dt = [
-            'part_detail_id'           => $id_part,
-            'unit_name'    => $request->type_unit_updt,
-            'category_part'    => $request->kat_part_dt,
-            'so_num'    => $request->so_num_updt,
-            'rma'    => $request->rma_part_updt,
-            'pn'    => $request->product_number_updt,
-            'sn'    => $request->serial_number_updt,
-            'type_part'    => $request->status_part_updt,
-            'part_onsite'    => $part_onsite,
-            'status'    => 0,
-            'created_at'    => $dateTime
-        ];
-        $execute = TiketPartDetail::insert($values_part_dt);
+        foreach ($request->input('status_part_updt') as $index => $spudt) {
+            $execute = TiketPartDetail::create([
+                'part_detail_id'           => $id_part,
+                'unit_name'    => $request->input('type_unit_updt')[$index],
+                'category_part'    => $request->input('kat_part_dt')[$index],
+                'so_num'    => $request->input('so_num_updt')[$index],
+                'rma'    =>  $request->input('rma_part_updt')[$index],
+                'pn'    => $request->input('product_number_updt')[$index],
+                'sn'    => $request->input('serial_number_updt')[$index],
+                'type_part'    => $spudt,
+                'part_onsite'    => 1,
+                'status'    => 0,
+                'created_at'    => $dateTime
+            ]);
+        }
 
             if($execute) {
                 $nik =  auth()->user()->nik;
@@ -1295,6 +1297,7 @@ class TicketController extends Controller
         $name_part = $data['un_pdt'] ?? [];
         $ctgr_part = $data['slc_ctgr_pdt'] ?? [];
         $pn_part = $data['pn_pdt'] ?? [];
+        $sn_part = $data['sn_pdt'] ?? [];
         $so_part = $data['so_pdt'] ?? [];
         $rma_part = $data['rma_pdt'] ?? [];
         $part_type = $data['pt_pdt'] ?? [];
@@ -1306,6 +1309,7 @@ class TicketController extends Controller
                             array_keys($name_part), 
                             array_keys($ctgr_part), 
                             array_keys($pn_part), 
+                            array_keys($sn_part), 
                             array_keys($so_part), 
                             array_keys($rma_part), 
                             array_keys($part_type), 
@@ -1383,6 +1387,20 @@ class TicketController extends Controller
                             ];
                             LogTiket::insert($cpn);
                             $partDT->update(['pn' => $val_pn_part]);
+                        }
+                    }
+                    if (isset($sn_part[$id])) {
+                        $val_sn_part = $sn_part[$id];
+                        if ($val_sn_part != $partDT->sn) {
+                            $csn = [
+                                'notiket'    => $notiket,
+                                'note'    => 'Change PN Part '.$txt_part.' from '.$partDT->sn.' to '.$val_sn_part,
+                                'user'     => $nik,
+                                'type_log'     => 1,
+                                'created_at'     => $dateTime
+                            ];
+                            LogTiket::insert($csn);
+                            $partDT->update(['sn' => $val_sn_part]);
                         }
                     }
                     if (isset($so_part[$id])) {

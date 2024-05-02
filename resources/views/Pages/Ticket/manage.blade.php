@@ -5,6 +5,7 @@
     use App\Models\ActivityL2En;
     use App\Models\TiketPartDetail;
     use App\Models\TiketPartNew;
+    use App\Models\Customer;
     use Carbon\Carbon;
     $role = auth()->user()->role;
     $nik = auth()->user()->nik;

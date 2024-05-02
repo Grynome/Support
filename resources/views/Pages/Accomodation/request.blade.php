@@ -124,9 +124,37 @@
                 <div class="col-md-3 grid-margin stretch-card" style="height: 100%">
                     <div class="card">
                         <div class="card-body">
-                            <div class="row">
+                        <div class="row">
                                 <h4 class="card-title">Additional</h4>
                                 <hr>
+                                <label class="form-label">For Freelance?</label>
+                                <div class="col-md-12 mb-3 border">
+                                    <div class="form-check form-check-inline mb-2 mt-2">
+                                        <input type="checkbox" value="1" name="need_fl" 
+                                            class="form-check-input" id="checkFLorNot">
+                                        <label class="form-check-label" for="checkFLorNot">
+                                        Yes
+                                        </label>
+                                    </div>
+                                    <div class="mb-2">
+                                        <select id="slct-sp"
+                                            class="js-example-basic-single form-select"
+                                            data-width="100%"
+                                            name="slct_sp_fl">
+                                            <option value="">
+                                                -
+                                                Service Point
+                                                -
+                                            </option>
+                                            @foreach ($svc_point as $sp)
+                                                <option
+                                                    value="{{ $sp->service_id }}">
+                                                    {{ $sp->service_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="col-md-12 mb-3">
                                     <label class="form-label">Type of Request</label>
                                     <div class="d-flex justify-content-between">
@@ -221,6 +249,18 @@
 @endpush
 @push('custom')
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkbox = document.getElementById('checkFLorNot');
+            const selectElement = document.getElementById('slct-sp');
+
+            selectElement.disabled = true;
+
+            checkbox.addEventListener('change', function() {
+                selectElement.disabled = !checkbox.checked;
+            });
+        });
+    </script>
+    <script>
         var dsc = "{{ $dsc }}";
         $('.btn-add-rqs-rmbrs').on('click', function(event) {
             event.preventDefault();
@@ -257,6 +297,7 @@
         function validateForm() {
             var notiketRequest = $('#notiket-request').val();
             var typeOfTrans = $('#type-of-trans').val();
+            var fl = $('#checkFLorNot').prop('checked');
 
             if (dsc == "Past") {
                 if (notiketRequest === null || notiketRequest.length === 0) {
@@ -265,6 +306,17 @@
                         icon: 'error',
                         title: 'Validation Error',
                         text: 'Please fill notiket fields.',
+                    });
+                    return false; // Validation failed
+                }
+            }
+            if (fl) {
+                var slctSP = $('#slct-sp').val();
+                if (slctSP === "") {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        text: 'Please select Service Points.',
                     });
                     return false; // Validation failed
                 }
@@ -279,7 +331,6 @@
                 });
                 return false; // Validation failed
             }
-
             // Validate fields inside each dynamically added field
             var allValid = true;
 

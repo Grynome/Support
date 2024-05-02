@@ -39,6 +39,7 @@ use App\Models\VW_Activity_L2Engineer;
 use App\Models\RefReqs;
 use App\Models\ReqsEn;
 use App\Models\VW_Expenses;
+use App\Helpers\WeekHelper;
 
 class ReportCOntroller extends Controller
 {
@@ -873,6 +874,7 @@ class ReportCOntroller extends Controller
         $row = 2;
         foreach ($final_data as $item) {
             $carbonDate = Carbon::parse($item->ticketcoming);
+
             $tatst = Carbon::parse($item->entrydate);
             $tatnd = Carbon::parse($item->work_stop);
             $delivend = Carbon::parse($item->arrive);
@@ -881,8 +883,8 @@ class ReportCOntroller extends Controller
             $get_tat = !empty($item->entrydate) && !empty($item->work_stop) ? $tatst->diffInDays($tatnd) : null;
             $get_deliv = !empty($item->entrydate) && !empty($item->arrive) ? $tatst->diffInDays($delivend) : null;
             $get_fe = !empty($item->arrive) && !empty($item->work_stop) ? $delivend->diffInDays($tatnd) : null;
-            $weekN = 'Week '.$carbonDate->weekOfMonth;
-            $wCloseDate = 'Week '.$cbCloseDate->weekOfMonth;
+            $weekN = 'Week '.WeekHelper::getWeekNumber($carbonDate);
+            $wCloseDate = 'Week '.WeekHelper::getWeekNumber($cbCloseDate);
             if ($item->status < 10) {
                 $sts = 'Open';
             } else {
@@ -2051,11 +2053,11 @@ class ReportCOntroller extends Controller
             ];
             $compare_tt = DB::table(function ($query) use($get_year, $get_month) {
                                     $query->selectRaw("prt.partner, hp.project_id, hp.project_name,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 1 AND 7 then 1 ELSE 0 END) AS cr_week1,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 8 AND 14 then 1 ELSE 0 END) AS cr_week2,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 15 AND 21 then 1 ELSE 0 END) AS cr_week3,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 22 AND 28 then 1 ELSE 0 END) AS cr_week4,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) >28 then 1 ELSE 0 END) AS cr_week5")
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 1 THEN 1 ELSE 0 END) AS cr_week1,
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 2 THEN 1 ELSE 0 END) AS cr_week2,
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 3 THEN 1 ELSE 0 END) AS cr_week3,
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 4 THEN 1 ELSE 0 END) AS cr_week4,
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 5 THEN 1 ELSE 0 END) AS cr_week5")
                                         ->from('hgt_ticket as ht')
                                         ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
                                         ->leftJoin('hgt_project as hp', 'hpi.project_id', '=', 'hp.project_id')
@@ -2067,11 +2069,11 @@ class ReportCOntroller extends Controller
                                 
             $compare_pt = DB::table(function ($query) use($get_year, $get_month) {
                                     $query->selectRaw("prt.partner, hp.project_id as pt_prj, hp.project_name,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 1 AND 7 then 1 ELSE 0 END) AS pn_week1,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 8 AND 14 then 1 ELSE 0 END) AS pn_week2,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 15 AND 21 then 1 ELSE 0 END) AS pn_week3,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 22 AND 28 then 1 ELSE 0 END) AS pn_week4,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) >28 then 1 ELSE 0 END) AS pn_week5")
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 1 THEN 1 ELSE 0 END) AS pn_week1,
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 2 THEN 1 ELSE 0 END) AS pn_week2,
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 3 THEN 1 ELSE 0 END) AS pn_week3,
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 4 THEN 1 ELSE 0 END) AS pn_week4,
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 5 THEN 1 ELSE 0 END) AS pn_week5")
                                         ->from('hgt_ticket as ht')
                                         ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
                                         ->leftJoin('hgt_project as hp', 'hpi.project_id', '=', 'hp.project_id')
@@ -2083,11 +2085,11 @@ class ReportCOntroller extends Controller
                                 })->toSql();
             $compare_ct = DB::table(function ($query) use($get_year, $get_month) {
                                     $query->selectRaw("prt.partner, hp.project_id  AS ct_prj, hp.project_name,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 1 AND 7 then 1 ELSE 0 END) AS cl_week1,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 8 AND 14 then 1 ELSE 0 END) AS cl_week2,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 15 AND 21 then 1 ELSE 0 END) AS cl_week3,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 22 AND 28 then 1 ELSE 0 END) AS cl_week4,
-                                                SUM(CASE WHEN EXTRACT(DAY FROM ticketcoming) >28 then 1 ELSE 0 END) AS cl_week5")
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 1 THEN 1 ELSE 0 END) AS cl_week1,
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 2 THEN 1 ELSE 0 END) AS cl_week2,
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 3 THEN 1 ELSE 0 END) AS cl_week3,
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 4 THEN 1 ELSE 0 END) AS cl_week4,
+                                                SUM(CASE WHEN WEEK(ticketcoming, 1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'), 1) + 1 = 5 THEN 1 ELSE 0 END) AS cl_week5")
                                         ->from('hgt_ticket as ht')
                                         ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
                                         ->leftJoin('hgt_project as hp', 'hpi.project_id', '=', 'hp.project_id')
@@ -2128,13 +2130,7 @@ class ReportCOntroller extends Controller
                                 })->get();
             if (empty($request->chosen_prj)) {
                 $htSubquery = DB::table('hgt_ticket')
-                    ->selectRaw("CASE
-                                    WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 1 AND 7 THEN 'Week 1'
-                                    WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 8 AND 14 THEN 'Week 2'
-                                    WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 15 AND 21 THEN 'Week 3'
-                                    WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 22 AND 28 THEN 'Week 4'
-                                    ELSE 'Week 5'
-                                END AS timeframe,
+                    ->selectRaw("WEEK(ticketcoming,1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'),1) + 1 AS timeframe,
                                 COUNT(tiket_id) AS data_count")
                     ->whereRaw("YEAR(ticketcoming) = $get_year")
                     ->whereRaw("MONTH(ticketcoming) = $get_month")
@@ -2147,11 +2143,11 @@ class ReportCOntroller extends Controller
                                         ->count();
 
                 $tpdSubquery = DB::table('hgt_ticket')
-                        ->selectRaw("CONCAT('Week ', FLOOR((DAY(ticketcoming) - 1) / 7) + 1) AS wn_pending, COUNT(*) AS count_pending")
+                        ->selectRaw("WEEK(ticketcoming,1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'),1) + 1 AS wn_pending, COUNT(*) AS count_pending")
                         ->whereRaw("YEAR(ticketcoming) = $get_year")
                         ->whereRaw("MONTH(ticketcoming) = $get_month")
                         ->whereRaw("status < 10")
-                        ->groupByRaw("FLOOR((DAY(ticketcoming) - 1) / 7)")
+                        ->groupByRaw("wn_pending")
                         ->orderBy('wn_pending')
                         ->toSql();
 
@@ -2161,11 +2157,11 @@ class ReportCOntroller extends Controller
                                         ->count();
 
                 $htcSubquery = DB::table('hgt_ticket')
-                    ->selectRaw("CONCAT('Week ', FLOOR((DAY(ticketcoming) - 1) / 7) + 1) AS wn_close, COUNT(*) AS close_count")
+                    ->selectRaw("WEEK(ticketcoming,1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'),1) + 1 AS wn_close, COUNT(*) AS close_count")
                     ->whereRaw("YEAR(ticketcoming) = $get_year")
                     ->whereRaw("MONTH(ticketcoming) = $get_month")
                     ->whereRaw("status = 10")
-                    ->groupByRaw("FLOOR((DAY(ticketcoming) - 1) / 7)")
+                    ->groupByRaw("wn_close")
                     ->orderBy('wn_close')
                     ->toSql();
 
@@ -2175,13 +2171,7 @@ class ReportCOntroller extends Controller
                                         ->count();
             } else {
                 $htSubquery = DB::table(function ($query) use($get_year,$get_month, $request) {
-                                    $query->selectRaw("CASE
-                                    WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 1 AND 7 THEN 'Week 1'
-                                    WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 8 AND 14 THEN 'Week 2'
-                                    WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 15 AND 21 THEN 'Week 3'
-                                    WHEN EXTRACT(DAY FROM ticketcoming) BETWEEN 22 AND 28 THEN 'Week 4'
-                                    ELSE 'Week 5'
-                                END AS timeframe,
+                                    $query->selectRaw("WEEK(ticketcoming,1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'),1) + 1 AS timeframe,
                                 COUNT(tiket_id) AS data_count")
                             ->from('hgt_ticket as ht')
                             ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
@@ -2202,14 +2192,14 @@ class ReportCOntroller extends Controller
                                         })->count();
                                         
                 $tpdSubquery = DB::table(function ($query) use($get_year,$get_month, $request) {
-                                    $query->selectRaw("CONCAT('Week ', FLOOR((DAY(ticketcoming) - 1) / 7) + 1) AS wn_pending, COUNT(*) AS count_pending")
+                                    $query->selectRaw("WEEK(ticketcoming,1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'),1) + 1 AS wn_pending, COUNT(*) AS count_pending")
                                     ->from('hgt_ticket as ht')
                                     ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
                                     ->whereRaw("project_id = '$request->chosen_prj'")
                                     ->whereRaw("YEAR(ticketcoming) = $get_year")
                                     ->whereRaw("MONTH(ticketcoming) = $get_month")
                                     ->whereRaw("status < 10")
-                                    ->groupByRaw("FLOOR((DAY(ticketcoming) - 1) / 7)")
+                                    ->groupByRaw("wn_pending")
                                     ->orderBy('wn_pending');
                                 })->toSql();
 
@@ -2224,14 +2214,14 @@ class ReportCOntroller extends Controller
                                         })->count();
 
                 $htcSubquery = DB::table(function ($query) use($get_year,$get_month, $request) {
-                                    $query->selectRaw("CONCAT('Week ', FLOOR((DAY(ticketcoming) - 1) / 7) + 1) AS wn_close, COUNT(*) AS close_count")
+                                    $query->selectRaw("WEEK(ticketcoming,1) - WEEK(DATE_FORMAT(ticketcoming, '%Y-%m-01'),1) + 1 AS wn_close, COUNT(*) AS close_count")
                                     ->from('hgt_ticket as ht')
                                     ->leftJoin('hgt_project_info as hpi', 'ht.notiket', '=', 'hpi.notiket')
                                     ->whereRaw("project_id = '$request->chosen_prj'")
                                     ->whereRaw("YEAR(ticketcoming) = $get_year")
                                     ->whereRaw("MONTH(ticketcoming) = $get_month")
                                     ->whereRaw("status = 10")
-                                    ->groupByRaw("FLOOR((DAY(ticketcoming) - 1) / 7)")
+                                    ->groupByRaw("wn_close")
                                     ->orderBy('wn_close');
                                 })->toSql();
                     
